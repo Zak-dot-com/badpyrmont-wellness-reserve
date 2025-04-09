@@ -1,4 +1,3 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -17,13 +16,12 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { CalendarRange, CircleCheck, Sparkles, Shower, Dumbbell, Heart, Leaf } from 'lucide-react';
+import { CalendarRange, CircleCheck, Sparkles, Bath, Dumbbell, Heart, Leaf } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-// Animation variants for elements
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -53,7 +51,7 @@ const PackageSelection = () => {
       case 'rejuvenation':
         return <Sparkles className="h-6 w-6 text-amber-500" />;
       case 'relaxation':
-        return <Shower className="h-6 w-6 text-blue-500" />;
+        return <Bath className="h-6 w-6 text-blue-500" />;
       case 'fitness':
         return <Dumbbell className="h-6 w-6 text-green-500" />;
       case 'wellness':
@@ -208,7 +206,6 @@ const PackageSelection = () => {
                     onSelect={(date) => setStartDate(date)}
                     className="rounded-md border p-3 pointer-events-auto"
                     disabled={(date) => {
-                      // Disable dates in the past
                       return date < new Date();
                     }}
                     footer={

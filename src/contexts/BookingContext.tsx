@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
@@ -8,6 +7,8 @@ export type PackageType = {
   name: string;
   description: string;
   basePrice: number;
+  type: string;
+  image?: string;
 };
 
 export type DurationType = "4" | "7" | "14";
@@ -256,25 +257,33 @@ const availablePackages: PackageType[] = [
     id: "relaxation-retreat",
     name: "Relaxation Retreat",
     description: "A peaceful wellness package focused on relaxation and stress relief",
-    basePrice: 120 // per day
+    basePrice: 120, // per day
+    type: "relaxation",
+    image: "/placeholder.svg"
   },
   {
     id: "detox-revitalize",
     name: "Detox & Revitalize",
     description: "Cleanse your body and mind with this comprehensive detox program",
-    basePrice: 150 // per day
+    basePrice: 150, // per day
+    type: "wellness",
+    image: "/placeholder.svg"
   },
   {
     id: "fitness-reboot",
     name: "Fitness Reboot",
     description: "Energize your body with intensive fitness activities and recovery treatments",
-    basePrice: 165 // per day
+    basePrice: 165, // per day
+    type: "fitness",
+    image: "/placeholder.svg"
   },
   {
     id: "luxury-escape",
     name: "Luxury Wellness Escape",
     description: "Our premium package with exclusive treatments and personalized service",
-    basePrice: 220 // per day
+    basePrice: 220, // per day
+    type: "rejuvenation",
+    image: "/placeholder.svg"
   }
 ];
 
