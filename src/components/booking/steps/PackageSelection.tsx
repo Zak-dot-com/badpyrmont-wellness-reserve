@@ -1,3 +1,4 @@
+
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -59,6 +60,11 @@ const PackageSelection = () => {
       default:
         return <Leaf className="h-6 w-6 text-emerald-500" />;
     }
+  };
+
+  const calculatePackagePrice = (basePrice: number) => {
+    const selectedDuration = parseInt(duration);
+    return basePrice * selectedDuration;
   };
 
   const handleContinue = () => {
@@ -128,9 +134,22 @@ const PackageSelection = () => {
                   <CardDescription>{pkg.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-hotel-primary">
-                    {pkg.basePrice} € <span className="text-sm text-gray-500">/ day</span>
-                  </p>
+                  <div>
+                    <div className="text-sm text-gray-500 mb-1">Starting from</div>
+                    <p className="text-2xl font-bold text-hotel-primary">
+                      {pkg.basePrice * 4} € <span className="text-sm text-gray-500">/ 4 days</span>
+                    </p>
+                    {selectedPackage?.id === pkg.id && parseInt(duration) !== 4 && (
+                      <motion.p 
+                        className="text-md font-medium text-hotel-secondary mt-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        {calculatePackagePrice(pkg.basePrice)} € for {duration} days
+                      </motion.p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
