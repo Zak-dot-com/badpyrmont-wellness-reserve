@@ -25,6 +25,7 @@ export type AddOnItem = {
   description: string;
   price: number;
   selected: boolean;
+  quantity: number;
 };
 
 export type RoomType = {
@@ -71,11 +72,13 @@ type BookingContextType = {
   setDuration: (duration: DurationType) => void;
   setStartDate: (date: Date | null) => void;
   toggleAddOn: (categoryId: string, itemId: string) => void;
+  updateAddOnQuantity: (categoryId: string, itemId: string, quantity: number) => void;
   selectRoom: (roomId: string) => void;
   toggleRoomAddOn: (addOnId: string) => void;
   setCustomerInfo: (info: Partial<BookingData['customerInfo']>) => void;
   calculateEndDate: () => Date | null;
   calculateTotalPrice: () => number;
+  getDefaultAddOnQuantity: () => number;
 };
 
 // Initial data
@@ -93,35 +96,40 @@ const initialData: BookingData = {
           name: "Massage Therapy",
           description: "60-minute relaxing massage session",
           price: 80,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "facial-treatment",
           name: "Facial Treatment",
           description: "Rejuvenating facial with organic products",
           price: 95,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "hot-stone-therapy",
           name: "Hot Stone Therapy",
           description: "Therapeutic hot stone massage",
           price: 120,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "aromatherapy",
           name: "Aromatherapy Session",
           description: "Relaxing aromatherapy treatment",
           price: 75,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "body-scrub",
           name: "Full Body Scrub",
           description: "Exfoliating body scrub treatment",
           price: 85,
-          selected: false
+          selected: false,
+          quantity: 2
         }
       ]
     },
@@ -134,35 +142,40 @@ const initialData: BookingData = {
           name: "Personal Trainer",
           description: "One-on-one fitness sessions",
           price: 110,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "yoga-classes",
           name: "Yoga Classes",
           description: "Daily yoga sessions",
           price: 60,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "aqua-fitness",
           name: "Aqua Fitness",
           description: "Water-based fitness activities",
           price: 55,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "meditation",
           name: "Guided Meditation",
           description: "Daily meditation sessions",
           price: 45,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "pilates",
           name: "Pilates Classes",
           description: "Core-strengthening pilates sessions",
           price: 65,
-          selected: false
+          selected: false,
+          quantity: 2
         }
       ]
     },
@@ -175,35 +188,40 @@ const initialData: BookingData = {
           name: "Diet Consultation",
           description: "Personalized nutrition planning",
           price: 140,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "detox-program",
           name: "Detox Program",
           description: "Specialized detox meal plan",
           price: 190,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "cooking-class",
           name: "Healthy Cooking Class",
           description: "Learn to prepare healthy meals",
           price: 85,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "juice-cleanse",
           name: "Juice Cleanse",
           description: "Fresh, organic juice cleanse program",
           price: 110,
-          selected: false
+          selected: false,
+          quantity: 2
         },
         {
           id: "nutrition-workshop",
           name: "Nutrition Workshop",
           description: "Group workshop on healthy eating",
           price: 70,
-          selected: false
+          selected: false,
+          quantity: 2
         }
       ]
     }
@@ -349,13 +367,40 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     return addDays(bookingData.startDate, parseInt(bookingData.duration));
   };
 
+  const getDefaultAddOnQuantity = (): number => {
+    return Math.floor(parseInt(bookingData.duration) / 2);
+  };
+
   const toggleAddOn = (categoryId: string, itemId: string) => {
     setBookingData(prev => {
       const updatedCategories = prev.addOnCategories.map(category => {
         if (category.id === categoryId) {
           const updatedItems = category.items.map(item => {
             if (item.id === itemId) {
-              return { ...item, selected: !item.selected };
+              const isSelected = !item.selected;
+              return { 
+                ...item, 
+                selected: isSelected,
+                quantity: isSelected ? getDefaultAddOnQuantity() : item.quantity 
+              };
+            }
+            return item;
+          });
+          return { ...category, items: updatedItems };
+        }
+        return category;
+      });
+      return { ...prev, addOnCategories: updatedCategories };
+    });
+  };
+
+  const updateAddOnQuantity = (categoryId: string, itemId: string, quantity: number) => {
+    setBookingData(prev => {
+      const updatedCategories = prev.addOnCategories.map(category => {
+        if (category.id === categoryId) {
+          const updatedItems = category.items.map(item => {
+            if (item.id === itemId) {
+              return { ...item, quantity: Math.max(1, quantity) };
             }
             return item;
           });
@@ -406,7 +451,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     bookingData.addOnCategories.forEach(category => {
       category.items.forEach(item => {
         if (item.selected) {
-          total += item.price;
+          total += item.price * item.quantity;
         }
       });
     });
@@ -437,11 +482,13 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       setDuration,
       setStartDate,
       toggleAddOn,
+      updateAddOnQuantity,
       selectRoom,
       toggleRoomAddOn,
       setCustomerInfo,
       calculateEndDate,
-      calculateTotalPrice
+      calculateTotalPrice,
+      getDefaultAddOnQuantity
     }}>
       {children}
     </BookingContext.Provider>

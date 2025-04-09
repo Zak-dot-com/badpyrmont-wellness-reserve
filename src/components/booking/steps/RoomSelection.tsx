@@ -71,7 +71,7 @@ const RoomSelection = () => {
             key={room.id}
             className={`overflow-hidden cursor-pointer transition-all room-option ${
               selectedRoom?.id === room.id 
-                ? 'ring-2 ring-hotel-primary' 
+                ? 'ring-2 ring-amber-500' 
                 : 'hover:shadow-lg'
             }`}
             onClick={() => selectRoom(room.id)}
@@ -108,7 +108,7 @@ const RoomSelection = () => {
                   {room.type === 'single' ? 'Single Bed' : 'King Size Bed'}
                 </span>
               </div>
-              <p className="mt-4 text-xl font-bold text-hotel-primary">
+              <p className="mt-4 text-xl font-bold text-amber-600">
                 {room.price} € <span className="text-sm text-gray-500">/ night</span>
               </p>
             </CardContent>
@@ -126,14 +126,14 @@ const RoomSelection = () => {
               key={addon.id}
               className={`p-4 border rounded-lg cursor-pointer transition ${
                 addon.selected 
-                  ? 'bg-hotel-primary/10 border-hotel-primary' 
+                  ? 'bg-amber-50 border-amber-500' 
                   : 'hover:bg-gray-100'
               }`}
               onClick={() => toggleRoomAddOn(addon.id)}
             >
               <div className="flex flex-col items-center text-center">
                 <div className={`p-3 rounded-full ${
-                  addon.selected ? 'bg-hotel-primary text-white' : 'bg-gray-100'
+                  addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
                 }`}>
                   {getIconForAddOn(addon.icon)}
                 </div>
@@ -155,7 +155,7 @@ const RoomSelection = () => {
         </Button>
         <Button 
           onClick={handleContinue}
-          className="bg-hotel-primary hover:bg-hotel-primary/90"
+          className="bg-amber-500 hover:bg-amber-600"
           size="lg"
         >
           Continue to Checkout

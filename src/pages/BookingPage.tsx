@@ -41,7 +41,7 @@ const BookingPage = () => {
         <div className="container mx-auto py-12 px-4 md:px-6">
           <div className="max-w-screen-xl mx-auto">
             <motion.h1 
-              className="text-3xl md:text-4xl font-bold text-center mb-8"
+              className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

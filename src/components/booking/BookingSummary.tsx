@@ -20,7 +20,7 @@ const BookingSummary = () => {
     <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6">
       <h2 className="text-xl font-bold border-b pb-4 mb-4 flex items-center justify-between">
         <span>Booking Summary</span>
-        <div className="text-hotel-primary flex items-center gap-1">
+        <div className="text-amber-600 flex items-center gap-1">
           <Euro className="h-5 w-5" />
           <span>{totalPrice.toFixed(2)}</span>
         </div>
@@ -61,8 +61,11 @@ const BookingSummary = () => {
             <ul className="space-y-2">
               {selectedAddOns.map(addon => (
                 <li key={addon.id} className="flex justify-between text-sm">
-                  <span>{addon.name}</span>
-                  <span>{addon.price} €</span>
+                  <span>
+                    {addon.name} 
+                    {addon.quantity > 1 && <span className="text-gray-500 ml-1">x{addon.quantity}</span>}
+                  </span>
+                  <span>{(addon.price * addon.quantity)} €</span>
                 </li>
               ))}
             </ul>
@@ -104,7 +107,7 @@ const BookingSummary = () => {
       <div className="mt-6 pt-4 border-t">
         <div className="flex justify-between font-bold">
           <span>Total Price</span>
-          <span className="text-hotel-primary">{totalPrice.toFixed(2)} €</span>
+          <span className="text-amber-600">{totalPrice.toFixed(2)} €</span>
         </div>
       </div>
     </div>
