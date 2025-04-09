@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        hotel: {
+          primary: '#003b95',
+          secondary: '#f5f5f5',
+          accent: '#febb02',
+          gold: '#d4af37'
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
