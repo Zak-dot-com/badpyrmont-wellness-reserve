@@ -13,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Euro, Plus, Minus, Spa, Dumbbell, UtensilsCrossed } from 'lucide-react';
+import { Euro, Plus, Minus, Bath, Dumbbell as Activity, Utensils } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AddOnSelection = () => {
@@ -31,11 +31,11 @@ const AddOnSelection = () => {
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
       case 'wellness-treatments':
-        return <Spa className="h-5 w-5 mr-2 text-amber-500" />;
+        return <Bath className="h-5 w-5 mr-2 text-amber-500" />;
       case 'fitness-activities':
-        return <Dumbbell className="h-5 w-5 mr-2 text-amber-500" />;
+        return <Activity className="h-5 w-5 mr-2 text-amber-500" />;
       case 'nutrition':
-        return <UtensilsCrossed className="h-5 w-5 mr-2 text-amber-500" />;
+        return <Utensils className="h-5 w-5 mr-2 text-amber-500" />;
       default:
         return null;
     }
