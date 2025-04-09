@@ -16,16 +16,30 @@ import { toast } from 'sonner';
 import { Euro, Plus, Minus, Bath, Dumbbell as Activity, Utensils } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const AddOnSelection = () => {
+type AddOnSelectionProps = {
+  isEditMode?: boolean;
+  onEditComplete?: () => void;
+};
+
+const AddOnSelection = ({ isEditMode = false, onEditComplete }: AddOnSelectionProps) => {
   const { bookingData, toggleAddOn, updateAddOnQuantity, setCurrentStep, getDefaultAddOnQuantity } = useBooking();
   const { addOnCategories, duration } = bookingData;
 
   const handleContinue = () => {
-    setCurrentStep(3);
+    if (isEditMode && onEditComplete) {
+      onEditComplete();
+      toast.success("Add-ons updated successfully");
+    } else {
+      setCurrentStep(3);
+    }
   };
 
   const handleBack = () => {
-    setCurrentStep(1);
+    if (isEditMode && onEditComplete) {
+      onEditComplete();
+    } else {
+      setCurrentStep(1);
+    }
   };
 
   const getCategoryIcon = (categoryId: string) => {
@@ -53,8 +67,12 @@ const AddOnSelection = () => {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold mb-2">Customize Your Experience</h2>
-      <p className="text-gray-600">Enhance your wellness retreat with our premium add-on services</p>
+      {!isEditMode && (
+        <>
+          <h2 className="text-2xl font-bold mb-2">Customize Your Experience</h2>
+          <p className="text-gray-600">Enhance your wellness retreat with our premium add-on services</p>
+        </>
+      )}
 
       <Tabs defaultValue={addOnCategories[0]?.id} className="w-full">
         <TabsList className="grid grid-cols-3 mb-8">
@@ -142,14 +160,14 @@ const AddOnSelection = () => {
           variant="outline"
           size="lg"
         >
-          Back
+          {isEditMode ? "Cancel" : "Back"}
         </Button>
         <Button 
           onClick={handleContinue}
           className="bg-amber-500 hover:bg-amber-600"
           size="lg"
         >
-          Continue to Room Selection
+          {isEditMode ? "Save Changes" : "Continue to Room Selection"}
         </Button>
       </div>
     </div>
