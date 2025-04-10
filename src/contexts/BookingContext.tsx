@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
@@ -69,12 +70,16 @@ type BookingContextType = {
   availableRooms: RoomType[];
   setCurrentStep: (step: number) => void;
   selectPackage: (packageId: string) => void;
+  resetPackage: () => void;
   setDuration: (duration: DurationType) => void;
   setStartDate: (date: Date | null) => void;
   toggleAddOn: (categoryId: string, itemId: string) => void;
+  removeAddOn: (categoryId: string, itemId: string) => void;
   updateAddOnQuantity: (categoryId: string, itemId: string, quantity: number) => void;
   selectRoom: (roomId: string) => void;
+  resetRoom: () => void;
   toggleRoomAddOn: (addOnId: string) => void;
+  removeRoomAddOn: (addOnId: string) => void;
   setCustomerInfo: (info: Partial<BookingData['customerInfo']>) => void;
   calculateEndDate: () => Date | null;
   calculateTotalPrice: () => number;
@@ -348,6 +353,15 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const resetPackage = () => {
+    setBookingData(prev => ({
+      ...prev,
+      selectedPackage: null,
+      startDate: null,
+      duration: "4"
+    }));
+  };
+
   const setDuration = (duration: DurationType) => {
     setBookingData(prev => ({
       ...prev,
@@ -394,6 +408,24 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const removeAddOn = (categoryId: string, itemId: string) => {
+    setBookingData(prev => {
+      const updatedCategories = prev.addOnCategories.map(category => {
+        if (category.id === categoryId) {
+          const updatedItems = category.items.map(item => {
+            if (item.id === itemId) {
+              return { ...item, selected: false };
+            }
+            return item;
+          });
+          return { ...category, items: updatedItems };
+        }
+        return category;
+      });
+      return { ...prev, addOnCategories: updatedCategories };
+    });
+  };
+
   const updateAddOnQuantity = (categoryId: string, itemId: string, quantity: number) => {
     setBookingData(prev => {
       const updatedCategories = prev.addOnCategories.map(category => {
@@ -420,11 +452,31 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const resetRoom = () => {
+    setBookingData(prev => ({
+      ...prev,
+      selectedRoom: null,
+      roomAddOns: prev.roomAddOns.map(addon => ({ ...addon, selected: false }))
+    }));
+  };
+
   const toggleRoomAddOn = (addOnId: string) => {
     setBookingData(prev => {
       const updatedAddOns = prev.roomAddOns.map(addon => {
         if (addon.id === addOnId) {
           return { ...addon, selected: !addon.selected };
+        }
+        return addon;
+      });
+      return { ...prev, roomAddOns: updatedAddOns };
+    });
+  };
+
+  const removeRoomAddOn = (addOnId: string) => {
+    setBookingData(prev => {
+      const updatedAddOns = prev.roomAddOns.map(addon => {
+        if (addon.id === addOnId) {
+          return { ...addon, selected: false };
         }
         return addon;
       });
@@ -479,12 +531,16 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       availableRooms,
       setCurrentStep,
       selectPackage,
+      resetPackage,
       setDuration,
       setStartDate,
       toggleAddOn,
+      removeAddOn,
       updateAddOnQuantity,
       selectRoom,
+      resetRoom,
       toggleRoomAddOn,
+      removeRoomAddOn,
       setCustomerInfo,
       calculateEndDate,
       calculateTotalPrice,

@@ -1,7 +1,7 @@
 
 import { useBooking } from '@/contexts/BookingContext';
 import { format } from 'date-fns';
-import { Euro, Edit2 } from 'lucide-react';
+import { Euro, Edit2, Trash2 } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent,
@@ -20,14 +20,58 @@ import PackageSelection from './steps/PackageSelection';
 import AddOnSelection from './steps/AddOnSelection';
 import RoomSelection from './steps/RoomSelection';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
 
 const BookingSummary = () => {
-  const { bookingData, calculateEndDate, calculateTotalPrice } = useBooking();
-  const { selectedPackage, duration, startDate, addOnCategories, selectedRoom, roomAddOns } = bookingData;
+  const { 
+    bookingData, 
+    calculateEndDate, 
+    calculateTotalPrice, 
+    removeAddOn,
+    removeRoomAddOn,
+    resetPackage,
+    resetRoom
+  } = useBooking();
+  
+  const { 
+    selectedPackage, 
+    duration, 
+    startDate, 
+    addOnCategories, 
+    selectedRoom, 
+    roomAddOns 
+  } = bookingData;
   
   const [openPackageDialog, setOpenPackageDialog] = useState(false);
   const [openAddonsDialog, setOpenAddonsDialog] = useState(false);
   const [openRoomDialog, setOpenRoomDialog] = useState(false);
+  const [removeAddOnDialog, setRemoveAddOnDialog] = useState<{open: boolean, categoryId: string, itemId: string}>({
+    open: false,
+    categoryId: '',
+    itemId: ''
+  });
+  const [removeRoomAddOnDialog, setRemoveRoomAddOnDialog] = useState<{open: boolean, addOnId: string}>({
+    open: false,
+    addOnId: ''
+  });
+  const [removePackageDialog, setRemovePackageDialog] = useState(false);
+  const [removeRoomDialog, setRemoveRoomDialog] = useState(false);
   
   const isDesktop = useMediaQuery("(min-width: 768px)");
   
@@ -39,6 +83,34 @@ const BookingSummary = () => {
   );
   
   const selectedRoomAddOns = roomAddOns.filter(addon => addon.selected);
+
+  const handleRemoveAddOn = () => {
+    if (removeAddOnDialog.categoryId && removeAddOnDialog.itemId) {
+      removeAddOn(removeAddOnDialog.categoryId, removeAddOnDialog.itemId);
+      setRemoveAddOnDialog({ open: false, categoryId: '', itemId: '' });
+      toast.success("Add-on removed successfully");
+    }
+  };
+
+  const handleRemoveRoomAddOn = () => {
+    if (removeRoomAddOnDialog.addOnId) {
+      removeRoomAddOn(removeRoomAddOnDialog.addOnId);
+      setRemoveRoomAddOnDialog({ open: false, addOnId: '' });
+      toast.success("Room add-on removed successfully");
+    }
+  };
+
+  const handleRemovePackage = () => {
+    resetPackage();
+    setRemovePackageDialog(false);
+    toast.success("Package removed successfully");
+  };
+
+  const handleRemoveRoom = () => {
+    resetRoom();
+    setRemoveRoomDialog(false);
+    toast.success("Room removed successfully");
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6">
@@ -52,18 +124,47 @@ const BookingSummary = () => {
       
       {/* Package details */}
       {selectedPackage && (
-        <div className="mb-4">
+        <div className="mb-4 group relative">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-700">Selected Package</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-auto" 
-              onClick={() => setOpenPackageDialog(true)}
-            >
-              <Edit2 className="h-4 w-4 text-amber-500" />
-              <span className="sr-only">Edit package</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                      onClick={() => setOpenPackageDialog(true)}
+                    >
+                      <Edit2 className="h-4 w-4 text-amber-500" />
+                      <span className="sr-only">Edit package</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit package</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                      onClick={() => setRemovePackageDialog(true)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <span className="sr-only">Remove package</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Remove package</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
             <p className="font-medium">{selectedPackage.name}</p>
@@ -77,8 +178,28 @@ const BookingSummary = () => {
       
       {/* Date Range */}
       {startDate && (
-        <div className="mb-4">
-          <h3 className="font-semibold text-gray-700">Selected Dates</h3>
+        <div className="mb-4 group relative">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-gray-700">Selected Dates</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                    onClick={() => setOpenPackageDialog(true)}
+                  >
+                    <Edit2 className="h-4 w-4 text-amber-500" />
+                    <span className="sr-only">Edit dates</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit dates</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
             <p className="text-sm text-gray-600">
               {format(startDate, 'MMM dd, yyyy')} {endDate && `to ${format(endDate, 'MMM dd, yyyy')}`}
@@ -90,30 +211,71 @@ const BookingSummary = () => {
       
       {/* Selected Add-ons */}
       {selectedAddOns.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-4 group relative">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-700">Selected Add-ons</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-auto" 
-              onClick={() => setOpenAddonsDialog(true)}
-            >
-              <Edit2 className="h-4 w-4 text-amber-500" />
-              <span className="sr-only">Edit add-ons</span>
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                    onClick={() => setOpenAddonsDialog(true)}
+                  >
+                    <Edit2 className="h-4 w-4 text-amber-500" />
+                    <span className="sr-only">Edit add-ons</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit add-ons</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
             <ul className="space-y-2">
-              {selectedAddOns.map(addon => (
-                <li key={addon.id} className="flex justify-between text-sm">
-                  <span>
-                    {addon.name} 
-                    {addon.quantity > 1 && <span className="text-gray-500 ml-1">x{addon.quantity}</span>}
-                  </span>
-                  <span>{(addon.price * addon.quantity)} €</span>
-                </li>
-              ))}
+              {selectedAddOns.map(addon => {
+                const categoryId = addOnCategories.find(category => 
+                  category.items.some(item => item.id === addon.id)
+                )?.id || '';
+
+                return (
+                  <li key={addon.id} className="flex justify-between text-sm group/item">
+                    <span>
+                      {addon.name} 
+                      {addon.quantity > 1 && <span className="text-gray-500 ml-1">x{addon.quantity}</span>}
+                    </span>
+                    <div className="flex items-center">
+                      <span className="mr-2">{(addon.price * addon.quantity)} €</span>
+                      <div className="flex opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-1 h-6 w-6"
+                                onClick={() => setRemoveAddOnDialog({
+                                  open: true, 
+                                  categoryId, 
+                                  itemId: addon.id
+                                })}
+                              >
+                                <Trash2 className="h-3 w-3 text-red-500" />
+                                <span className="sr-only">Remove add-on</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Remove add-on</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -121,18 +283,47 @@ const BookingSummary = () => {
       
       {/* Selected Room */}
       {selectedRoom && (
-        <div className="mb-4">
+        <div className="mb-4 group relative">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-700">Selected Room</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-auto" 
-              onClick={() => setOpenRoomDialog(true)}
-            >
-              <Edit2 className="h-4 w-4 text-amber-500" />
-              <span className="sr-only">Edit room</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                      onClick={() => setOpenRoomDialog(true)}
+                    >
+                      <Edit2 className="h-4 w-4 text-amber-500" />
+                      <span className="sr-only">Edit room</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit room</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                      onClick={() => setRemoveRoomDialog(true)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <span className="sr-only">Remove room</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Remove room</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
             <p className="font-medium">{selectedRoom.name}</p>
@@ -145,14 +336,59 @@ const BookingSummary = () => {
       
       {/* Selected Room Add-ons */}
       {selectedRoomAddOns.length > 0 && (
-        <div className="mb-4">
-          <h3 className="font-semibold text-gray-700">Room Add-ons</h3>
+        <div className="mb-4 group relative">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-gray-700">Room Add-ons</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+                    onClick={() => setOpenRoomDialog(true)}
+                  >
+                    <Edit2 className="h-4 w-4 text-amber-500" />
+                    <span className="sr-only">Edit room add-ons</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit room add-ons</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
             <ul className="space-y-2">
               {selectedRoomAddOns.map(addon => (
-                <li key={addon.id} className="flex justify-between text-sm">
+                <li key={addon.id} className="flex justify-between text-sm group/item">
                   <span>{addon.name}</span>
-                  <span>{addon.price} €</span>
+                  <div className="flex items-center">
+                    <span className="mr-2">{addon.price} €</span>
+                    <div className="flex opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-1 h-6 w-6" 
+                              onClick={() => setRemoveRoomAddOnDialog({
+                                open: true, 
+                                addOnId: addon.id
+                              })}
+                            >
+                              <Trash2 className="h-3 w-3 text-red-500" />
+                              <span className="sr-only">Remove room add-on</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Remove room add-on</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -234,6 +470,100 @@ const BookingSummary = () => {
           </Sheet>
         </>
       )}
+      
+      {/* Confirmation dialogs for removing items */}
+      <AlertDialog 
+        open={removeAddOnDialog.open} 
+        onOpenChange={(open) => !open && setRemoveAddOnDialog(prev => ({...prev, open}))}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Add-on</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this add-on from your booking?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleRemoveAddOn}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <AlertDialog 
+        open={removeRoomAddOnDialog.open} 
+        onOpenChange={(open) => !open && setRemoveRoomAddOnDialog(prev => ({...prev, open}))}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Room Add-on</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this room add-on from your booking?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleRemoveRoomAddOn}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <AlertDialog 
+        open={removePackageDialog} 
+        onOpenChange={setRemovePackageDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Package</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove the selected package from your booking? 
+              This will reset your booking.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleRemovePackage}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <AlertDialog 
+        open={removeRoomDialog} 
+        onOpenChange={setRemoveRoomDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Room</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove the selected room from your booking?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleRemoveRoom}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
