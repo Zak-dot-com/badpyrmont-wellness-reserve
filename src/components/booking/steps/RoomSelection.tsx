@@ -19,7 +19,12 @@ import {
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
-const RoomSelection = () => {
+type RoomSelectionProps = {
+  isEditMode?: boolean;
+  onEditComplete?: () => void;
+};
+
+const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProps) => {
   const { 
     bookingData, 
     availableRooms, 
@@ -36,11 +41,20 @@ const RoomSelection = () => {
       return;
     }
     
-    setCurrentStep(4);
+    if (isEditMode && onEditComplete) {
+      onEditComplete();
+      toast.success("Room selection updated successfully");
+    } else {
+      setCurrentStep(4);
+    }
   };
 
   const handleBack = () => {
-    setCurrentStep(2);
+    if (isEditMode && onEditComplete) {
+      onEditComplete();
+    } else {
+      setCurrentStep(2);
+    }
   };
 
   const getIconForAddOn = (iconName: string) => {
@@ -60,10 +74,12 @@ const RoomSelection = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Select Your Accommodation</h2>
-        <p className="text-gray-600">Choose the perfect room for your wellness retreat</p>
-      </div>
+      {!isEditMode && (
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Select Your Accommodation</h2>
+          <p className="text-gray-600">Choose the perfect room for your wellness retreat</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {availableRooms.map((room) => (
@@ -151,14 +167,14 @@ const RoomSelection = () => {
           variant="outline"
           size="lg"
         >
-          Back
+          {isEditMode ? "Cancel" : "Back"}
         </Button>
         <Button 
           onClick={handleContinue}
           className="bg-amber-500 hover:bg-amber-600"
           size="lg"
         >
-          Continue to Checkout
+          {isEditMode ? "Save Changes" : "Continue to Checkout"}
         </Button>
       </div>
     </div>

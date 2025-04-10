@@ -33,7 +33,12 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
 };
 
-const PackageSelection = () => {
+type PackageSelectionProps = {
+  isEditMode?: boolean;
+  onEditComplete?: () => void;
+};
+
+const PackageSelection = ({ isEditMode = false, onEditComplete }: PackageSelectionProps) => {
   const { 
     bookingData, 
     availablePackages, 
@@ -78,7 +83,12 @@ const PackageSelection = () => {
       return;
     }
 
-    setCurrentStep(2);
+    if (isEditMode && onEditComplete) {
+      onEditComplete();
+      toast.success("Package updated successfully");
+    } else {
+      setCurrentStep(2);
+    }
   };
 
   return (
@@ -88,8 +98,13 @@ const PackageSelection = () => {
       animate="visible"
       variants={containerVariants}
     >
+      {!isEditMode && (
+        <motion.div variants={itemVariants}>
+          <h2 className="text-2xl font-bold mb-6">Select Your Wellness Package</h2>
+        </motion.div>
+      )}
+      
       <motion.div variants={itemVariants}>
-        <h2 className="text-2xl font-bold mb-6">Select Your Wellness Package</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {availablePackages.map((pkg) => (
             <motion.div 
@@ -252,7 +267,7 @@ const PackageSelection = () => {
           className="bg-hotel-primary hover:bg-hotel-primary/90"
           size="lg"
         >
-          Continue to Add-ons
+          {isEditMode ? "Save Changes" : "Continue to Add-ons"}
         </Button>
       </motion.div>
     </motion.div>
