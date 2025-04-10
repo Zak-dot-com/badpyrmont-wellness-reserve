@@ -11,7 +11,7 @@ import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
@@ -26,6 +26,13 @@ const BookingPage = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
+
+  // Make sure drawer is closed when switching to desktop view
+  useEffect(() => {
+    if (!isMobile && openDrawer) {
+      setOpenDrawer(false);
+    }
+  }, [isMobile, openDrawer]);
 
   const renderCurrentStep = () => {
     switch (currentStep) {
