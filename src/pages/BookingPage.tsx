@@ -49,6 +49,9 @@ const BookingPage = () => {
     }
   };
 
+  console.log("isMobile:", isMobile);
+  console.log("BookingSummary component should be visible");
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -81,7 +84,15 @@ const BookingPage = () => {
                 </AnimatePresence>
               </div>
               
-              {isMobile ? (
+              {/* Always render BookingSummary for desktop */}
+              {!isMobile && (
+                <div className="lg:col-span-1 relative">
+                  <BookingSummary />
+                </div>
+              )}
+              
+              {/* For mobile, show a floating button that opens a drawer with BookingSummary */}
+              {isMobile && (
                 <div className="fixed bottom-6 right-6 z-10">
                   <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
                     <DrawerTrigger asChild>
@@ -98,10 +109,6 @@ const BookingPage = () => {
                       </div>
                     </DrawerContent>
                   </Drawer>
-                </div>
-              ) : (
-                <div className="lg:col-span-1">
-                  <BookingSummary />
                 </div>
               )}
             </div>
