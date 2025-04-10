@@ -16,8 +16,11 @@ import {
   CircleCheck,
   Wifi,
   CircleParking,
+  BadgeDollarSign,
+  ArrowUpCircle
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -30,10 +33,13 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     availableRooms, 
     selectRoom, 
     toggleRoomAddOn, 
-    setCurrentStep 
+    setCurrentStep,
+    getRoomUpgradePrice,
+    getStandardRoom
   } = useBooking();
   
-  const { selectedRoom, roomAddOns } = bookingData;
+  const { selectedPackage, selectedRoom, roomAddOns } = bookingData;
+  const standardRoom = getStandardRoom();
 
   const handleContinue = () => {
     if (!selectedRoom) {
@@ -77,59 +83,92 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
       {!isEditMode && (
         <div>
           <h2 className="text-2xl font-bold mb-2">Select Your Accommodation</h2>
-          <p className="text-gray-600">Choose the perfect room for your wellness retreat</p>
+          <p className="text-gray-600">
+            {selectedPackage?.includesStandardRoom 
+              ? "Your package includes a Standard Room. You can upgrade to a better room for an additional fee." 
+              : "Choose the perfect room for your wellness retreat"}
+          </p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {availableRooms.map((room) => (
-          <Card 
-            key={room.id}
-            className={`overflow-hidden cursor-pointer transition-all room-option ${
-              selectedRoom?.id === room.id 
-                ? 'ring-2 ring-amber-500' 
-                : 'hover:shadow-lg'
-            }`}
-            onClick={() => selectRoom(room.id)}
-          >
-            <div className="relative">
-              <AspectRatio ratio={16/9}>
-                <img
-                  src={room.image}
-                  alt={room.name}
-                  className="object-cover w-full h-full"
-                />
-              </AspectRatio>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                <div>
-                  <h3 className="text-white text-lg font-bold">{room.name}</h3>
-                  <p className="text-white/80 text-sm">{room.type === 'single' ? 'For 1 person' : room.type === 'deluxe' ? 'For 2 persons' : 'Luxury for 2'}</p>
+        {availableRooms.map((room) => {
+          const upgradePrice = getRoomUpgradePrice(room.id);
+          const isIncluded = room.isStandard && selectedPackage?.includesStandardRoom;
+          const isUpgrade = !room.isStandard && selectedPackage?.includesStandardRoom;
+          
+          return (
+            <Card 
+              key={room.id}
+              className={`overflow-hidden cursor-pointer transition-all room-option ${
+                selectedRoom?.id === room.id 
+                  ? 'ring-2 ring-amber-500' 
+                  : 'hover:shadow-lg'
+              }`}
+              onClick={() => selectRoom(room.id)}
+            >
+              <div className="relative">
+                <AspectRatio ratio={16/9}>
+                  <img
+                    src={room.image}
+                    alt={room.name}
+                    className="object-cover w-full h-full"
+                  />
+                </AspectRatio>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                  <div>
+                    <h3 className="text-white text-lg font-bold">{room.name}</h3>
+                    <p className="text-white/80 text-sm">{room.type === 'single' ? 'For 1 person' : room.type === 'deluxe' ? 'For 2 persons' : 'Luxury for 2'}</p>
+                  </div>
                 </div>
-              </div>
-              {selectedRoom?.id === room.id && (
-                <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
-                  <CircleCheck className="h-6 w-6 text-green-500" />
-                </div>
-              )}
-            </div>
-            <CardContent className="p-4">
-              <p className="text-gray-700">{room.description}</p>
-              <div className="mt-3 flex items-center space-x-2">
-                {room.type === 'single' ? (
-                  <Bed className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <BedDouble className="h-5 w-5 text-gray-500" />
+                {isIncluded && (
+                  <div className="absolute top-2 left-2">
+                    <Badge className="bg-green-500 text-white">Included in Package</Badge>
+                  </div>
                 )}
-                <span className="text-sm text-gray-500">
-                  {room.type === 'single' ? 'Single Bed' : 'King Size Bed'}
-                </span>
+                {selectedRoom?.id === room.id && (
+                  <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
+                    <CircleCheck className="h-6 w-6 text-green-500" />
+                  </div>
+                )}
               </div>
-              <p className="mt-4 text-xl font-bold text-amber-600">
-                {room.price} € <span className="text-sm text-gray-500">/ night</span>
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+              <CardContent className="p-4">
+                <p className="text-gray-700">{room.description}</p>
+                <div className="mt-3 flex items-center space-x-2">
+                  {room.type === 'single' ? (
+                    <Bed className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <BedDouble className="h-5 w-5 text-gray-500" />
+                  )}
+                  <span className="text-sm text-gray-500">
+                    {room.type === 'single' ? 'Single Bed' : 'King Size Bed'}
+                  </span>
+                </div>
+                
+                {isIncluded ? (
+                  <div className="mt-4 flex items-center gap-2">
+                    <BadgeDollarSign className="h-5 w-5 text-green-500" />
+                    <p className="text-green-600 font-medium">Included with your package</p>
+                  </div>
+                ) : isUpgrade ? (
+                  <div className="mt-4">
+                    <div className="flex items-center gap-2 text-amber-600">
+                      <ArrowUpCircle className="h-5 w-5" />
+                      <p className="font-medium">Upgrade fee:</p>
+                    </div>
+                    <p className="mt-1 text-xl font-bold text-amber-600">
+                      +{upgradePrice} € <span className="text-sm text-gray-500">/ night</span>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-xl font-bold text-amber-600">
+                    {room.price} € <span className="text-sm text-gray-500">/ night</span>
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">

@@ -1,7 +1,7 @@
 
 import { useBooking } from '@/contexts/BookingContext';
 import { format } from 'date-fns';
-import { Euro, Edit2, Trash2 } from 'lucide-react';
+import { Euro, Edit2, Trash2, BedDouble, ArrowUpCircle } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent,
@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 const BookingSummary = () => {
   const { 
@@ -46,7 +47,9 @@ const BookingSummary = () => {
     removeAddOn,
     removeRoomAddOn,
     resetPackage,
-    resetRoom
+    resetRoom,
+    getRoomUpgradePrice,
+    getStandardRoom
   } = useBooking();
   
   const { 
@@ -83,6 +86,9 @@ const BookingSummary = () => {
   );
   
   const selectedRoomAddOns = roomAddOns.filter(addon => addon.selected);
+  const standardRoom = getStandardRoom();
+  const isRoomIncluded = selectedRoom?.isStandard && selectedPackage?.includesStandardRoom;
+  const roomUpgradePrice = selectedRoom && !selectedRoom.isStandard ? getRoomUpgradePrice(selectedRoom.id) : 0;
 
   const handleRemoveAddOn = () => {
     if (removeAddOnDialog.categoryId && removeAddOnDialog.itemId) {
@@ -169,8 +175,14 @@ const BookingSummary = () => {
           <div className="bg-gray-50 p-3 rounded mt-2">
             <p className="font-medium">{selectedPackage.name}</p>
             <p className="text-sm text-gray-600">{duration} Days</p>
+            {selectedPackage.includesStandardRoom && standardRoom && (
+              <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                <BedDouble className="h-4 w-4" />
+                <span>Includes Standard Room</span>
+              </div>
+            )}
             <p className="text-sm text-gray-600 mt-2">
-              {selectedPackage.basePrice} € per day (Total: {selectedPackage.basePrice * parseInt(duration)} €)
+              {selectedPackage.basePrice * parseInt(duration)} € total
             </p>
           </div>
         </div>
@@ -326,10 +338,27 @@ const BookingSummary = () => {
             </div>
           </div>
           <div className="bg-gray-50 p-3 rounded mt-2">
-            <p className="font-medium">{selectedRoom.name}</p>
-            <p className="text-sm text-gray-600 mt-2">
-              {selectedRoom.price} € per night (Total: {selectedRoom.price * parseInt(duration)} €)
-            </p>
+            <div className="flex justify-between items-start">
+              <p className="font-medium">{selectedRoom.name}</p>
+              {isRoomIncluded && (
+                <Badge className="bg-green-500 text-xs">Included</Badge>
+              )}
+            </div>
+            
+            {!isRoomIncluded && (
+              <div className="mt-2">
+                {selectedPackage?.includesStandardRoom ? (
+                  <div className="flex items-center gap-1 text-sm text-amber-600">
+                    <ArrowUpCircle className="h-4 w-4" />
+                    <span>Upgrade fee: {roomUpgradePrice * parseInt(duration)} € total</span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    {selectedRoom.price} € per night (Total: {selectedRoom.price * parseInt(duration)} €)
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

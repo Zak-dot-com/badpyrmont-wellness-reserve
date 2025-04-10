@@ -17,7 +17,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { CalendarRange, CircleCheck, Sparkles, Bath, Dumbbell, Heart, Leaf } from 'lucide-react';
+import { CalendarRange, CircleCheck, Sparkles, Bath, Dumbbell, Heart, Leaf, BedDouble } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -46,11 +46,13 @@ const PackageSelection = ({ isEditMode = false, onEditComplete }: PackageSelecti
     setDuration, 
     setStartDate, 
     setCurrentStep,
-    calculateEndDate 
+    calculateEndDate,
+    getStandardRoom
   } = useBooking();
   
   const { selectedPackage, duration, startDate } = bookingData;
   const endDate = calculateEndDate();
+  const standardRoom = getStandardRoom();
 
   const getPackageIcon = (packageType: string) => {
     switch (packageType) {
@@ -149,11 +151,17 @@ const PackageSelection = ({ isEditMode = false, onEditComplete }: PackageSelecti
                   <CardDescription>{pkg.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div>
+                  <div className="space-y-3">
                     <div className="text-sm text-gray-500 mb-1">Starting from</div>
                     <p className="text-2xl font-bold text-hotel-primary">
-                      {pkg.basePrice * 4} € <span className="text-sm text-gray-500">/ 4 days</span>
+                      {pkg.basePrice * 4} €
                     </p>
+                    {pkg.includesStandardRoom && standardRoom && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <BedDouble className="h-4 w-4" />
+                        <span>Includes Standard Room</span>
+                      </div>
+                    )}
                     {selectedPackage?.id === pkg.id && parseInt(duration) !== 4 && (
                       <motion.p 
                         className="text-md font-medium text-hotel-secondary mt-2"

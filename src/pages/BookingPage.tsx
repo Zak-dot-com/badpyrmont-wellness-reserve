@@ -49,9 +49,6 @@ const BookingPage = () => {
     }
   };
 
-  console.log("isMobile:", isMobile);
-  console.log("BookingSummary component should be visible");
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

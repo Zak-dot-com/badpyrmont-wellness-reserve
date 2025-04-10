@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
@@ -10,6 +9,7 @@ export type PackageType = {
   basePrice: number;
   type: string;
   image?: string;
+  includesStandardRoom: boolean;
 };
 
 export type DurationType = "4" | "7" | "14";
@@ -36,6 +36,7 @@ export type RoomType = {
   description: string;
   price: number;
   image: string;
+  isStandard?: boolean;
 };
 
 export type RoomAddOn = {
@@ -84,6 +85,8 @@ type BookingContextType = {
   calculateEndDate: () => Date | null;
   calculateTotalPrice: () => number;
   getDefaultAddOnQuantity: () => number;
+  getStandardRoom: () => RoomType | null;
+  getRoomUpgradePrice: (roomId: string) => number;
 };
 
 // Initial data
@@ -280,33 +283,37 @@ const availablePackages: PackageType[] = [
     id: "relaxation-retreat",
     name: "Relaxation Retreat",
     description: "A peaceful wellness package focused on relaxation and stress relief",
-    basePrice: 120, // per day
+    basePrice: 200,
     type: "relaxation",
-    image: "/placeholder.svg"
+    image: "/placeholder.svg",
+    includesStandardRoom: true
   },
   {
     id: "detox-revitalize",
     name: "Detox & Revitalize",
     description: "Cleanse your body and mind with this comprehensive detox program",
-    basePrice: 150, // per day
+    basePrice: 230,
     type: "wellness",
-    image: "/placeholder.svg"
+    image: "/placeholder.svg",
+    includesStandardRoom: true
   },
   {
     id: "fitness-reboot",
     name: "Fitness Reboot",
     description: "Energize your body with intensive fitness activities and recovery treatments",
-    basePrice: 165, // per day
+    basePrice: 245,
     type: "fitness",
-    image: "/placeholder.svg"
+    image: "/placeholder.svg",
+    includesStandardRoom: true
   },
   {
     id: "luxury-escape",
     name: "Luxury Wellness Escape",
     description: "Our premium package with exclusive treatments and personalized service",
-    basePrice: 220, // per day
+    basePrice: 300,
     type: "rejuvenation",
-    image: "/placeholder.svg"
+    image: "/placeholder.svg",
+    includesStandardRoom: true
   }
 ];
 
@@ -316,24 +323,27 @@ const availableRooms: RoomType[] = [
     type: "single",
     name: "Single Room",
     description: "Comfortable single room with all essential amenities",
-    price: 80, // per night
-    image: "/placeholder.svg"
+    price: 80,
+    image: "/placeholder.svg",
+    isStandard: true
   },
   {
     id: "deluxe-room",
     type: "deluxe",
     name: "Deluxe Room",
     description: "Spacious room with premium amenities and mountain view",
-    price: 150, // per night
-    image: "/placeholder.svg"
+    price: 150,
+    image: "/placeholder.svg",
+    isStandard: false
   },
   {
     id: "vip-suite",
     type: "suite",
     name: "VIP Suite",
     description: "Luxurious suite with separate living area and panoramic views",
-    price: 280, // per night
-    image: "/placeholder.svg"
+    price: 280,
+    image: "/placeholder.svg",
+    isStandard: false
   }
 ];
 
@@ -344,13 +354,38 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<BookingData>(initialData);
 
-  // Helper functions
+  const getStandardRoom = (): RoomType | null => {
+    return availableRooms.find(room => room.isStandard) || null;
+  };
+
+  const getRoomUpgradePrice = (roomId: string): number => {
+    const standardRoom = getStandardRoom();
+    const selectedRoom = availableRooms.find(r => r.id === roomId);
+    
+    if (!standardRoom || !selectedRoom || selectedRoom.isStandard) {
+      return 0;
+    }
+    
+    return selectedRoom.price - standardRoom.price;
+  };
+
   const selectPackage = (packageId: string) => {
     const selected = availablePackages.find(p => p.id === packageId) || null;
-    setBookingData(prev => ({
-      ...prev,
-      selectedPackage: selected
-    }));
+    
+    if (selected && selected.includesStandardRoom) {
+      const standardRoom = getStandardRoom();
+      
+      setBookingData(prev => ({
+        ...prev,
+        selectedPackage: selected,
+        selectedRoom: prev.selectedRoom?.isStandard ? standardRoom : prev.selectedRoom
+      }));
+    } else {
+      setBookingData(prev => ({
+        ...prev,
+        selectedPackage: selected
+      }));
+    }
   };
 
   const resetPackage = () => {
@@ -494,12 +529,10 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   const calculateTotalPrice = (): number => {
     let total = 0;
 
-    // Package price
     if (bookingData.selectedPackage) {
       total += bookingData.selectedPackage.basePrice * parseInt(bookingData.duration);
     }
 
-    // Add-ons price
     bookingData.addOnCategories.forEach(category => {
       category.items.forEach(item => {
         if (item.selected) {
@@ -508,12 +541,16 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       });
     });
 
-    // Room price
-    if (bookingData.selectedRoom) {
+    if (bookingData.selectedRoom && !bookingData.selectedRoom.isStandard && bookingData.selectedPackage?.includesStandardRoom) {
+      const standardRoom = getStandardRoom();
+      if (standardRoom) {
+        const upgradePrice = bookingData.selectedRoom.price - standardRoom.price;
+        total += upgradePrice * parseInt(bookingData.duration);
+      }
+    } else if (bookingData.selectedRoom && !bookingData.selectedPackage?.includesStandardRoom) {
       total += bookingData.selectedRoom.price * parseInt(bookingData.duration);
     }
 
-    // Room add-ons
     bookingData.roomAddOns.forEach(addon => {
       if (addon.selected) {
         total += addon.price;
@@ -544,14 +581,15 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       setCustomerInfo,
       calculateEndDate,
       calculateTotalPrice,
-      getDefaultAddOnQuantity
+      getDefaultAddOnQuantity,
+      getStandardRoom,
+      getRoomUpgradePrice
     }}>
       {children}
     </BookingContext.Provider>
   );
 }
 
-// Custom hook to use the booking context
 export function useBooking() {
   const context = useContext(BookingContext);
   if (context === undefined) {
