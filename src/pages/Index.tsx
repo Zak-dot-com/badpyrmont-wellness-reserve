@@ -11,7 +11,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Package, Bed, CalendarCheck } from 'lucide-react';
+import { Package, Bed, CalendarCheck, RefreshCcw } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,6 +23,15 @@ const Index = () => {
     // We can pass selected values as query parameters if needed
     navigate('/booking');
   };
+
+  const handleReset = () => {
+    setSelectedPackage("");
+    setSelectedRoom("");
+    setSelectedEventSpace("");
+  };
+
+  // Determine if any option is selected to show reset button
+  const hasSelection = selectedPackage || selectedRoom || selectedEventSpace;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -55,61 +64,98 @@ const Index = () => {
 
           {/* Booking Bar with Dropdowns */}
           <div className="relative mx-auto px-[100px] -mb-16 z-20">
-            <div className="bg-white rounded-md shadow-lg p-6 flex flex-col md:flex-row items-center gap-4">
-              <div className="flex-1 w-full">
-                <Select value={selectedPackage} onValueChange={setSelectedPackage}>
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      <Package className="h-4 w-4" />
-                      <SelectValue placeholder="Select Package" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="relaxation">Relaxation Retreat</SelectItem>
-                    <SelectItem value="detox">Detox & Revitalize</SelectItem>
-                    <SelectItem value="luxury">Luxury Wellness Escape</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="bg-white rounded-md shadow-lg p-6">
+              <div className="flex justify-end mb-2">
+                {hasSelection && (
+                  <button 
+                    onClick={handleReset}
+                    className="flex items-center text-sm text-gray-500 hover:text-hotel-primary"
+                  >
+                    <RefreshCcw className="h-3.5 w-3.5 mr-1" />
+                    Reset
+                  </button>
+                )}
               </div>
               
-              <div className="flex-1 w-full">
-                <Select value={selectedRoom} onValueChange={setSelectedRoom}>
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      <Bed className="h-4 w-4" />
-                      <SelectValue placeholder="Select Room" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">Standard Room</SelectItem>
-                    <SelectItem value="deluxe">Deluxe Room</SelectItem>
-                    <SelectItem value="suite">Executive Suite</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="flex-1 w-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Your Wellness Package
+                  </label>
+                  <Select 
+                    value={selectedPackage} 
+                    onValueChange={setSelectedPackage}
+                    disabled={selectedRoom !== "" && selectedPackage === ""}
+                  >
+                    <SelectTrigger className={`w-full ${(selectedRoom !== "" && selectedPackage === "") ? "opacity-50" : ""}`}>
+                      <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        <SelectValue placeholder="e.g., Relaxation Retreat" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="relaxation">Relaxation Retreat</SelectItem>
+                      <SelectItem value="detox">Detox & Revitalize</SelectItem>
+                      <SelectItem value="luxury">Luxury Wellness Escape</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex-1 w-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Choose Your Room Type
+                  </label>
+                  <Select 
+                    value={selectedRoom} 
+                    onValueChange={setSelectedRoom}
+                    disabled={selectedEventSpace !== "" && selectedRoom === ""}
+                  >
+                    <SelectTrigger className={`w-full ${(selectedEventSpace !== "" && selectedRoom === "") ? "opacity-50" : ""}`}>
+                      <div className="flex items-center gap-2">
+                        <Bed className="h-4 w-4" />
+                        <SelectValue placeholder="e.g., Deluxe Room" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Standard Room</SelectItem>
+                      <SelectItem value="deluxe">Deluxe Room</SelectItem>
+                      <SelectItem value="suite">Executive Suite</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex-1 w-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Event Space
+                  </label>
+                  <Select 
+                    value={selectedEventSpace} 
+                    onValueChange={setSelectedEventSpace}
+                    disabled={selectedPackage !== "" && selectedEventSpace === ""}
+                  >
+                    <SelectTrigger className={`w-full ${(selectedPackage !== "" && selectedEventSpace === "") ? "opacity-50" : ""}`}>
+                      <div className="flex items-center gap-2">
+                        <CalendarCheck className="h-4 w-4" />
+                        <SelectValue placeholder="e.g., Garden Pavilion" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="garden">Garden Pavilion</SelectItem>
+                      <SelectItem value="ballroom">Grand Ballroom</SelectItem>
+                      <SelectItem value="terrace">Rooftop Terrace</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="mt-6 md:mt-0">
+                  <Button 
+                    onClick={handleProceedToBooking}
+                    className="whitespace-nowrap text-hotel-primary bg-hotel-gold hover:bg-hotel-gold/90"
+                  >
+                    Proceed to Booking
+                  </Button>
+                </div>
               </div>
-              
-              <div className="flex-1 w-full">
-                <Select value={selectedEventSpace} onValueChange={setSelectedEventSpace}>
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      <CalendarCheck className="h-4 w-4" />
-                      <SelectValue placeholder="Select Event Space" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="garden">Garden Pavilion</SelectItem>
-                    <SelectItem value="ballroom">Grand Ballroom</SelectItem>
-                    <SelectItem value="terrace">Rooftop Terrace</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button 
-                onClick={handleProceedToBooking}
-                className="whitespace-nowrap bg-hotel-primary hover:bg-hotel-primary/90"
-              >
-                Proceed to Booking
-              </Button>
             </div>
           </div>
         </section>
