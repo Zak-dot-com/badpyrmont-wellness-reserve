@@ -1,10 +1,29 @@
 
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { Package, Bed, CalendarCheck } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [selectedPackage, setSelectedPackage] = useState("");
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [selectedEventSpace, setSelectedEventSpace] = useState("");
+
+  const handleProceedToBooking = () => {
+    // We can pass selected values as query parameters if needed
+    navigate('/booking');
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -33,10 +52,70 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Booking Bar with Dropdowns */}
+          <div className="relative mx-auto px-[100px] -mb-16 z-20">
+            <div className="bg-white rounded-md shadow-lg p-6 flex flex-col md:flex-row items-center gap-4">
+              <div className="flex-1 w-full">
+                <Select value={selectedPackage} onValueChange={setSelectedPackage}>
+                  <SelectTrigger className="w-full">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      <SelectValue placeholder="Select Package" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="relaxation">Relaxation Retreat</SelectItem>
+                    <SelectItem value="detox">Detox & Revitalize</SelectItem>
+                    <SelectItem value="luxury">Luxury Wellness Escape</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex-1 w-full">
+                <Select value={selectedRoom} onValueChange={setSelectedRoom}>
+                  <SelectTrigger className="w-full">
+                    <div className="flex items-center gap-2">
+                      <Bed className="h-4 w-4" />
+                      <SelectValue placeholder="Select Room" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standard Room</SelectItem>
+                    <SelectItem value="deluxe">Deluxe Room</SelectItem>
+                    <SelectItem value="suite">Executive Suite</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex-1 w-full">
+                <Select value={selectedEventSpace} onValueChange={setSelectedEventSpace}>
+                  <SelectTrigger className="w-full">
+                    <div className="flex items-center gap-2">
+                      <CalendarCheck className="h-4 w-4" />
+                      <SelectValue placeholder="Select Event Space" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="garden">Garden Pavilion</SelectItem>
+                    <SelectItem value="ballroom">Grand Ballroom</SelectItem>
+                    <SelectItem value="terrace">Rooftop Terrace</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Button 
+                onClick={handleProceedToBooking}
+                className="whitespace-nowrap bg-hotel-primary hover:bg-hotel-primary/90"
+              >
+                Proceed to Booking
+              </Button>
+            </div>
+          </div>
         </section>
 
         {/* Features */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-white mt-16">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-12">Experience Luxury Wellness</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
