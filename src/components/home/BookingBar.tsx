@@ -36,6 +36,9 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
     }
     if (selectedEventSpace) {
       queryParams.append('event', selectedEventSpace);
+      queryParams.append('bookingType', 'event');
+    } else if (selectedRoom && !selectedPackage) {
+      queryParams.append('bookingType', 'room');
     }
     
     if (startDate) {
@@ -86,10 +89,10 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             onValueChange={(value) => handleSelectionChange('package', value)}
             disabled={selectedRoom !== "" || selectedEventSpace !== ""}
           >
-            <SelectTrigger className={`w-full ${(selectedRoom !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${(selectedRoom !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
-                <SelectValue placeholder="Select package" className="text-gray-900" />
+                <SelectValue placeholder="Select package" className="text-gray-100" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -109,10 +112,10 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             onValueChange={(value) => handleSelectionChange('room', value)}
             disabled={selectedPackage !== "" || selectedEventSpace !== ""}
           >
-            <SelectTrigger className={`w-full ${(selectedPackage !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${(selectedPackage !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Bed className="h-4 w-4" />
-                <SelectValue placeholder="Select room" className="text-gray-900" />
+                <SelectValue placeholder="Select room" className="text-gray-100" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -132,10 +135,10 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             onValueChange={(value) => handleSelectionChange('event', value)}
             disabled={selectedPackage !== "" || selectedRoom !== ""}
           >
-            <SelectTrigger className={`w-full ${(selectedPackage !== "" || selectedRoom !== "") ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${(selectedPackage !== "" || selectedRoom !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <CalendarCheck className="h-4 w-4" />
-                <SelectValue placeholder="Select venue" className="text-gray-900" />
+                <SelectValue placeholder="Select venue" className="text-gray-100" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -161,12 +164,12 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
           ) : (
             <Button 
               variant="outline" 
-              className="w-full flex justify-start items-center gap-2"
+              className="w-full flex justify-start items-center gap-2 bg-blue-900 text-white hover:bg-blue-800"
               onClick={() => setShowDateSelector(true)}
               disabled={!hasSelection}
             >
               <Calendar className="h-4 w-4" />
-              <span className="text-gray-500">Select dates</span>
+              <span>Select dates</span>
             </Button>
           )}
         </div>

@@ -1,7 +1,7 @@
 
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BookingStepper from '@/components/booking/BookingStepper';
@@ -13,8 +13,6 @@ import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { toast } from 'sonner';
 
@@ -30,12 +28,30 @@ const BookingPage = () => {
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
   const [searchParams] = useSearchParams();
+  const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
 
   // Parse query parameters to pre-select options
   useEffect(() => {
+    // Determine booking type
+    const type = searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
+    const event = searchParams.get('event');
     const addPackage = searchParams.get('addPackage');
+    
+    // Set booking type
+    if (type === 'room') {
+      setBookingType('room');
+    } else if (type === 'event') {
+      setBookingType('event');
+      // Handle event space booking logic
+      toast.info("Event space booking selected. Choose your preferred date and services.");
+    } else if (packageId) {
+      setBookingType('package');
+    } else {
+      // Default to package booking if no specific type
+      setBookingType('package');
+    }
     
     // Handle room selection from homepage
     if (room) {
@@ -65,6 +81,16 @@ const BookingPage = () => {
     }
   }, [isMobile, openDrawer]);
 
+  const getPageTitle = () => {
+    if (bookingType === 'room') {
+      return "Book Your Stay";
+    } else if (bookingType === 'event') {
+      return "Book Your Event Space";
+    } else {
+      return "Book Your Wellness Retreat";
+    }
+  };
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
@@ -92,7 +118,7 @@ const BookingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Book Your Wellness Retreat
+              {getPageTitle()}
             </motion.h1>
             
             <BookingStepper />
