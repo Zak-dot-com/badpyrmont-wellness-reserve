@@ -17,10 +17,12 @@ import {
   Wifi,
   CircleParking,
   BadgeDollarSign,
-  ArrowUpCircle
+  ArrowUpCircle,
+  Sparkles
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -78,16 +80,32 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     }
   };
 
+  const isRoomOnlyBooking = !selectedPackage;
+
   return (
     <div className="space-y-8">
       {!isEditMode && (
-        <div>
-          <h2 className="text-2xl font-bold mb-2">Select Your Accommodation</h2>
-          <p className="text-gray-600">
-            {selectedPackage?.includesStandardRoom 
-              ? "Your package includes a Standard Room. You can upgrade to a better room for an additional fee." 
-              : "Choose the perfect room for your wellness retreat"}
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Select Your Accommodation</h2>
+            <p className="text-gray-600">
+              {selectedPackage?.includesStandardRoom 
+                ? "Your package includes a Standard Room. You can upgrade to a better room for an additional fee." 
+                : "Choose the perfect room for your wellness retreat"}
+            </p>
+          </div>
+
+          {isRoomOnlyBooking && (
+            <Link to="/booking?addPackage=true">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 border-amber-500 text-amber-700 hover:bg-amber-50"
+              >
+                <Sparkles className="h-4 w-4" />
+                Add Wellness Package
+              </Button>
+            </Link>
+          )}
         </div>
       )}
 
@@ -210,7 +228,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
         </Button>
         <Button 
           onClick={handleContinue}
-          className="bg-amber-500 hover:bg-amber-600"
+          className="bg-amber-800 hover:bg-amber-900"
           size="lg"
         >
           {isEditMode ? "Save Changes" : "Continue to Checkout"}

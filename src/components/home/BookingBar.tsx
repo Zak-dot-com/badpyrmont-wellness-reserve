@@ -26,8 +26,26 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const handleProceedToBooking = () => {
-    // We can pass selected values as query parameters if needed
-    navigate('/booking');
+    const queryParams = new URLSearchParams();
+    
+    if (selectedPackage) {
+      queryParams.append('package', selectedPackage);
+    }
+    if (selectedRoom) {
+      queryParams.append('room', selectedRoom);
+    }
+    if (selectedEventSpace) {
+      queryParams.append('event', selectedEventSpace);
+    }
+    
+    if (startDate) {
+      queryParams.append('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      queryParams.append('endDate', endDate.toISOString());
+    }
+    
+    navigate(`/booking?${queryParams.toString()}`);
   };
 
   const handleReset = () => {
@@ -57,23 +75,11 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
   const hasSelection = selectedPackage || selectedRoom || selectedEventSpace;
 
   return (
-    <div className={`bg-white rounded-md shadow-lg p-6 ${className}`}>
-      <div className="flex justify-end mb-2">
-        {hasSelection && (
-          <button 
-            onClick={handleReset}
-            className="flex items-center text-sm text-gray-500 hover:text-hotel-primary"
-          >
-            <RefreshCcw className="h-3.5 w-3.5 mr-1" />
-            Reset
-          </button>
-        )}
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Select Your Wellness Package
+    <div className={`bg-white rounded-md shadow-lg p-4 ${className}`}>
+      <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
+        <div className="w-full md:w-auto flex-1">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Wellness Package
           </label>
           <Select 
             value={selectedPackage} 
@@ -83,7 +89,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             <SelectTrigger className={`w-full ${(selectedRoom !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
-                <SelectValue placeholder="e.g., Relaxation Retreat" />
+                <SelectValue placeholder="Select package" className="text-gray-900" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -94,9 +100,9 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
           </Select>
         </div>
         
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Choose Your Room Type
+        <div className="w-full md:w-auto flex-1">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Room Type
           </label>
           <Select 
             value={selectedRoom} 
@@ -106,7 +112,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             <SelectTrigger className={`w-full ${(selectedPackage !== "" || selectedEventSpace !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Bed className="h-4 w-4" />
-                <SelectValue placeholder="e.g., Deluxe Room" />
+                <SelectValue placeholder="Select room" className="text-gray-900" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -117,9 +123,9 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
           </Select>
         </div>
         
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Select Event Space
+        <div className="w-full md:w-auto flex-1">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Event Space
           </label>
           <Select 
             value={selectedEventSpace} 
@@ -129,7 +135,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
             <SelectTrigger className={`w-full ${(selectedPackage !== "" || selectedRoom !== "") ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <CalendarCheck className="h-4 w-4" />
-                <SelectValue placeholder="e.g., Garden Pavilion" />
+                <SelectValue placeholder="Select venue" className="text-gray-900" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -140,19 +146,19 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
           </Select>
         </div>
 
-        {showDateSelector ? (
-          <DateSelector 
-            showRange={selectedRoom !== ""}
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
-          />
-        ) : (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date / Range
-            </label>
+        <div className="w-full md:w-auto flex-1">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Date / Range
+          </label>
+          {showDateSelector ? (
+            <DateSelector 
+              showRange={selectedRoom !== ""}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          ) : (
             <Button 
               variant="outline" 
               className="w-full flex justify-start items-center gap-2"
@@ -162,13 +168,24 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
               <Calendar className="h-4 w-4" />
               <span className="text-gray-500">Select dates</span>
             </Button>
-          </div>
-        )}
-        
-        <div className="col-span-1 lg:col-span-4 mt-4 flex justify-center">
+          )}
+        </div>
+
+        <div className="w-full md:w-auto flex items-center gap-3">
+          {hasSelection && (
+            <button 
+              onClick={handleReset}
+              className="flex items-center text-xs text-gray-500 hover:text-hotel-primary"
+            >
+              <RefreshCcw className="h-3.5 w-3.5 mr-1" />
+              Reset
+            </button>
+          )}
+          
           <Button 
             onClick={handleProceedToBooking}
-            className="w-full md:w-auto whitespace-nowrap text-hotel-primary bg-hotel-gold hover:bg-hotel-gold/90"
+            className="w-full md:w-auto whitespace-nowrap text-white bg-amber-800 hover:bg-amber-900"
+            disabled={!hasSelection || !startDate}
           >
             Proceed to Booking
           </Button>

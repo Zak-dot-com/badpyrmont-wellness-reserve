@@ -1,5 +1,7 @@
 
 import { useBooking } from '@/contexts/BookingContext';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BookingStepper from '@/components/booking/BookingStepper';
@@ -11,9 +13,10 @@ import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { ShoppingBag } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { toast } from 'sonner';
 
 const stepVariants = {
   hidden: { opacity: 0, x: 50 },
@@ -22,10 +25,38 @@ const stepVariants = {
 };
 
 const BookingPage = () => {
-  const { currentStep, calculateTotalPrice } = useBooking();
+  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep } = useBooking();
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
+  const [searchParams] = useSearchParams();
+
+  // Parse query parameters to pre-select options
+  useEffect(() => {
+    const room = searchParams.get('room');
+    const packageId = searchParams.get('package');
+    const addPackage = searchParams.get('addPackage');
+    
+    // Handle room selection from homepage
+    if (room) {
+      selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
+      setCurrentStep(3); // Jump to room selection step
+      toast.info("Room type pre-selected. Please confirm your selection.");
+    }
+    
+    // Handle package selection from homepage
+    if (packageId) {
+      selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : 
+                   packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
+      toast.info("Package pre-selected. Please customize your wellness journey.");
+    }
+    
+    // If coming from "Add Wellness Package" button
+    if (addPackage === 'true') {
+      setCurrentStep(1); // Go to package selection step
+      toast.info("Select a wellness package to enhance your stay.");
+    }
+  }, [searchParams, selectRoom, selectPackage, setCurrentStep]);
 
   // Make sure drawer is closed when switching to desktop view
   useEffect(() => {
