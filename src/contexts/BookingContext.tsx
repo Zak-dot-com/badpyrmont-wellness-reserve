@@ -64,7 +64,7 @@ export type BookingData = {
   };
 };
 
-type BookingContextType = {
+export type BookingContextType = {
   currentStep: number;
   bookingData: BookingData;
   availablePackages: PackageType[];
@@ -87,9 +87,20 @@ type BookingContextType = {
   getDefaultAddOnQuantity: () => number;
   getStandardRoom: () => RoomType | null;
   getRoomUpgradePrice: (roomId: string) => number;
+  eventSpace: string | null;
+  eventDate: Date | null;
+  attendees: number | null;
+  eventType: string | null;
+  eventDuration: number | null;
+  eventAddons: string[];
+  setEventSpace: (eventSpace: string) => void;
+  setEventDate: (date: Date) => void;
+  setAttendees: (count: number) => void;
+  setEventType: (type: string) => void;
+  setEventDuration: (hours: number) => void;
+  setEventAddons: (addons: string[]) => void;
 };
 
-// Initial data
 const initialData: BookingData = {
   selectedPackage: null,
   duration: "4",
@@ -347,12 +358,17 @@ const availableRooms: RoomType[] = [
   }
 ];
 
-// Create context with default values
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
-export function BookingProvider({ children }: { children: React.ReactNode }) {
+export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<BookingData>(initialData);
+  const [eventSpace, setEventSpace] = useState<string | null>(null);
+  const [eventDate, setEventDate] = useState<Date | null>(null);
+  const [attendees, setAttendees] = useState<number | null>(50);
+  const [eventType, setEventType] = useState<string | null>(null);
+  const [eventDuration, setEventDuration] = useState<number | null>(4);
+  const [eventAddons, setEventAddons] = useState<string[]>([]);
 
   const getStandardRoom = (): RoomType | null => {
     return availableRooms.find(room => room.isStandard) || null;
@@ -526,9 +542,9 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const calculateTotalPrice = (): number => {
+  const calculateTotalPrice = () => {
     let total = 0;
-
+    
     if (bookingData.selectedPackage) {
       total += bookingData.selectedPackage.basePrice * parseInt(bookingData.duration);
     }
@@ -557,6 +573,47 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
+    if (eventSpace && eventType && attendees && eventDuration) {
+      const venuePrices: Record<string, number> = {
+        'garden-pavilion': 1200,
+        'grand-ballroom': 2000,
+        'executive-hall': 1500,
+        'rooftop-terrace': 1800,
+      };
+      
+      const eventMultipliers: Record<string, number> = {
+        'wedding': 1.2,
+        'corporate': 1.0,
+        'birthday': 0.9,
+        'conference': 1.1,
+        'social': 0.8,
+      };
+      
+      total += venuePrices[eventSpace] || 0;
+      
+      total *= eventMultipliers[eventType] || 1;
+      
+      if (eventDuration > 4) {
+        total += (eventDuration - 4) * 300;
+      }
+      
+      if (attendees > 0) {
+        total += attendees * 25;
+        
+        if (eventAddons.includes('catering')) {
+          total += attendees * 45;
+        }
+        
+        if (eventAddons.includes('decoration')) {
+          total += attendees * 15;
+        }
+      }
+      
+      if (eventAddons.includes('liveMusic')) {
+        total += 800;
+      }
+    }
+
     return total;
   };
 
@@ -583,12 +640,24 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       calculateTotalPrice,
       getDefaultAddOnQuantity,
       getStandardRoom,
-      getRoomUpgradePrice
+      getRoomUpgradePrice,
+      eventSpace,
+      eventDate,
+      attendees,
+      eventType,
+      eventDuration,
+      eventAddons,
+      setEventSpace,
+      setEventDate,
+      setAttendees,
+      setEventType,
+      setEventDuration,
+      setEventAddons
     }}>
       {children}
     </BookingContext.Provider>
   );
-}
+};
 
 export function useBooking() {
   const context = useContext(BookingContext);

@@ -10,6 +10,7 @@ import PackageSelection from '@/components/booking/steps/PackageSelection';
 import AddOnSelection from '@/components/booking/steps/AddOnSelection';
 import RoomSelection from '@/components/booking/steps/RoomSelection';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
+import EventSpaceSelection from '@/components/booking/steps/EventSpaceSelection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -56,9 +57,10 @@ const BookingPage = () => {
       setBookingType('room');
     } else if (type === 'event') {
       setBookingType('event');
+      setCurrentStep(1); // Event space selection is the first step in event flow
       // Handle event space booking logic
       if (!notificationsShown.current) {
-        toast.info("Event space booking selected. Choose your preferred date and services.");
+        toast.info("Event space booking selected. Choose your preferred venue and details.");
         notificationsShown.current = true;
       }
     } else if (packageId) {
@@ -84,6 +86,16 @@ const BookingPage = () => {
                    packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
       if (!notificationsShown.current) {
         toast.info("Package pre-selected. Please customize your wellness journey.");
+        notificationsShown.current = true;
+      }
+    }
+    
+    // Handle event space selection from homepage
+    if (event) {
+      setBookingType('event');
+      setCurrentStep(1); // Event space selection is the first step
+      if (!notificationsShown.current) {
+        toast.info("Event space pre-selected. Please customize your event details.");
         notificationsShown.current = true;
       }
     }
@@ -134,6 +146,12 @@ const BookingPage = () => {
   };
 
   const renderCurrentStep = () => {
+    // For event bookings, show event-specific steps
+    if (bookingType === 'event') {
+      return <EventSpaceSelection />;
+    }
+    
+    // For wellness packages and room bookings, use standard flow
     switch (currentStep) {
       case 1:
         return <PackageSelection />;
@@ -163,13 +181,13 @@ const BookingPage = () => {
               {getPageTitle()}
             </motion.h1>
             
-            <BookingStepper />
+            {bookingType !== 'event' && <BookingStepper />}
             
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
               <div className="lg:col-span-2">
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={currentStep}
+                    key={currentStep + (bookingType || '')}
                     variants={stepVariants}
                     initial="hidden"
                     animate="visible"

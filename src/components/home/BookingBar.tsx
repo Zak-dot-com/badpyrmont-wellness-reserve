@@ -151,9 +151,10 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="garden">Garden Pavilion</SelectItem>
-              <SelectItem value="ballroom">Grand Ballroom</SelectItem>
-              <SelectItem value="terrace">Rooftop Terrace</SelectItem>
+              <SelectItem value="garden-pavilion">Garden Pavilion</SelectItem>
+              <SelectItem value="grand-ballroom">Grand Ballroom</SelectItem>
+              <SelectItem value="executive-hall">Executive Hall</SelectItem>
+              <SelectItem value="rooftop-terrace">Rooftop Terrace</SelectItem>
             </SelectContent>
           </Select>
         </div>
