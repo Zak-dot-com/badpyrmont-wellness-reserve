@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Select, 
@@ -30,15 +30,15 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
     
     if (selectedPackage) {
       queryParams.append('package', selectedPackage);
+      queryParams.append('bookingType', 'package');
     }
     if (selectedRoom) {
       queryParams.append('room', selectedRoom);
+      queryParams.append('bookingType', 'room');
     }
     if (selectedEventSpace) {
       queryParams.append('event', selectedEventSpace);
       queryParams.append('bookingType', 'event');
-    } else if (selectedRoom && !selectedPackage) {
-      queryParams.append('bookingType', 'room');
     }
     
     if (startDate) {
@@ -64,25 +64,34 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
   const handleSelectionChange = (type: 'package' | 'room' | 'event', value: string) => {
     if (type === 'package') {
       setSelectedPackage(value);
+      setSelectedRoom("");
+      setSelectedEventSpace("");
       setShowDateSelector(!!value);
     } else if (type === 'room') {
       setSelectedRoom(value);
+      setSelectedPackage("");
+      setSelectedEventSpace("");
       setShowDateSelector(!!value);
     } else if (type === 'event') {
       setSelectedEventSpace(value);
+      setSelectedPackage("");
+      setSelectedRoom("");
       setShowDateSelector(!!value);
     }
   };
 
   // Determine if any option is selected to show reset button
   const hasSelection = selectedPackage || selectedRoom || selectedEventSpace;
+  
+  // Determine if form is valid for submission
+  const isFormValid = (hasSelection && startDate) || false;
 
   return (
     <div className={`bg-white rounded-md shadow-lg p-4 ${className}`}>
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
         <div className="w-full md:w-auto flex-1">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Wellness Package
+            Package
           </label>
           <Select 
             value={selectedPackage} 
@@ -105,7 +114,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
         
         <div className="w-full md:w-auto flex-1">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Room Type
+            Room
           </label>
           <Select 
             value={selectedRoom} 
@@ -128,7 +137,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
         
         <div className="w-full md:w-auto flex-1">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Event Space
+            Event
           </label>
           <Select 
             value={selectedEventSpace} 
@@ -151,7 +160,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
 
         <div className="w-full md:w-auto flex-1">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Date / Range
+            Date
           </label>
           {showDateSelector ? (
             <DateSelector 
@@ -188,7 +197,7 @@ const BookingBar = ({ className = "" }: BookingBarProps) => {
           <Button 
             onClick={handleProceedToBooking}
             className="w-full md:w-auto whitespace-nowrap text-white bg-amber-800 hover:bg-amber-900"
-            disabled={!hasSelection || !startDate}
+            disabled={!isFormValid}
           >
             Proceed to Booking
           </Button>

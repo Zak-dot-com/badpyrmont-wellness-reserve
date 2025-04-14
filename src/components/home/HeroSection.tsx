@@ -31,8 +31,10 @@ const HeroSection = () => {
       </div>
 
       {/* Booking Bar with Dropdowns */}
-      <div className="relative mx-auto px-[100px] -mb-16 z-20">
-        <BookingBar />
+      <div className="relative -mb-24 z-20">
+        <div className="container mx-auto px-4 md:px-6">
+          <BookingBar />
+        </div>
       </div>
     </section>
   );

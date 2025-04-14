@@ -24,7 +24,7 @@ const stepVariants = {
 };
 
 const BookingPage = () => {
-  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep } = useBooking();
+  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration } = useBooking();
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
@@ -39,6 +39,13 @@ const BookingPage = () => {
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
     const addPackage = searchParams.get('addPackage');
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+    
+    // Handle date selection
+    if (startDateParam) {
+      setStartDate(new Date(startDateParam));
+    }
     
     // Set booking type
     if (type === 'room') {
@@ -73,7 +80,23 @@ const BookingPage = () => {
       setCurrentStep(1); // Go to package selection step
       toast.info("Select a wellness package to enhance your stay.");
     }
-  }, [searchParams, selectRoom, selectPackage, setCurrentStep]);
+    
+    // Calculate duration from start/end dates if both are present
+    if (startDateParam && endDateParam) {
+      const start = new Date(startDateParam);
+      const end = new Date(endDateParam);
+      const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Set closest duration from available options
+      if (diffDays <= 4) {
+        setDuration("4");
+      } else if (diffDays <= 7) {
+        setDuration("7");
+      } else {
+        setDuration("14");
+      }
+    }
+  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration]);
 
   // Make sure drawer is closed when switching to desktop view
   useEffect(() => {
