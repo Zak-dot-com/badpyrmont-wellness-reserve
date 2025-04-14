@@ -25,12 +25,12 @@ const stepVariants = {
 };
 
 const BookingPage = () => {
-  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration } = useBooking();
+  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType } = useBooking();
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
   const [searchParams] = useSearchParams();
-  const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
+  const [bookingType, setLocalBookingType] = useState<'package' | 'room' | 'event' | null>(null);
   const initialSetupComplete = useRef(false);
   const notificationsShown = useRef(false);
 
@@ -54,8 +54,10 @@ const BookingPage = () => {
     
     // Set booking type
     if (type === 'room') {
+      setLocalBookingType('room');
       setBookingType('room');
     } else if (type === 'event') {
+      setLocalBookingType('event');
       setBookingType('event');
       setCurrentStep(1); // Event space selection is the first step in event flow
       // Handle event space booking logic
@@ -64,9 +66,11 @@ const BookingPage = () => {
         notificationsShown.current = true;
       }
     } else if (packageId) {
+      setLocalBookingType('package');
       setBookingType('package');
     } else {
       // Default to package booking if no specific type
+      setLocalBookingType('package');
       setBookingType('package');
     }
     
@@ -92,6 +96,7 @@ const BookingPage = () => {
     
     // Handle event space selection from homepage
     if (event) {
+      setLocalBookingType('event');
       setBookingType('event');
       setCurrentStep(1); // Event space selection is the first step
       if (!notificationsShown.current) {
@@ -126,7 +131,7 @@ const BookingPage = () => {
     }
     
     initialSetupComplete.current = true;
-  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration]);
+  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType]);
 
   // Make sure drawer is closed when switching to desktop view
   useEffect(() => {

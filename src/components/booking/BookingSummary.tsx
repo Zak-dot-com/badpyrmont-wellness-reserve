@@ -210,7 +210,7 @@ const BookingSummary = () => {
 
   // Get booking details based on booking type
   const renderBookingDetails = () => {
-    if (eventSpace) {
+    if (eventSpace || bookingType === 'event') {
       return renderEventBookingSummary();
     } else {
       return renderWellnessPackageSummary();

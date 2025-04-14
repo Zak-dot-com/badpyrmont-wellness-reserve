@@ -70,6 +70,7 @@ export type BookingContextType = {
   availablePackages: PackageType[];
   availableRooms: RoomType[];
   setCurrentStep: (step: number) => void;
+  goToNextStep: () => void;
   selectPackage: (packageId: string) => void;
   resetPackage: () => void;
   setDuration: (duration: DurationType) => void;
@@ -99,6 +100,14 @@ export type BookingContextType = {
   setEventType: (type: string) => void;
   setEventDuration: (hours: number) => void;
   setEventAddons: (addons: string[]) => void;
+  bookingType: 'package' | 'room' | 'event' | null;
+  setBookingType: (type: 'package' | 'room' | 'event' | null) => void;
+  selectedPackage: PackageType | null;
+  selectedDuration: string;
+  selectedAddOns: string[];
+  selectedRoom: RoomType | null;
+  bookedDays: number;
+  startDate: Date | null;
 };
 
 const initialData: BookingData = {
@@ -369,6 +378,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [eventType, setEventType] = useState<string | null>(null);
   const [eventDuration, setEventDuration] = useState<number | null>(4);
   const [eventAddons, setEventAddons] = useState<string[]>([]);
+  const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
+
+  const goToNextStep = () => {
+    setCurrentStep(prevStep => prevStep + 1);
+  };
 
   const getStandardRoom = (): RoomType | null => {
     return availableRooms.find(room => room.isStandard) || null;
@@ -617,6 +631,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return total;
   };
 
+  const bookedDays = bookingData.duration ? parseInt(bookingData.duration) : 0;
+
+  const selectedAddOns = getSelectedAddOns();
+
   return (
     <BookingContext.Provider value={{
       currentStep,
@@ -624,6 +642,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       availablePackages,
       availableRooms,
       setCurrentStep,
+      goToNextStep,
       selectPackage,
       resetPackage,
       setDuration,
@@ -652,7 +671,15 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setAttendees,
       setEventType,
       setEventDuration,
-      setEventAddons
+      setEventAddons,
+      bookingType,
+      setBookingType,
+      selectedPackage: bookingData.selectedPackage,
+      selectedDuration: bookingData.duration,
+      selectedAddOns,
+      selectedRoom: bookingData.selectedRoom,
+      bookedDays,
+      startDate: bookingData.startDate
     }}>
       {children}
     </BookingContext.Provider>

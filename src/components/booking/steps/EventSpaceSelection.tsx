@@ -13,7 +13,7 @@ import { CalendarClock, Users, Music, Utensils, Clock, Calendar } from 'lucide-r
 const EventSpaceSelection = () => {
   const { eventSpace, setEventSpace, eventDate, setEventDate, attendees, setAttendees, 
           eventType, setEventType, eventDuration, setEventDuration, 
-          eventAddons, setEventAddons, calculateTotalPrice, goToNextStep } = useBooking();
+          eventAddons, setEventAddons, calculateTotalPrice, goToNextStep, setBookingType } = useBooking();
   
   const [selectedVenue, setSelectedVenue] = useState(eventSpace || '');
   const [selectedDate, setSelectedDate] = useState<Date | null>(eventDate || null);
@@ -24,10 +24,42 @@ const EventSpaceSelection = () => {
   const [specialRequests, setSpecialRequests] = useState<string>('');
   
   const venues = [
-    { id: 'garden-pavilion', name: 'Garden Pavilion', basePrice: 1200, isOutdoor: true, capacity: 150, description: 'An elegant outdoor venue surrounded by manicured gardens and water features.' },
-    { id: 'grand-ballroom', name: 'Grand Ballroom', basePrice: 2000, isOutdoor: false, capacity: 300, description: 'A sophisticated indoor venue with crystal chandeliers and premium finishes.' },
-    { id: 'executive-hall', name: 'Executive Hall', basePrice: 1500, isOutdoor: false, capacity: 100, description: 'A modern corporate event space with state-of-the-art technology.' },
-    { id: 'rooftop-terrace', name: 'Rooftop Terrace', basePrice: 1800, isOutdoor: true, capacity: 120, description: 'A stunning rooftop venue with panoramic views of the cityscape.' },
+    { 
+      id: 'garden-pavilion', 
+      name: 'Garden Pavilion', 
+      basePrice: 1200, 
+      isOutdoor: true, 
+      capacity: 150, 
+      description: 'An elegant outdoor venue surrounded by manicured gardens and water features.',
+      image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=400&h=250'
+    },
+    { 
+      id: 'grand-ballroom', 
+      name: 'Grand Ballroom', 
+      basePrice: 2000, 
+      isOutdoor: false, 
+      capacity: 300, 
+      description: 'A sophisticated indoor venue with crystal chandeliers and premium finishes.',
+      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&h=250'
+    },
+    { 
+      id: 'executive-hall', 
+      name: 'Executive Hall', 
+      basePrice: 1500, 
+      isOutdoor: false, 
+      capacity: 100, 
+      description: 'A modern corporate event space with state-of-the-art technology.',
+      image: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=400&h=250'
+    },
+    { 
+      id: 'rooftop-terrace', 
+      name: 'Rooftop Terrace', 
+      basePrice: 1800, 
+      isOutdoor: true, 
+      capacity: 120, 
+      description: 'A stunning rooftop venue with panoramic views of the cityscape.',
+      image: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?auto=format&fit=crop&w=400&h=250'
+    },
   ];
   
   const eventTypes = [
@@ -70,6 +102,7 @@ const EventSpaceSelection = () => {
     setEventType(selectedEventType);
     setEventDuration(selectedDuration);
     setEventAddons(selectedAddons);
+    setBookingType('event'); // Set booking type to 'event'
     
     // Move to next step (probably checkout for event space bookings)
     goToNextStep();
@@ -88,6 +121,18 @@ const EventSpaceSelection = () => {
             className={`cursor-pointer transition-all hover:shadow-md ${selectedVenue === venue.id ? 'ring-2 ring-amber-500' : ''}`}
             onClick={() => setSelectedVenue(venue.id)}
           >
+            <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+              <img 
+                src={venue.image} 
+                alt={venue.name}
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+              />
+              {venue.isOutdoor && (
+                <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  Outdoor
+                </span>
+              )}
+            </div>
             <CardHeader className="pb-2">
               <CardTitle>{venue.name}</CardTitle>
               <CardDescription>{venue.description}</CardDescription>
@@ -95,7 +140,7 @@ const EventSpaceSelection = () => {
             <CardContent>
               <div className="mb-2"><span className="font-medium">Type:</span> {venue.isOutdoor ? 'Outdoor' : 'Indoor'}</div>
               <div className="mb-2"><span className="font-medium">Capacity:</span> Up to {venue.capacity} guests</div>
-              <div className="font-medium text-lg text-amber-700">${venue.basePrice} base price</div>
+              <div className="font-medium text-lg text-amber-700">€{venue.basePrice} base price</div>
             </CardContent>
           </Card>
         ))}
@@ -201,9 +246,9 @@ const EventSpaceSelection = () => {
                         <div>
                           <div className="font-medium">{addon.name}</div>
                           <div className="text-sm text-gray-500">
-                            {addon.pricePerPerson && `$${addon.pricePerPerson} per person`}
-                            {addon.flatPrice && `$${addon.flatPrice} flat fee`}
-                            {addon.pricePerHour && `$${addon.pricePerHour} per hour`}
+                            {addon.pricePerPerson && `€${addon.pricePerPerson} per person`}
+                            {addon.flatPrice && `€${addon.flatPrice} flat fee`}
+                            {addon.pricePerHour && `€${addon.pricePerHour} per hour`}
                           </div>
                         </div>
                       </div>
