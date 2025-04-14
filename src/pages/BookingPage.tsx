@@ -12,6 +12,7 @@ import RoomSelection from '@/components/booking/steps/RoomSelection';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { toast } from 'sonner';
@@ -138,14 +139,14 @@ const BookingPage = () => {
                 </AnimatePresence>
               </div>
               
-              {/* Always render BookingSummary for desktop */}
+              {/* Desktop BookingSummary */}
               {!isMobile && (
                 <div className="lg:col-span-1 relative">
                   <BookingSummary />
                 </div>
               )}
               
-              {/* For mobile, show a floating button that opens a drawer with BookingSummary */}
+              {/* Mobile floating button with drawer */}
               {isMobile && (
                 <div className="fixed bottom-6 right-6 z-10">
                   <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
