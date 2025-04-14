@@ -1,7 +1,7 @@
 
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BookingStepper from '@/components/booking/BookingStepper';
@@ -30,9 +30,12 @@ const BookingPage = () => {
   const totalPrice = calculateTotalPrice();
   const [searchParams] = useSearchParams();
   const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
+  const initialSetupComplete = useRef(false);
 
-  // Parse query parameters to pre-select options
+  // Parse query parameters to pre-select options - only run once
   useEffect(() => {
+    if (initialSetupComplete.current) return;
+    
     // Determine booking type
     const type = searchParams.get('bookingType');
     const room = searchParams.get('room');
@@ -96,6 +99,8 @@ const BookingPage = () => {
         setDuration("14");
       }
     }
+    
+    initialSetupComplete.current = true;
   }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration]);
 
   // Make sure drawer is closed when switching to desktop view

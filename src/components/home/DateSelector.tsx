@@ -36,16 +36,13 @@ const DateSelector = ({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {showRange ? 'Check-in / Check-out' : 'Select Start Date'}
-      </label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
               "w-full bg-white justify-start text-left font-normal",
-              !startDate && "text-gray-500"
+              !startDate ? "text-gray-500" : "text-gray-900" // Make selected date text black
             )}
           >
             <CalendarRange className="h-4 w-4 mr-2" />

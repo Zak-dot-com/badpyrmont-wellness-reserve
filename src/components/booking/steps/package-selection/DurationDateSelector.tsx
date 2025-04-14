@@ -65,7 +65,7 @@ export const DurationDateSelector = ({
                 variant="outline"
                 className={cn(
                   "w-full bg-white justify-start text-left font-normal",
-                  !startDate && "text-muted-foreground"
+                  !startDate ? "text-muted-foreground" : "text-gray-900" // Make selected date text black
                 )}
               >
                 <CalendarRange className="h-5 w-5 mr-2" />
@@ -74,7 +74,7 @@ export const DurationDateSelector = ({
                   : 'Select your stay dates'}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-lg border" align="center">
+            <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-lg border pointer-events-auto" align="center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
