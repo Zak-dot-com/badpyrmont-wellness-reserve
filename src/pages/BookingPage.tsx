@@ -31,6 +31,7 @@ const BookingPage = () => {
   const [searchParams] = useSearchParams();
   const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
   const initialSetupComplete = useRef(false);
+  const notificationsShown = useRef(false);
 
   // Parse query parameters to pre-select options - only run once
   useEffect(() => {
@@ -56,7 +57,10 @@ const BookingPage = () => {
     } else if (type === 'event') {
       setBookingType('event');
       // Handle event space booking logic
-      toast.info("Event space booking selected. Choose your preferred date and services.");
+      if (!notificationsShown.current) {
+        toast.info("Event space booking selected. Choose your preferred date and services.");
+        notificationsShown.current = true;
+      }
     } else if (packageId) {
       setBookingType('package');
     } else {
@@ -68,20 +72,29 @@ const BookingPage = () => {
     if (room) {
       selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
       setCurrentStep(3); // Jump to room selection step
-      toast.info("Room type pre-selected. Please confirm your selection.");
+      if (!notificationsShown.current) {
+        toast.info("Room type pre-selected. Please confirm your selection.");
+        notificationsShown.current = true;
+      }
     }
     
     // Handle package selection from homepage
     if (packageId) {
       selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : 
                    packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
-      toast.info("Package pre-selected. Please customize your wellness journey.");
+      if (!notificationsShown.current) {
+        toast.info("Package pre-selected. Please customize your wellness journey.");
+        notificationsShown.current = true;
+      }
     }
     
     // If coming from "Add Wellness Package" button
     if (addPackage === 'true') {
       setCurrentStep(1); // Go to package selection step
-      toast.info("Select a wellness package to enhance your stay.");
+      if (!notificationsShown.current) {
+        toast.info("Select a wellness package to enhance your stay.");
+        notificationsShown.current = true;
+      }
     }
     
     // Calculate duration from start/end dates if both are present
