@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,59 +5,51 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
-  
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
+    const {
+      data: {
+        subscription
       }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
 
+    // Check for existing session
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
+      setUser(session?.user ?? null);
+    });
     return () => subscription.unsubscribe();
   }, []);
-  
-  const navLinks = [
-    {
-      name: 'Home',
-      path: '/'
-    }, 
-    {
-      name: 'Book Room',
-      path: '/book-room'
-    }, 
-    {
-      name: 'Wellness Packages',
-      path: '/booking?bookingType=package'
-    }, 
-    {
-      name: 'Event Spaces',
-      path: '/booking?bookingType=event'
-    }
-  ];
-  
+  const navLinks = [{
+    name: 'Home',
+    path: '/'
+  }, {
+    name: 'Book Room',
+    path: '/book-room'
+  }, {
+    name: 'Wellness Packages',
+    path: '/booking?bookingType=package'
+  }, {
+    name: 'Event Spaces',
+    path: '/booking?bookingType=event'
+  }];
   return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" 
-              alt="Grand Hotel Bad Pyrmont" 
-              className="h-16" 
-            />
+            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Bad Pyrmont" className="h-16 object-fill" />
           </Link>
           
           {/* Desktop Navigation */}
@@ -67,27 +58,13 @@ const Header = () => {
                 {link.name}
               </Link>)}
             
-            {user ? (
-              <Button 
-                variant="ghost"
-                size="sm" 
-                className="flex items-center gap-2 hover:text-amber-700"
-                onClick={() => navigate('/dashboard')}
-              >
+            {user ? <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/dashboard')}>
                 <User size={16} />
                 Dashboard
-              </Button>
-            ) : (
-              <Button 
-                variant="ghost"
-                size="sm" 
-                className="flex items-center gap-2 hover:text-amber-700"
-                onClick={() => navigate('/auth')}
-              >
+              </Button> : <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/auth')}>
                 <User size={16} />
                 Login
-              </Button>
-            )}
+              </Button>}
             
             <Link to="/booking">
               <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
@@ -110,25 +87,13 @@ const Header = () => {
                     {link.name}
                   </Link>)}
                 
-                {user ? (
-                  <Link 
-                    to="/dashboard" 
-                    className="text-lg font-medium text-gray-600 flex items-center gap-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                {user ? <Link to="/dashboard" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                     <User size={18} />
                     Dashboard
-                  </Link>
-                ) : (
-                  <Link 
-                    to="/auth" 
-                    className="text-lg font-medium text-gray-600 flex items-center gap-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  </Link> : <Link to="/auth" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                     <User size={18} />
                     Login
-                  </Link>
-                )}
+                  </Link>}
                 
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-amber-500 hover:bg-amber-600 mt-4">
@@ -142,5 +107,4 @@ const Header = () => {
       </div>
     </header>;
 };
-
 export default Header;
