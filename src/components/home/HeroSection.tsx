@@ -1,21 +1,23 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import BookingBar from './BookingBar';
+
 const HeroSection = () => {
   const [bookingType, setBookingType] = useState<'room' | 'wellness' | 'event'>('room');
   return <section className="relative h-screen overflow-hidden bg-gradient-to-b from-amber-50 to-white">
       {/* Background image */}
       <div className="absolute inset-0 z-0 bg-cover bg-center opacity-20" style={{
-      backgroundImage: "url('/placeholder.svg')"
-    }} />
+        backgroundImage: "url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&q=80')"
+      }} />
       
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full container mx-auto px-4">
         {/* Hero text */}
         <div className="flex-grow flex flex-col justify-center items-center text-center pt-16 md:pt-24">
-          <motion.h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tighter" initial={{
+          <motion.h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tighter" initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -66,4 +68,5 @@ const HeroSection = () => {
       </div>
     </section>;
 };
+
 export default HeroSection;
