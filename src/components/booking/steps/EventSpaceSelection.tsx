@@ -78,15 +78,42 @@ const EventSpaceSelection = () => {
   ];
   
   const toggleAddon = (addonId: string) => {
+    let newAddons;
     if (selectedAddons.includes(addonId)) {
-      setSelectedAddons(selectedAddons.filter(id => id !== addonId));
+      newAddons = selectedAddons.filter(id => id !== addonId);
     } else {
-      setSelectedAddons([...selectedAddons, addonId]);
+      newAddons = [...selectedAddons, addonId];
     }
+    setSelectedAddons(newAddons);
+    
+    // Update context immediately to reflect price changes
+    setEventAddons(newAddons);
   };
   
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
+    setEventDate(date); // Update context immediately
+  };
+
+  const handleGuestCountChange = (count: number) => {
+    setGuestCount(count);
+    setAttendees(count); // Update context immediately
+  };
+  
+  const handleDurationChange = (hours: string) => {
+    const duration = Number(hours);
+    setSelectedDuration(duration);
+    setEventDuration(duration); // Update context immediately
+  };
+  
+  const handleEventTypeChange = (type: string) => {
+    setSelectedEventType(type);
+    setEventType(type); // Update context immediately
+  };
+  
+  const handleVenueSelect = (venueId: string) => {
+    setSelectedVenue(venueId);
+    setEventSpace(venueId); // Update context immediately
   };
   
   const handleSubmit = () => {
@@ -104,7 +131,7 @@ const EventSpaceSelection = () => {
     setEventAddons(selectedAddons);
     setBookingType('event'); // Set booking type to 'event'
     
-    // Move to next step (probably checkout for event space bookings)
+    // Move to checkout step (step 4)
     goToNextStep();
   };
   
@@ -119,7 +146,7 @@ const EventSpaceSelection = () => {
           <Card 
             key={venue.id} 
             className={`cursor-pointer transition-all hover:shadow-md ${selectedVenue === venue.id ? 'ring-2 ring-amber-500' : ''}`}
-            onClick={() => setSelectedVenue(venue.id)}
+            onClick={() => handleVenueSelect(venue.id)}
           >
             <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
               <img 
@@ -154,7 +181,7 @@ const EventSpaceSelection = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="eventType">Event Type</Label>
-                <Select value={selectedEventType} onValueChange={setSelectedEventType}>
+                <Select value={selectedEventType} onValueChange={handleEventTypeChange}>
                   <SelectTrigger className="w-full">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -193,7 +220,7 @@ const EventSpaceSelection = () => {
                     min="10"
                     max={selectedVenueData?.capacity || 300}
                     value={guestCount}
-                    onChange={(e) => setGuestCount(Number(e.target.value))}
+                    onChange={(e) => handleGuestCountChange(Number(e.target.value))}
                     className="pl-10"
                   />
                   <Users className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -208,7 +235,7 @@ const EventSpaceSelection = () => {
                 <div className="relative">
                   <Select 
                     value={selectedDuration.toString()} 
-                    onValueChange={(val) => setSelectedDuration(Number(val))}
+                    onValueChange={handleDurationChange}
                   >
                     <SelectTrigger className="w-full pl-10">
                       <SelectValue placeholder="Select duration" />

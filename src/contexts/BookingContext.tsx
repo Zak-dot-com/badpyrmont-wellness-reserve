@@ -381,7 +381,12 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
 
   const goToNextStep = () => {
-    setCurrentStep(prevStep => prevStep + 1);
+    setCurrentStep(prevStep => {
+      if (bookingType === 'event') {
+        return 4; // Checkout step
+      }
+      return prevStep + 1;
+    });
   };
 
   const getStandardRoom = (): RoomType | null => {
@@ -587,7 +592,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     });
 
-    if (eventSpace && eventType && attendees && eventDuration) {
+    if (eventSpace && eventType && attendees) {
       const venuePrices: Record<string, number> = {
         'garden-pavilion': 1200,
         'grand-ballroom': 2000,
@@ -603,11 +608,13 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         'social': 0.8,
       };
       
-      total += venuePrices[eventSpace] || 0;
+      const basePrice = venuePrices[eventSpace] || 0;
+      total += basePrice;
       
-      total *= eventMultipliers[eventType] || 1;
+      const multiplier = eventMultipliers[eventType] || 1;
+      total = total * multiplier;
       
-      if (eventDuration > 4) {
+      if (eventDuration && eventDuration > 4) {
         total += (eventDuration - 4) * 300;
       }
       
@@ -625,6 +632,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       if (eventAddons.includes('liveMusic')) {
         total += 800;
+      }
+      
+      if (eventAddons.includes('extendedHours') && eventDuration) {
+        total += eventDuration * 300;
       }
     }
 

@@ -152,11 +152,12 @@ const BookingPage = () => {
 
   const renderCurrentStep = () => {
     // For event bookings, show event-specific steps
-    if (bookingType === 'event') {
+    if (bookingType === 'event' && currentStep !== 4) {
       return <EventSpaceSelection />;
     }
     
     // For wellness packages and room bookings, use standard flow
+    // Also show checkout form for all booking types when on step 4
     switch (currentStep) {
       case 1:
         return <PackageSelection />;
@@ -203,10 +204,12 @@ const BookingPage = () => {
                 </AnimatePresence>
               </div>
               
-              {/* Desktop BookingSummary */}
+              {/* Desktop BookingSummary with sticky positioning */}
               {!isMobile && (
-                <div className="lg:col-span-1 relative">
-                  <BookingSummary />
+                <div className="lg:col-span-1">
+                  <div className="sticky top-8">
+                    <BookingSummary />
+                  </div>
                 </div>
               )}
               
