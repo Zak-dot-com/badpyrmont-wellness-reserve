@@ -53,10 +53,14 @@ const HeroSection = () => {
           delay: 0.6
         }}>
             <Link to="/booking?bookingType=package">
-              
+              <Button size="lg" className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500">
+                Explore Packages
+              </Button>
             </Link>
             <Link to="/book-room">
-              
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                Book a Room
+              </Button>
             </Link>
           </motion.div>
         </div>
