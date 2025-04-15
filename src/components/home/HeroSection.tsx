@@ -1,17 +1,15 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import BookingBar from './BookingBar';
-
 const HeroSection = () => {
   const [bookingType, setBookingType] = useState<'room' | 'wellness' | 'event'>('room');
   return <section className="relative h-screen overflow-hidden bg-gradient-to-b from-amber-50 to-white">
       {/* Background image */}
       <div className="absolute inset-0 z-0 bg-cover bg-center opacity-20" style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&q=80')"
-      }} />
+      backgroundImage: "url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&q=80')"
+    }} />
       
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full container mx-auto px-4">
@@ -53,14 +51,10 @@ const HeroSection = () => {
           delay: 0.6
         }}>
             <Link to="/booking?bookingType=package">
-              <Button size="lg" className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500">
-                Explore Packages
-              </Button>
+              
             </Link>
             <Link to="/book-room">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Book a Room
-              </Button>
+              
             </Link>
           </motion.div>
         </div>
@@ -72,5 +66,4 @@ const HeroSection = () => {
       </div>
     </section>;
 };
-
 export default HeroSection;
