@@ -49,7 +49,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Bad Pyrmont" className="h-16 object-fill" />
+            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Bad Pyrmont" className="h-16 object-cover" />
           </Link>
           
           {/* Desktop Navigation */}
