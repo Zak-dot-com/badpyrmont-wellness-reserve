@@ -43,6 +43,13 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   const { selectedPackage, selectedRoom, roomAddOns } = bookingData;
   const standardRoom = getStandardRoom();
 
+  // Room images mapping
+  const roomImages = {
+    'single-standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
+    'deluxe-room': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
+    'vip-suite': 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop'
+  };
+
   const handleContinue = () => {
     if (!selectedRoom) {
       toast.error("Please select a room type");
@@ -128,7 +135,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
               <div className="relative">
                 <AspectRatio ratio={16/9}>
                   <img
-                    src={room.image}
+                    src={roomImages[room.id as keyof typeof roomImages] || room.image}
                     alt={room.name}
                     className="object-cover w-full h-full"
                   />

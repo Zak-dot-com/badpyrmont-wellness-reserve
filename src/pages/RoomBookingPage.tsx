@@ -94,6 +94,30 @@ const RoomBookingPage = () => {
     }
   };
 
+  const handleStepClick = (step: 'dates' | 'room' | 'checkout') => {
+    // Only allow going backward or staying on current step
+    if (step === activeStep) return;
+    
+    if (step === 'dates') {
+      setActiveStep('dates');
+    } else if (step === 'room') {
+      // Only allow if dates are selected
+      if (!bookingData.startDate) {
+        toast.error("Please select your dates first");
+        return;
+      }
+      setActiveStep('room');
+    } else if (step === 'checkout') {
+      // Only allow if room is selected
+      if (!bookingData.selectedRoom) {
+        toast.error("Please select a room first");
+        return;
+      }
+      setActiveStep('checkout');
+      setCurrentStep(4);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -112,10 +136,13 @@ const RoomBookingPage = () => {
             <div className="mb-8">
               <div className="flex justify-center">
                 <div className="flex items-center">
-                  <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full border-2",
-                    activeStep === 'dates' ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-white"
-                  )}>
+                  <div 
+                    className={cn(
+                      "flex items-center justify-center w-10 h-10 rounded-full border-2 cursor-pointer",
+                      activeStep === 'dates' ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-white"
+                    )}
+                    onClick={() => handleStepClick('dates')}
+                  >
                     <span className={cn(
                       "text-sm font-semibold",
                       activeStep === 'dates' ? "text-amber-700" : "text-gray-500"
@@ -125,11 +152,14 @@ const RoomBookingPage = () => {
                     "w-12 h-0.5",
                     activeStep !== 'dates' ? "bg-amber-500" : "bg-gray-300"
                   )}></div>
-                  <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full border-2",
-                    activeStep === 'room' ? "border-amber-500 bg-amber-50" : 
-                    activeStep === 'checkout' ? "border-amber-500 bg-white" : "border-gray-300 bg-white"
-                  )}>
+                  <div 
+                    className={cn(
+                      "flex items-center justify-center w-10 h-10 rounded-full border-2 cursor-pointer",
+                      activeStep === 'room' ? "border-amber-500 bg-amber-50" : 
+                      activeStep === 'checkout' ? "border-amber-500 bg-white" : "border-gray-300 bg-white"
+                    )}
+                    onClick={() => handleStepClick('room')}
+                  >
                     <span className={cn(
                       "text-sm font-semibold",
                       activeStep === 'room' ? "text-amber-700" : 
@@ -140,10 +170,13 @@ const RoomBookingPage = () => {
                     "w-12 h-0.5",
                     activeStep === 'checkout' ? "bg-amber-500" : "bg-gray-300"
                   )}></div>
-                  <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full border-2",
-                    activeStep === 'checkout' ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-white"
-                  )}>
+                  <div 
+                    className={cn(
+                      "flex items-center justify-center w-10 h-10 rounded-full border-2 cursor-pointer",
+                      activeStep === 'checkout' ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-white"
+                    )}
+                    onClick={() => handleStepClick('checkout')}
+                  >
                     <span className={cn(
                       "text-sm font-semibold",
                       activeStep === 'checkout' ? "text-amber-700" : "text-gray-500"
@@ -153,9 +186,33 @@ const RoomBookingPage = () => {
               </div>
               <div className="flex justify-center mt-2">
                 <div className="flex space-x-16 text-sm">
-                  <span className={activeStep === 'dates' ? "text-amber-700 font-medium" : "text-gray-500"}>Dates</span>
-                  <span className={activeStep === 'room' ? "text-amber-700 font-medium" : "text-gray-500"}>Room</span>
-                  <span className={activeStep === 'checkout' ? "text-amber-700 font-medium" : "text-gray-500"}>Checkout</span>
+                  <span 
+                    className={cn(
+                      "cursor-pointer",
+                      activeStep === 'dates' ? "text-amber-700 font-medium" : "text-gray-500"
+                    )}
+                    onClick={() => handleStepClick('dates')}
+                  >
+                    Dates
+                  </span>
+                  <span 
+                    className={cn(
+                      "cursor-pointer",
+                      activeStep === 'room' ? "text-amber-700 font-medium" : "text-gray-500"
+                    )}
+                    onClick={() => handleStepClick('room')}
+                  >
+                    Room
+                  </span>
+                  <span 
+                    className={cn(
+                      "cursor-pointer",
+                      activeStep === 'checkout' ? "text-amber-700 font-medium" : "text-gray-500"
+                    )}
+                    onClick={() => handleStepClick('checkout')}
+                  >
+                    Checkout
+                  </span>
                 </div>
               </div>
             </div>

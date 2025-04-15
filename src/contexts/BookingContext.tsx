@@ -344,7 +344,7 @@ const availableRooms: RoomType[] = [
     name: "Single Room",
     description: "Comfortable single room with all essential amenities",
     price: 80,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop",
     isStandard: true
   },
   {
@@ -353,7 +353,7 @@ const availableRooms: RoomType[] = [
     name: "Deluxe Room",
     description: "Spacious room with premium amenities and mountain view",
     price: 150,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop",
     isStandard: false
   },
   {
@@ -362,7 +362,7 @@ const availableRooms: RoomType[] = [
     name: "VIP Suite",
     description: "Luxurious suite with separate living area and panoramic views",
     price: 280,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop",
     isStandard: false
   }
 ];
