@@ -7,11 +7,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import PageLayout from '@/components/layout/PageLayout';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarIcon, CreditCard, User, LogOut, Clock, CalendarDays, CalendarCheck } from 'lucide-react';
+import { CalendarIcon, CreditCard, User, LogOut, Clock, CalendarDays, CalendarCheck, Gift, Award } from 'lucide-react';
+import DashboardNav from '@/components/loyalty/DashboardNav';
+import TierCard from '@/components/loyalty/TierCard';
+import DashboardQuickCard from '@/components/loyalty/DashboardQuickCard';
 
 const DashboardPage = () => {
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -35,11 +40,44 @@ const DashboardPage = () => {
       
       if (!session) {
         navigate('/auth');
+      } else {
+        // Fetch user profile
+        fetchUserProfile(session.user.id);
+        fetchRecentTransactions(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+  
+  const fetchUserProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+      
+    if (error) {
+      console.error('Error fetching profile:', error);
+    } else {
+      setProfile(data);
+    }
+  };
+  
+  const fetchRecentTransactions = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(5);
+      
+    if (error) {
+      console.error('Error fetching transactions:', error);
+    } else {
+      setRecentTransactions(data || []);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -77,9 +115,11 @@ const DashboardPage = () => {
   }
   
   const userMetadata = user?.user_metadata || {};
-  const firstName = userMetadata.first_name || 'Valued';
-  const lastName = userMetadata.last_name || 'Member';
+  const firstName = profile?.first_name || userMetadata.first_name || 'Valued';
+  const lastName = profile?.last_name || userMetadata.last_name || 'Member';
   const email = user?.email || '';
+  const loyaltyTier = profile?.loyalty_tier || 'Silver';
+  const loyaltyPoints = profile?.loyalty_points || 0;
 
   const upcomingAppointments = [
     {
@@ -110,9 +150,6 @@ const DashboardPage = () => {
       duration: 45,
     },
   ];
-
-  const membershipLevel = "Silver"; // Example data
-  const loyaltyPoints = 350; // Example data
   
   // Format date to readable format
   const formatDate = (date: Date) => {
@@ -145,53 +182,50 @@ const DashboardPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm font-medium">Membership Level</CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-0">
-                    <div className="text-2xl font-bold">{membershipLevel}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm font-medium">Loyalty Points</CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-0">
-                    <div className="text-2xl font-bold">{loyaltyPoints}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm font-medium">Next Appointment</CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-0">
-                    <div className="text-sm">
-                      {upcomingAppointments.length > 0 ? (
-                        <div className="flex items-center">
-                          <CalendarDays className="h-4 w-4 mr-2 text-amber-500" />
-                          {formatDate(upcomingAppointments[0].datetime)}
-                        </div>
-                      ) : (
-                        "No upcoming appointments"
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm font-medium">Member Since</CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-0">
-                    <div className="text-sm">
-                      <div className="flex items-center">
-                        <CalendarCheck className="h-4 w-4 mr-2 text-amber-500" />
-                        {new Date(user?.created_at || Date.now()).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="w-full sm:w-1/3">
+                  <TierCard tier={loyaltyTier as "Silver" | "Gold" | "Platinum"} points={loyaltyPoints} />
+                </div>
+                <div className="w-full sm:w-2/3 flex flex-col justify-center">
+                  <h3 className="text-lg font-semibold mb-2">Your Loyalty Program</h3>
+                  <p className="text-gray-600 mb-4">
+                    Enjoy exclusive benefits as a {loyaltyTier} member of our loyalty program. 
+                    Earn points with every stay and spa treatment to unlock more rewards.
+                  </p>
+                  <DashboardNav />
+                </div>
+              </div>
+              
+              {/* Quick Action Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <DashboardQuickCard 
+                  title="Book Treatment"
+                  description="Schedule your next wellness experience"
+                  icon={CalendarDays}
+                  linkTo="/booking"
+                  color="text-blue-500"
+                />
+                <DashboardQuickCard 
+                  title="Redeem Points"
+                  description="Browse and claim available rewards"
+                  icon={Gift}
+                  linkTo="/rewards"
+                  color="text-amber-500"
+                />
+                <DashboardQuickCard 
+                  title="Points Activity"
+                  description="View your transaction history"
+                  icon={Clock}
+                  linkTo="/activity"
+                  color="text-green-500"
+                />
+                <DashboardQuickCard 
+                  title="Tier Benefits"
+                  description="See what your status unlocks"
+                  icon={Award}
+                  linkTo="/profile"
+                  color="text-purple-500"
+                />
               </div>
             </CardContent>
           </Card>
@@ -278,33 +312,6 @@ const DashboardPage = () => {
               </div>
             </TabsContent>
           </Tabs>
-          
-          {/* Quick Links / Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center" onClick={() => navigate('/booking')}>
-                  <CalendarDays className="h-6 w-6 mb-2" />
-                  <span>Book New Appointment</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <CreditCard className="h-6 w-6 mb-2" />
-                  <span>Manage Payment Methods</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <User className="h-6 w-6 mb-2" />
-                  <span>Update Profile</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
-                  <Clock className="h-6 w-6 mb-2" />
-                  <span>View Special Offers</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </PageLayout>

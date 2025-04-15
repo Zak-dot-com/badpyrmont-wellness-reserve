@@ -12,6 +12,9 @@ import BookingPage from "./pages/BookingPage";
 import RoomBookingPage from "./pages/RoomBookingPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
+import LoyaltyRewardsPage from "./pages/LoyaltyRewardsPage";
+import LoyaltyActivityPage from "./pages/LoyaltyActivityPage";
+import LoyaltyProfilePage from "./pages/LoyaltyProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,9 @@ const App = () => (
               <Route path="/book-room" element={<RoomBookingPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/rewards" element={<LoyaltyRewardsPage />} />
+              <Route path="/activity" element={<LoyaltyActivityPage />} />
+              <Route path="/profile" element={<LoyaltyProfilePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

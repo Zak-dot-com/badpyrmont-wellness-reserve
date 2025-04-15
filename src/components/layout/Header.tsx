@@ -1,10 +1,19 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,13 +78,44 @@ const Header = () => {
                 {link.name}
               </Link>)}
             
-            {user ? <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/dashboard')}>
-                <User size={16} />
-                Dashboard
-              </Button> : <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/auth')}>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700">
+                    <User size={16} />
+                    My Account
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Loyalty Program</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/rewards')}>
+                    Rewards
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/activity')}>
+                    Points Activity
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    Profile Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={async () => {
+                    await supabase.auth.signOut();
+                    navigate('/');
+                  }}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/auth')}>
                 <User size={16} />
                 Login
-              </Button>}
+              </Button>
+            )}
             
             <Link to="/booking">
               <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
@@ -98,13 +138,46 @@ const Header = () => {
                     {link.name}
                   </Link>)}
                 
-                {user ? <Link to="/dashboard" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
-                    <User size={18} />
-                    Dashboard
-                  </Link> : <Link to="/auth" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                {user ? (
+                  <>
+                    <div className="pt-4 border-t">
+                      <h3 className="font-medium mb-2 flex items-center gap-2">
+                        <Gift size={18} />
+                        Loyalty Program
+                      </h3>
+                      <div className="flex flex-col gap-3 pl-6">
+                        <Link to="/dashboard" className="text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                          Dashboard
+                        </Link>
+                        <Link to="/rewards" className="text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                          Rewards
+                        </Link>
+                        <Link to="/activity" className="text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                          Points Activity
+                        </Link>
+                        <Link to="/profile" className="text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                          Profile Settings
+                        </Link>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="justify-start" 
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        setIsMenuOpen(false);
+                        navigate('/');
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Link to="/auth" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                     <User size={18} />
                     Login
-                  </Link>}
+                  </Link>
+                )}
                 
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-amber-500 hover:bg-amber-600 mt-4">
