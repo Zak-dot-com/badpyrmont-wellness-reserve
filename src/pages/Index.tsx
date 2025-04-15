@@ -9,11 +9,12 @@ import CallToAction from '@/components/home/CallToAction';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index = () => {
-  return <div className="flex flex-col min-h-screen">
+  return (
+    <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow">
         <HeroSection />
-        <div className="py-12">
+        <div className="pt-24 py-12"> {/* Added top padding to accommodate the overlapping booking bar */}
           <FeaturesSection />
           <PackagesSection />
           <TestimonialsSection />
@@ -21,7 +22,8 @@ const Index = () => {
         </div>
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
 
 export default Index;
