@@ -1,5 +1,5 @@
 
-import { PackageType } from "@/contexts/BookingContext";
+import { PackageType, RoomType } from "@/types/bookingTypes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircleCheck, Sparkles, Bath, Dumbbell, Heart, Leaf, BedDouble } from "lucide-react";
 import { motion } from "framer-motion";
