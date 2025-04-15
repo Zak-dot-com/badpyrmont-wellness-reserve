@@ -631,6 +631,26 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return total;
   };
 
+  const getSelectedAddOns = (): string[] => {
+    const addOns: string[] = [];
+    
+    bookingData.addOnCategories.forEach(category => {
+      category.items.forEach(item => {
+        if (item.selected) {
+          addOns.push(item.id);
+        }
+      });
+    });
+    
+    bookingData.roomAddOns.forEach(addon => {
+      if (addon.selected) {
+        addOns.push(addon.id);
+      }
+    });
+    
+    return addOns;
+  };
+
   const bookedDays = bookingData.duration ? parseInt(bookingData.duration) : 0;
 
   const selectedAddOns = getSelectedAddOns();

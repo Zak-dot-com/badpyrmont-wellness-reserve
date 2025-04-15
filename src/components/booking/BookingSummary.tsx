@@ -140,9 +140,9 @@ const BookingSummary = () => {
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700">Package</h4>
             <p className="font-semibold text-lg">
-              {selectedPackage === 'relaxation-retreat'
+              {selectedPackage.id === 'relaxation-retreat'
                 ? 'Relaxation Retreat'
-                : selectedPackage === 'detox-revitalize'
+                : selectedPackage.id === 'detox-revitalize'
                 ? 'Detox & Revitalize'
                 : 'Luxury Wellness Escape'}
             </p>
@@ -167,9 +167,9 @@ const BookingSummary = () => {
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700">Room</h4>
             <p>
-              {selectedRoom === 'single-standard'
+              {selectedRoom.id === 'single-standard'
                 ? 'Standard Room'
-                : selectedRoom === 'deluxe-room'
+                : selectedRoom.id === 'deluxe-room'
                 ? 'Deluxe Room'
                 : 'VIP Suite'}
             </p>
