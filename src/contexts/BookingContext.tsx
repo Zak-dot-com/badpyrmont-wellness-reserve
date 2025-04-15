@@ -1,68 +1,28 @@
+
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
-// Define our types
-export type PackageType = {
-  id: string;
-  name: string;
-  description: string;
-  basePrice: number;
-  type: string;
-  image?: string;
-  includesStandardRoom: boolean;
-};
+// Import types
+import { 
+  BookingType, 
+  BookingData, 
+  DurationType, 
+  PackageType,
+  RoomType,
+  CustomerInfo
+} from "../types/bookingTypes";
 
-export type DurationType = "4" | "7" | "14";
+// Import data
+import { initialBookingData } from "../data/initialData";
+import { availablePackages } from "../data/packagesData";
+import { availableRooms } from "../data/roomsData";
 
-export type AddOnCategory = {
-  id: string;
-  name: string;
-  items: AddOnItem[];
-};
-
-export type AddOnItem = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  selected: boolean;
-  quantity: number;
-};
-
-export type RoomType = {
-  id: string;
-  type: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  isStandard?: boolean;
-};
-
-export type RoomAddOn = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  icon: string;
-  selected: boolean;
-};
-
-export type BookingData = {
-  selectedPackage: PackageType | null;
-  duration: DurationType;
-  startDate: Date | null;
-  addOnCategories: AddOnCategory[];
-  selectedRoom: RoomType | null;
-  roomAddOns: RoomAddOn[];
-  totalPrice: number;
-  customerInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-  };
-};
+// Import custom hooks
+import { usePackages } from "../hooks/usePackages";
+import { useRooms } from "../hooks/useRooms";
+import { useAddOns } from "../hooks/useAddOns";
+import { usePricing } from "../hooks/usePricing";
+import { useEventBooking } from "../hooks/useEventBooking";
 
 export type BookingContextType = {
   currentStep: number;
@@ -82,7 +42,7 @@ export type BookingContextType = {
   resetRoom: () => void;
   toggleRoomAddOn: (addOnId: string) => void;
   removeRoomAddOn: (addOnId: string) => void;
-  setCustomerInfo: (info: Partial<BookingData['customerInfo']>) => void;
+  setCustomerInfo: (info: Partial<CustomerInfo>) => void;
   calculateEndDate: () => Date | null;
   calculateTotalPrice: () => number;
   getDefaultAddOnQuantity: () => number;
@@ -100,8 +60,8 @@ export type BookingContextType = {
   setEventType: (type: string) => void;
   setEventDuration: (hours: number) => void;
   setEventAddons: (addons: string[]) => void;
-  bookingType: 'package' | 'room' | 'event' | null;
-  setBookingType: (type: 'package' | 'room' | 'event' | null) => void;
+  bookingType: BookingType;
+  setBookingType: (type: BookingType) => void;
   selectedPackage: PackageType | null;
   selectedDuration: string;
   selectedAddOns: string[];
@@ -110,276 +70,48 @@ export type BookingContextType = {
   startDate: Date | null;
 };
 
-const initialData: BookingData = {
-  selectedPackage: null,
-  duration: "4",
-  startDate: null,
-  addOnCategories: [
-    {
-      id: "wellness-treatments",
-      name: "Wellness Treatments",
-      items: [
-        {
-          id: "massage-therapy",
-          name: "Massage Therapy",
-          description: "60-minute relaxing massage session",
-          price: 80,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "facial-treatment",
-          name: "Facial Treatment",
-          description: "Rejuvenating facial with organic products",
-          price: 95,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "hot-stone-therapy",
-          name: "Hot Stone Therapy",
-          description: "Therapeutic hot stone massage",
-          price: 120,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "aromatherapy",
-          name: "Aromatherapy Session",
-          description: "Relaxing aromatherapy treatment",
-          price: 75,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "body-scrub",
-          name: "Full Body Scrub",
-          description: "Exfoliating body scrub treatment",
-          price: 85,
-          selected: false,
-          quantity: 2
-        }
-      ]
-    },
-    {
-      id: "fitness-activities",
-      name: "Fitness Activities",
-      items: [
-        {
-          id: "personal-trainer",
-          name: "Personal Trainer",
-          description: "One-on-one fitness sessions",
-          price: 110,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "yoga-classes",
-          name: "Yoga Classes",
-          description: "Daily yoga sessions",
-          price: 60,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "aqua-fitness",
-          name: "Aqua Fitness",
-          description: "Water-based fitness activities",
-          price: 55,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "meditation",
-          name: "Guided Meditation",
-          description: "Daily meditation sessions",
-          price: 45,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "pilates",
-          name: "Pilates Classes",
-          description: "Core-strengthening pilates sessions",
-          price: 65,
-          selected: false,
-          quantity: 2
-        }
-      ]
-    },
-    {
-      id: "nutrition",
-      name: "Nutrition & Diet",
-      items: [
-        {
-          id: "diet-consultation",
-          name: "Diet Consultation",
-          description: "Personalized nutrition planning",
-          price: 140,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "detox-program",
-          name: "Detox Program",
-          description: "Specialized detox meal plan",
-          price: 190,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "cooking-class",
-          name: "Healthy Cooking Class",
-          description: "Learn to prepare healthy meals",
-          price: 85,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "juice-cleanse",
-          name: "Juice Cleanse",
-          description: "Fresh, organic juice cleanse program",
-          price: 110,
-          selected: false,
-          quantity: 2
-        },
-        {
-          id: "nutrition-workshop",
-          name: "Nutrition Workshop",
-          description: "Group workshop on healthy eating",
-          price: 70,
-          selected: false,
-          quantity: 2
-        }
-      ]
-    }
-  ],
-  selectedRoom: null,
-  roomAddOns: [
-    {
-      id: "vip-treatment",
-      name: "VIP Treatment",
-      description: "Premium concierge service and daily amenities",
-      price: 150,
-      icon: "circle-check",
-      selected: false
-    },
-    {
-      id: "extra-parking",
-      name: "Extra Parking",
-      description: "Additional secure parking space",
-      price: 25,
-      icon: "circle-parking",
-      selected: false
-    },
-    {
-      id: "high-speed-wifi",
-      name: "High Speed WiFi",
-      description: "Dedicated high-speed internet connection",
-      price: 15,
-      icon: "wifi",
-      selected: false
-    },
-    {
-      id: "breakfast-in-bed",
-      name: "Breakfast in Bed",
-      description: "Daily gourmet breakfast delivered to your room",
-      price: 40,
-      icon: "bed",
-      selected: false
-    }
-  ],
-  totalPrice: 0,
-  customerInfo: {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: ""
-  }
-};
-
-const availablePackages: PackageType[] = [
-  {
-    id: "relaxation-retreat",
-    name: "Relaxation Retreat",
-    description: "A peaceful wellness package focused on relaxation and stress relief",
-    basePrice: 200,
-    type: "relaxation",
-    image: "https://images.unsplash.com/photo-1531685250784-7569952593d2?q=80&w=1470&auto=format&fit=crop",
-    includesStandardRoom: true
-  },
-  {
-    id: "detox-revitalize",
-    name: "Detox & Revitalize",
-    description: "Cleanse your body and mind with this comprehensive detox program",
-    basePrice: 230,
-    type: "wellness",
-    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1470&auto=format&fit=crop",
-    includesStandardRoom: true
-  },
-  {
-    id: "fitness-reboot",
-    name: "Fitness Reboot",
-    description: "Energize your body with intensive fitness activities and recovery treatments",
-    basePrice: 245,
-    type: "fitness",
-    image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1470&auto=format&fit=crop",
-    includesStandardRoom: true
-  },
-  {
-    id: "luxury-escape",
-    name: "Luxury Wellness Escape",
-    description: "Our premium package with exclusive treatments and personalized service",
-    basePrice: 300,
-    type: "rejuvenation",
-    image: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1470&auto=format&fit=crop",
-    includesStandardRoom: true
-  }
-];
-
-const availableRooms: RoomType[] = [
-  {
-    id: "single-standard",
-    type: "single",
-    name: "Single Room",
-    description: "Comfortable single room with all essential amenities",
-    price: 80,
-    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop",
-    isStandard: true
-  },
-  {
-    id: "deluxe-room",
-    type: "deluxe",
-    name: "Deluxe Room",
-    description: "Spacious room with premium amenities and mountain view",
-    price: 150,
-    image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop",
-    isStandard: false
-  },
-  {
-    id: "vip-suite",
-    type: "suite",
-    name: "VIP Suite",
-    description: "Luxurious suite with separate living area and panoramic views",
-    price: 280,
-    image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop",
-    isStandard: false
-  }
-];
-
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [bookingData, setBookingData] = useState<BookingData>(initialData);
+  const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [eventSpace, setEventSpace] = useState<string | null>(null);
   const [eventDate, setEventDate] = useState<Date | null>(null);
   const [attendees, setAttendees] = useState<number | null>(50);
   const [eventType, setEventType] = useState<string | null>(null);
   const [eventDuration, setEventDuration] = useState<number | null>(4);
   const [eventAddons, setEventAddons] = useState<string[]>([]);
-  const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
+  const [bookingType, setBookingType] = useState<BookingType>(null);
 
+  // Custom hooks
+  const { getStandardRoom, getRoomUpgradePrice, selectRoom: roomSelector, toggleRoomAddOn, removeRoomAddOn } = useRooms();
+  const { selectPackage: packageSelector } = usePackages(bookingData.selectedPackage);
+  const { toggleAddOn, removeAddOn, updateAddOnQuantity, getSelectedAddOns } = useAddOns();
+  const { getDefaultAddOnQuantity, calculateTotalPrice } = usePricing({
+    getStandardRoom, 
+    getRoomUpgradePrice,
+    eventSpace, 
+    eventType, 
+    attendees, 
+    eventDuration, 
+    eventAddons
+  });
+  const eventBooking = useEventBooking(
+    eventSpace,
+    eventDate,
+    eventType,
+    attendees,
+    eventDuration,
+    eventAddons,
+    setEventSpace,
+    setEventDate,
+    setEventType,
+    setAttendees,
+    setEventDuration,
+    setEventAddons
+  );
+
+  // Navigation
   const goToNextStep = () => {
     setCurrentStep(prevStep => {
       if (bookingType === 'event') {
@@ -389,38 +121,19 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  const getStandardRoom = (): RoomType | null => {
-    return availableRooms.find(room => room.isStandard) || null;
-  };
-
-  const getRoomUpgradePrice = (roomId: string): number => {
-    const standardRoom = getStandardRoom();
-    const selectedRoom = availableRooms.find(r => r.id === roomId);
-    
-    if (!standardRoom || !selectedRoom || selectedRoom.isStandard) {
-      return 0;
-    }
-    
-    return selectedRoom.price - standardRoom.price;
-  };
-
+  // Package operations
   const selectPackage = (packageId: string) => {
-    const selected = availablePackages.find(p => p.id === packageId) || null;
+    const { selectedPackage: newPackage, selectedRoom: newRoom } = packageSelector(
+      packageId, 
+      getStandardRoom, 
+      bookingData.selectedRoom
+    );
     
-    if (selected && selected.includesStandardRoom) {
-      const standardRoom = getStandardRoom();
-      
-      setBookingData(prev => ({
-        ...prev,
-        selectedPackage: selected,
-        selectedRoom: prev.selectedRoom?.isStandard ? standardRoom : prev.selectedRoom
-      }));
-    } else {
-      setBookingData(prev => ({
-        ...prev,
-        selectedPackage: selected
-      }));
-    }
+    setBookingData(prev => ({
+      ...prev,
+      selectedPackage: newPackage,
+      selectedRoom: newRoom
+    }));
   };
 
   const resetPackage = () => {
@@ -432,6 +145,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
+  // Duration and date operations
   const setDuration = (duration: DurationType) => {
     setBookingData(prev => ({
       ...prev,
@@ -451,71 +165,36 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return addDays(bookingData.startDate, parseInt(bookingData.duration));
   };
 
-  const getDefaultAddOnQuantity = (): number => {
-    return Math.floor(parseInt(bookingData.duration) / 2);
-  };
-
-  const toggleAddOn = (categoryId: string, itemId: string) => {
+  // Add-on operations
+  const handleToggleAddOn = (categoryId: string, itemId: string) => {
     setBookingData(prev => {
-      const updatedCategories = prev.addOnCategories.map(category => {
-        if (category.id === categoryId) {
-          const updatedItems = category.items.map(item => {
-            if (item.id === itemId) {
-              const isSelected = !item.selected;
-              return { 
-                ...item, 
-                selected: isSelected,
-                quantity: isSelected ? getDefaultAddOnQuantity() : item.quantity 
-              };
-            }
-            return item;
-          });
-          return { ...category, items: updatedItems };
-        }
-        return category;
-      });
+      const updatedCategories = toggleAddOn(
+        prev.addOnCategories, 
+        categoryId, 
+        itemId, 
+        () => getDefaultAddOnQuantity(prev.duration)
+      );
       return { ...prev, addOnCategories: updatedCategories };
     });
   };
 
-  const removeAddOn = (categoryId: string, itemId: string) => {
+  const handleRemoveAddOn = (categoryId: string, itemId: string) => {
     setBookingData(prev => {
-      const updatedCategories = prev.addOnCategories.map(category => {
-        if (category.id === categoryId) {
-          const updatedItems = category.items.map(item => {
-            if (item.id === itemId) {
-              return { ...item, selected: false };
-            }
-            return item;
-          });
-          return { ...category, items: updatedItems };
-        }
-        return category;
-      });
+      const updatedCategories = removeAddOn(prev.addOnCategories, categoryId, itemId);
       return { ...prev, addOnCategories: updatedCategories };
     });
   };
 
-  const updateAddOnQuantity = (categoryId: string, itemId: string, quantity: number) => {
+  const handleUpdateAddOnQuantity = (categoryId: string, itemId: string, quantity: number) => {
     setBookingData(prev => {
-      const updatedCategories = prev.addOnCategories.map(category => {
-        if (category.id === categoryId) {
-          const updatedItems = category.items.map(item => {
-            if (item.id === itemId) {
-              return { ...item, quantity: Math.max(1, quantity) };
-            }
-            return item;
-          });
-          return { ...category, items: updatedItems };
-        }
-        return category;
-      });
+      const updatedCategories = updateAddOnQuantity(prev.addOnCategories, categoryId, itemId, quantity);
       return { ...prev, addOnCategories: updatedCategories };
     });
   };
 
-  const selectRoom = (roomId: string) => {
-    const selected = availableRooms.find(r => r.id === roomId) || null;
+  // Room operations
+  const handleSelectRoom = (roomId: string) => {
+    const selected = roomSelector(roomId);
     setBookingData(prev => ({
       ...prev,
       selectedRoom: selected
@@ -530,141 +209,30 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
-  const toggleRoomAddOn = (addOnId: string) => {
+  const handleToggleRoomAddOn = (addOnId: string) => {
     setBookingData(prev => {
-      const updatedAddOns = prev.roomAddOns.map(addon => {
-        if (addon.id === addOnId) {
-          return { ...addon, selected: !addon.selected };
-        }
-        return addon;
-      });
+      const updatedAddOns = toggleRoomAddOn(prev.roomAddOns, addOnId);
       return { ...prev, roomAddOns: updatedAddOns };
     });
   };
 
-  const removeRoomAddOn = (addOnId: string) => {
+  const handleRemoveRoomAddOn = (addOnId: string) => {
     setBookingData(prev => {
-      const updatedAddOns = prev.roomAddOns.map(addon => {
-        if (addon.id === addOnId) {
-          return { ...addon, selected: false };
-        }
-        return addon;
-      });
+      const updatedAddOns = removeRoomAddOn(prev.roomAddOns, addOnId);
       return { ...prev, roomAddOns: updatedAddOns };
     });
   };
 
-  const setCustomerInfo = (info: Partial<BookingData['customerInfo']>) => {
+  // Customer info operations
+  const setCustomerInfo = (info: Partial<CustomerInfo>) => {
     setBookingData(prev => ({
       ...prev,
       customerInfo: { ...prev.customerInfo, ...info }
     }));
   };
 
-  const calculateTotalPrice = () => {
-    let total = 0;
-    
-    if (bookingData.selectedPackage) {
-      total += bookingData.selectedPackage.basePrice * parseInt(bookingData.duration);
-    }
-
-    bookingData.addOnCategories.forEach(category => {
-      category.items.forEach(item => {
-        if (item.selected) {
-          total += item.price * item.quantity;
-        }
-      });
-    });
-
-    if (bookingData.selectedRoom && !bookingData.selectedRoom.isStandard && bookingData.selectedPackage?.includesStandardRoom) {
-      const standardRoom = getStandardRoom();
-      if (standardRoom) {
-        const upgradePrice = bookingData.selectedRoom.price - standardRoom.price;
-        total += upgradePrice * parseInt(bookingData.duration);
-      }
-    } else if (bookingData.selectedRoom && !bookingData.selectedPackage?.includesStandardRoom) {
-      total += bookingData.selectedRoom.price * parseInt(bookingData.duration);
-    }
-
-    bookingData.roomAddOns.forEach(addon => {
-      if (addon.selected) {
-        total += addon.price;
-      }
-    });
-
-    if (eventSpace && eventType && attendees) {
-      const venuePrices: Record<string, number> = {
-        'garden-pavilion': 1200,
-        'grand-ballroom': 2000,
-        'executive-hall': 1500,
-        'rooftop-terrace': 1800,
-      };
-      
-      const eventMultipliers: Record<string, number> = {
-        'wedding': 1.2,
-        'corporate': 1.0,
-        'birthday': 0.9,
-        'conference': 1.1,
-        'social': 0.8,
-      };
-      
-      const basePrice = venuePrices[eventSpace] || 0;
-      total += basePrice;
-      
-      const multiplier = eventMultipliers[eventType] || 1;
-      total = total * multiplier;
-      
-      if (eventDuration && eventDuration > 4) {
-        total += (eventDuration - 4) * 300;
-      }
-      
-      if (attendees > 0) {
-        total += attendees * 25;
-        
-        if (eventAddons.includes('catering')) {
-          total += attendees * 45;
-        }
-        
-        if (eventAddons.includes('decoration')) {
-          total += attendees * 15;
-        }
-      }
-      
-      if (eventAddons.includes('liveMusic')) {
-        total += 800;
-      }
-      
-      if (eventAddons.includes('extendedHours') && eventDuration) {
-        total += eventDuration * 300;
-      }
-    }
-
-    return total;
-  };
-
-  const getSelectedAddOns = (): string[] => {
-    const addOns: string[] = [];
-    
-    bookingData.addOnCategories.forEach(category => {
-      category.items.forEach(item => {
-        if (item.selected) {
-          addOns.push(item.id);
-        }
-      });
-    });
-    
-    bookingData.roomAddOns.forEach(addon => {
-      if (addon.selected) {
-        addOns.push(addon.id);
-      }
-    });
-    
-    return addOns;
-  };
-
+  const selectedAddOns = getSelectedAddOns(bookingData.addOnCategories, bookingData.roomAddOns);
   const bookedDays = bookingData.duration ? parseInt(bookingData.duration) : 0;
-
-  const selectedAddOns = getSelectedAddOns();
 
   return (
     <BookingContext.Provider value={{
@@ -678,31 +246,20 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       resetPackage,
       setDuration,
       setStartDate,
-      toggleAddOn,
-      removeAddOn,
-      updateAddOnQuantity,
-      selectRoom,
+      toggleAddOn: handleToggleAddOn,
+      removeAddOn: handleRemoveAddOn,
+      updateAddOnQuantity: handleUpdateAddOnQuantity,
+      selectRoom: handleSelectRoom,
       resetRoom,
-      toggleRoomAddOn,
-      removeRoomAddOn,
+      toggleRoomAddOn: handleToggleRoomAddOn,
+      removeRoomAddOn: handleRemoveRoomAddOn,
       setCustomerInfo,
       calculateEndDate,
-      calculateTotalPrice,
-      getDefaultAddOnQuantity,
+      calculateTotalPrice: () => calculateTotalPrice(bookingData),
+      getDefaultAddOnQuantity: () => getDefaultAddOnQuantity(bookingData.duration),
       getStandardRoom,
       getRoomUpgradePrice,
-      eventSpace,
-      eventDate,
-      attendees,
-      eventType,
-      eventDuration,
-      eventAddons,
-      setEventSpace,
-      setEventDate,
-      setAttendees,
-      setEventType,
-      setEventDuration,
-      setEventAddons,
+      ...eventBooking,
       bookingType,
       setBookingType,
       selectedPackage: bookingData.selectedPackage,
