@@ -37,10 +37,21 @@ const RewardCard = ({
     
     setIsRedeeming(true);
     try {
+      // Get the current user
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+      
       // Insert redemption record
       const { error: redemptionError } = await supabase
         .from('redemptions')
-        .insert({ reward_id: id });
+        .insert({ 
+          reward_id: id,
+          user_id: userId
+        });
         
       if (redemptionError) throw redemptionError;
 
@@ -50,7 +61,8 @@ const RewardCard = ({
         .insert({
           points: -pointsCost,
           transaction_type: 'redemption',
-          description: `Redeemed: ${name}`
+          description: `Redeemed: ${name}`,
+          user_id: userId
         });
         
       if (transactionError) throw transactionError;
