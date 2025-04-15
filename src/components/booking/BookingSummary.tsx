@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { useBooking } from '@/contexts/BookingContext';
-import { Check } from 'lucide-react';
+import { Check, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const BookingSummary = () => {
   const {
@@ -13,13 +15,23 @@ const BookingSummary = () => {
     startDate,
     calculateTotalPrice,
     bookingType,
+    setBookingType,
+    resetPackage,
+    resetRoom,
+    setCurrentStep,
     // Event space properties
     eventSpace,
     eventDate,
     attendees,
     eventType,
     eventDuration,
-    eventAddons
+    eventAddons,
+    setEventSpace,
+    setEventDate,
+    setEventType,
+    setAttendees,
+    setEventDuration,
+    setEventAddons
   } = useBooking();
 
   const formatDate = (date: Date | null) => {
@@ -32,6 +44,37 @@ const BookingSummary = () => {
   };
 
   const totalPrice = calculateTotalPrice();
+
+  // Complete reset function to clear all selections
+  const handleReset = () => {
+    // Reset package selection if applicable
+    if (selectedPackage) {
+      resetPackage();
+    }
+    
+    // Reset room selection if applicable
+    if (selectedRoom) {
+      resetRoom();
+    }
+    
+    // Reset event selection if applicable
+    if (eventSpace) {
+      setEventSpace('');
+      setEventDate(null);
+      setEventType(null);
+      setAttendees(null);
+      setEventDuration(null);
+      setEventAddons([]);
+    }
+    
+    // Reset booking type to null
+    setBookingType(null);
+    
+    // Go back to first step
+    setCurrentStep(1);
+    
+    toast.success("Booking reset successfully. You can start a new selection.");
+  };
 
   // Helper to get event specific details
   const getEventSpaceDetail = (id: string | null) => {
@@ -217,9 +260,26 @@ const BookingSummary = () => {
     }
   };
 
+  // Show reset button only if there's something to reset
+  const hasSelections = bookingType || selectedPackage || selectedRoom || eventSpace;
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-bold mb-6">Booking Summary</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-bold">Booking Summary</h3>
+        
+        {hasSelections && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleReset}
+            className="flex items-center text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+          >
+            <RefreshCcw className="h-4 w-4 mr-1.5" />
+            Start over
+          </Button>
+        )}
+      </div>
       
       {renderBookingDetails()}
 

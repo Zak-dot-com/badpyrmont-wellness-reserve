@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
@@ -121,8 +120,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  // Package operations
+  // Make sure booking type is set when selecting a package
   const selectPackage = (packageId: string) => {
+    setBookingType('package');
+    
     const { selectedPackage: newPackage, selectedRoom: newRoom } = packageSelector(
       packageId, 
       getStandardRoom, 
@@ -143,6 +144,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       startDate: null,
       duration: "4"
     }));
+    
+    // Only reset booking type if it's a package booking
+    if (bookingType === 'package') {
+      setBookingType(null);
+    }
   };
 
   // Duration and date operations
@@ -192,8 +198,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  // Room operations
+  // Room operations with booking type integration
   const handleSelectRoom = (roomId: string) => {
+    setBookingType('room');
+    
     const selected = roomSelector(roomId);
     setBookingData(prev => ({
       ...prev,
@@ -207,6 +215,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       selectedRoom: null,
       roomAddOns: prev.roomAddOns.map(addon => ({ ...addon, selected: false }))
     }));
+    
+    // Only reset booking type if it's a room booking
+    if (bookingType === 'room') {
+      setBookingType(null);
+    }
   };
 
   const handleToggleRoomAddOn = (addOnId: string) => {
@@ -230,6 +243,12 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       customerInfo: { ...prev.customerInfo, ...info }
     }));
   };
+
+  // Update event space operations to set booking type
+  const handleSetEventSpace = (space: string) => {
+    setEventSpace(space);
+    setBookingType('event');
+  }
 
   const selectedAddOns = getSelectedAddOns(bookingData.addOnCategories, bookingData.roomAddOns);
   const bookedDays = bookingData.duration ? parseInt(bookingData.duration) : 0;
@@ -260,6 +279,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       getStandardRoom,
       getRoomUpgradePrice,
       ...eventBooking,
+      eventSpace,
+      setEventSpace: handleSetEventSpace,
       bookingType,
       setBookingType,
       selectedPackage: bookingData.selectedPackage,

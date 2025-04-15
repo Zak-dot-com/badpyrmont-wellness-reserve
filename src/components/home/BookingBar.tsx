@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,39 +8,66 @@ import DateSelector from './DateSelector';
 type BookingBarProps = {
   className?: string;
 };
+
 const BookingBar = ({
   className = ""
 }: BookingBarProps) => {
   const navigate = useNavigate();
+  
+  // Booking type state to track which flow is active
+  const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
   const [selectedPackage, setSelectedPackage] = useState("");
   const [selectedRoom, setSelectedRoom] = useState("");
   const [selectedEventSpace, setSelectedEventSpace] = useState("");
   const [showDateSelector, setShowDateSelector] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
+  // When booking type changes, reset all other selections
+  useEffect(() => {
+    if (bookingType === 'package') {
+      setSelectedRoom("");
+      setSelectedEventSpace("");
+    } else if (bookingType === 'room') {
+      setSelectedPackage("");
+      setSelectedEventSpace("");
+    } else if (bookingType === 'event') {
+      setSelectedPackage("");
+      setSelectedRoom("");
+    }
+    // Reset dates when changing booking type
+    setStartDate(null);
+    setEndDate(null);
+    setShowDateSelector(false);
+  }, [bookingType]);
+
   const handleProceedToBooking = () => {
     const queryParams = new URLSearchParams();
-    if (selectedPackage) {
+    
+    if (bookingType === 'package' && selectedPackage) {
       queryParams.append('package', selectedPackage);
       queryParams.append('bookingType', 'package');
-    }
-    if (selectedRoom) {
+    } else if (bookingType === 'room' && selectedRoom) {
       queryParams.append('room', selectedRoom);
       queryParams.append('bookingType', 'room');
-    }
-    if (selectedEventSpace) {
+    } else if (bookingType === 'event' && selectedEventSpace) {
       queryParams.append('event', selectedEventSpace);
       queryParams.append('bookingType', 'event');
     }
+    
     if (startDate) {
       queryParams.append('startDate', startDate.toISOString());
     }
     if (endDate) {
       queryParams.append('endDate', endDate.toISOString());
     }
+    
     navigate(`/booking?${queryParams.toString()}`);
   };
+
   const handleReset = () => {
+    // Reset all selections
+    setBookingType(null);
     setSelectedPackage("");
     setSelectedRoom("");
     setSelectedEventSpace("");
@@ -48,39 +76,37 @@ const BookingBar = ({
     setShowDateSelector(false);
   };
 
-  // When any selection changes, update the date selector visibility
   const handleSelectionChange = (type: 'package' | 'room' | 'event', value: string) => {
+    // Set booking type first
+    setBookingType(type);
+    
+    // Then set the specific selection
     if (type === 'package') {
       setSelectedPackage(value);
-      setSelectedRoom("");
-      setSelectedEventSpace("");
       setShowDateSelector(!!value);
     } else if (type === 'room') {
       setSelectedRoom(value);
-      setSelectedPackage("");
-      setSelectedEventSpace("");
       setShowDateSelector(!!value);
     } else if (type === 'event') {
       setSelectedEventSpace(value);
-      setSelectedPackage("");
-      setSelectedRoom("");
       setShowDateSelector(!!value);
     }
   };
 
   // Determine if any option is selected to show reset button
-  const hasSelection = selectedPackage || selectedRoom || selectedEventSpace;
+  const hasSelection = !!bookingType;
 
   // Determine if form is valid for submission
-  const isFormValid = hasSelection && startDate || false;
+  const isFormValid = hasSelection && startDate;
+  
   return <div className={`bg-white rounded-md shadow-lg p-4 ${className}`}>
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
         <div className="w-full md:w-auto flex-1">
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Package
           </label>
-          <Select value={selectedPackage} onValueChange={value => handleSelectionChange('package', value)} disabled={selectedRoom !== "" || selectedEventSpace !== ""}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${selectedRoom !== "" || selectedEventSpace !== "" ? "opacity-50" : ""}`}>
+          <Select value={selectedPackage} onValueChange={value => handleSelectionChange('package', value)} disabled={bookingType !== null && bookingType !== 'package'}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'package' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
                 <SelectValue placeholder="Select package" className="text-gray-100" />
@@ -98,8 +124,8 @@ const BookingBar = ({
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Room
           </label>
-          <Select value={selectedRoom} onValueChange={value => handleSelectionChange('room', value)} disabled={selectedPackage !== "" || selectedEventSpace !== ""}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${selectedPackage !== "" || selectedEventSpace !== "" ? "opacity-50" : ""}`}>
+          <Select value={selectedRoom} onValueChange={value => handleSelectionChange('room', value)} disabled={bookingType !== null && bookingType !== 'room'}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'room' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Bed className="h-4 w-4" />
                 <SelectValue placeholder="Select room" className="text-gray-100" />
@@ -117,8 +143,8 @@ const BookingBar = ({
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Event
           </label>
-          <Select value={selectedEventSpace} onValueChange={value => handleSelectionChange('event', value)} disabled={selectedPackage !== "" || selectedRoom !== ""}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${selectedPackage !== "" || selectedRoom !== "" ? "opacity-50" : ""}`}>
+          <Select value={selectedEventSpace} onValueChange={value => handleSelectionChange('event', value)} disabled={bookingType !== null && bookingType !== 'event'}>
+            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'event' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <CalendarCheck className="h-4 w-4" />
                 <SelectValue placeholder="Select venue" className="text-gray-100" />
@@ -137,7 +163,7 @@ const BookingBar = ({
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Date
           </label>
-          {showDateSelector ? <DateSelector showRange={selectedRoom !== ""} startDate={startDate} endDate={endDate} onStartDateChange={setStartDate} onEndDateChange={setEndDate} /> : <Button variant="outline" className="w-full flex justify-start items-center gap-2 bg-blue-900 text-white hover:bg-blue-800" onClick={() => setShowDateSelector(true)} disabled={!hasSelection}>
+          {showDateSelector ? <DateSelector showRange={bookingType === 'room'} startDate={startDate} endDate={endDate} onStartDateChange={setStartDate} onEndDateChange={setEndDate} /> : <Button variant="outline" className="w-full flex justify-start items-center gap-2 bg-blue-900 text-white hover:bg-blue-800" onClick={() => setShowDateSelector(true)} disabled={!hasSelection}>
               <Calendar className="h-4 w-4" />
               <span>Select dates</span>
             </Button>}

@@ -25,18 +25,34 @@ const stepVariants = {
 };
 
 const BookingPage = () => {
-  const { currentStep, calculateTotalPrice, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType } = useBooking();
+  const { 
+    currentStep, 
+    calculateTotalPrice, 
+    selectRoom, 
+    selectPackage, 
+    setCurrentStep, 
+    setStartDate, 
+    setDuration, 
+    setBookingType, 
+    bookingType, 
+    setEventSpace,
+    resetPackage,
+    resetRoom
+  } = useBooking();
+  
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
   const [searchParams] = useSearchParams();
-  const [bookingType, setLocalBookingType] = useState<'package' | 'room' | 'event' | null>(null);
   const initialSetupComplete = useRef(false);
   const notificationsShown = useRef(false);
 
   // Parse query parameters to pre-select options - only run once
   useEffect(() => {
     if (initialSetupComplete.current) return;
+    
+    // First reset all existing selections if switching booking types
+    resetExistingSelections();
     
     // Determine booking type
     const type = searchParams.get('bookingType');
@@ -52,12 +68,10 @@ const BookingPage = () => {
       setStartDate(new Date(startDateParam));
     }
     
-    // Set booking type
-    if (type === 'room') {
-      setLocalBookingType('room');
+    // Set booking type based on query parameters
+    if (type === 'room' || room) {
       setBookingType('room');
-    } else if (type === 'event') {
-      setLocalBookingType('event');
+    } else if (type === 'event' || event) {
       setBookingType('event');
       setCurrentStep(1); // Event space selection is the first step in event flow
       // Handle event space booking logic
@@ -65,12 +79,7 @@ const BookingPage = () => {
         toast.info("Event space booking selected. Choose your preferred venue and details.");
         notificationsShown.current = true;
       }
-    } else if (packageId) {
-      setLocalBookingType('package');
-      setBookingType('package');
-    } else {
-      // Default to package booking if no specific type
-      setLocalBookingType('package');
+    } else if (type === 'package' || packageId || addPackage) {
       setBookingType('package');
     }
     
@@ -96,8 +105,8 @@ const BookingPage = () => {
     
     // Handle event space selection from homepage
     if (event) {
-      setLocalBookingType('event');
       setBookingType('event');
+      setEventSpace(event);
       setCurrentStep(1); // Event space selection is the first step
       if (!notificationsShown.current) {
         toast.info("Event space pre-selected. Please customize your event details.");
@@ -107,6 +116,7 @@ const BookingPage = () => {
     
     // If coming from "Add Wellness Package" button
     if (addPackage === 'true') {
+      setBookingType('package');
       setCurrentStep(1); // Go to package selection step
       if (!notificationsShown.current) {
         toast.info("Select a wellness package to enhance your stay.");
@@ -131,7 +141,31 @@ const BookingPage = () => {
     }
     
     initialSetupComplete.current = true;
-  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType]);
+  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace]);
+
+  // Reset existing selections when switching booking types
+  const resetExistingSelections = () => {
+    const type = searchParams.get('bookingType');
+    const room = searchParams.get('room');
+    const packageId = searchParams.get('package');
+    const event = searchParams.get('event');
+    
+    // If switching to room booking, reset package if exists
+    if ((type === 'room' || room) && bookingType === 'package') {
+      resetPackage();
+    }
+    
+    // If switching to package booking, reset room if exists
+    if ((type === 'package' || packageId) && bookingType === 'room') {
+      resetRoom();
+    }
+    
+    // If switching to event booking, reset both package and room
+    if ((type === 'event' || event) && (bookingType === 'package' || bookingType === 'room')) {
+      resetPackage();
+      resetRoom();
+    }
+  };
 
   // Make sure drawer is closed when switching to desktop view
   useEffect(() => {
