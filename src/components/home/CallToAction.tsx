@@ -9,7 +9,7 @@ const CallToAction = () => {
           Book your wellness retreat today and experience the ultimate relaxation at Grand Hotel Badpyrmont.
         </p>
         <Link to="/booking">
-          <Button size="lg" className="bg-white text-hotel-primary hover:bg-gray-100">
+          <Button size="lg" className="bg-orange-500 hover:bg-orange-400 text-neutral-50">
             Book Now
           </Button>
         </Link>
