@@ -46,6 +46,7 @@ const HeroSection = () => {
             premium accommodations, and expert care.
           </motion.p>
           
+          {/* Removing the buttons as requested */}
           <motion.div className="mt-6 flex flex-col sm:flex-row gap-4" initial={{
           opacity: 0,
           y: 20
@@ -55,21 +56,12 @@ const HeroSection = () => {
         }} transition={{
           delay: 0.6
         }}>
-            <Link to="/booking?bookingType=package">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600">
-                Explore Wellness Packages
-              </Button>
-            </Link>
-            <Link to="/book-room">
-              <Button size="lg" variant="outline" className="bg-white/20 hover:bg-white/30 text-white border-white">
-                Book a Room
-              </Button>
-            </Link>
+            {/* Buttons removed */}
           </motion.div>
         </div>
         
-        {/* Booking bar */}
-        <div className="mb-16 w-full">
+        {/* Booking bar - adjusted to be fully visible */}
+        <div className="mb-24 w-full"> {/* Increased bottom margin to make it fully visible */}
           <BookingBar />
         </div>
       </div>
