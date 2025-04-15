@@ -1,33 +1,45 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
-  const navLinks = [{
-    name: 'Home',
-    path: '/'
-  }, {
-    name: 'Book Room',
-    path: '/book-room'
-  }, {
-    name: 'Wellness Packages',
-    path: '/booking?bookingType=package'
-  }, {
-    name: 'Event Spaces',
-    path: '/booking?bookingType=event'
-  }];
+  
+  const navLinks = [
+    {
+      name: 'Home',
+      path: '/'
+    }, 
+    {
+      name: 'Book Room',
+      path: '/book-room'
+    }, 
+    {
+      name: 'Wellness Packages',
+      path: '/booking?bookingType=package'
+    }, 
+    {
+      name: 'Event Spaces',
+      path: '/booking?bookingType=event'
+    }
+  ];
+  
   return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            
-            
+            <img 
+              src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" 
+              alt="Grand Hotel Bad Pyrmont" 
+              className="h-16" 
+            />
           </Link>
           
           {/* Desktop Navigation */}
@@ -67,4 +79,5 @@ const Header = () => {
       </div>
     </header>;
 };
+
 export default Header;
