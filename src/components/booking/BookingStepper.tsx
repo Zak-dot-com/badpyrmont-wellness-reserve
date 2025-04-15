@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BookingStepper = () => {
-  const { currentStep, setCurrentStep, bookingData } = useBooking();
+  const { currentStep, setCurrentStep, bookingData, bookingType } = useBooking();
 
   const steps = [
     { id: 1, name: 'Package & Date' },
@@ -26,7 +26,7 @@ const BookingStepper = () => {
     } 
     else if (stepId === 2) {
       // Only allow going to add-ons if a package is selected
-      if (!bookingData.selectedPackage && !bookingData.bookingType === 'room') {
+      if (!bookingData.selectedPackage && bookingType !== 'room') {
         toast.error("Please select a package first");
         return;
       }

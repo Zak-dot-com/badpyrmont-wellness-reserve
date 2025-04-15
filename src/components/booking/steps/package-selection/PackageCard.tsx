@@ -52,7 +52,7 @@ export const PackageCard = ({
         onClick={() => onSelect(pkg.id)}
       >
         {pkg.image && (
-          <div className="relative h-40">
+          <div className="relative h-48">
             <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
               <div className="p-4 text-white">

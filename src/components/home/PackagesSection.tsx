@@ -18,22 +18,28 @@ const PackagesSection = () => {
               name: "Relaxation Retreat",
               price: "€480",
               duration: "4 Days",
-              description: "A peaceful wellness package focused on relaxation and stress relief."
+              description: "A peaceful wellness package focused on relaxation and stress relief.",
+              image: "https://images.unsplash.com/photo-1531685250784-7569952593d2?q=80&w=1470&auto=format&fit=crop"
             },
             {
               name: "Detox & Revitalize",
               price: "€600",
               duration: "4 Days",
-              description: "Cleanse your body and mind with this comprehensive detox program."
+              description: "Cleanse your body and mind with this comprehensive detox program.",
+              image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1470&auto=format&fit=crop"
             },
             {
               name: "Luxury Wellness Escape",
               price: "€880",
               duration: "4 Days",
-              description: "Our premium package with exclusive treatments and personalized service."
+              description: "Our premium package with exclusive treatments and personalized service.",
+              image: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1470&auto=format&fit=crop"
             }
           ].map((pkg, index) => (
             <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
+              <div className="h-48 overflow-hidden">
+                <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+              </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
                 <div className="flex items-baseline mb-4">
