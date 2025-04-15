@@ -10,6 +10,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BookingPage from "./pages/BookingPage";
 import RoomBookingPage from "./pages/RoomBookingPage";
+import AuthPage from "./pages/AuthPage";
+import DashboardPage from "./pages/DashboardPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/booking" element={<BookingPage />} />
               <Route path="/book-room" element={<RoomBookingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

@@ -1,15 +1,34 @@
 
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+  
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
   
   const navLinks = [
     {
@@ -47,6 +66,29 @@ const Header = () => {
             {navLinks.map(link => <Link key={link.name} to={link.path} className={cn("text-sm font-medium transition-colors hover:text-amber-700", isActive(link.path) ? "text-amber-700" : "text-gray-600")}>
                 {link.name}
               </Link>)}
+            
+            {user ? (
+              <Button 
+                variant="ghost"
+                size="sm" 
+                className="flex items-center gap-2 hover:text-amber-700"
+                onClick={() => navigate('/dashboard')}
+              >
+                <User size={16} />
+                Dashboard
+              </Button>
+            ) : (
+              <Button 
+                variant="ghost"
+                size="sm" 
+                className="flex items-center gap-2 hover:text-amber-700"
+                onClick={() => navigate('/auth')}
+              >
+                <User size={16} />
+                Login
+              </Button>
+            )}
+            
             <Link to="/booking">
               <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
                 Book Now
@@ -67,6 +109,27 @@ const Header = () => {
                 {navLinks.map(link => <Link key={link.name} to={link.path} className={cn("text-lg font-medium", isActive(link.path) ? "text-amber-700" : "text-gray-600")} onClick={() => setIsMenuOpen(false)}>
                     {link.name}
                   </Link>)}
+                
+                {user ? (
+                  <Link 
+                    to="/dashboard" 
+                    className="text-lg font-medium text-gray-600 flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User size={18} />
+                    Dashboard
+                  </Link>
+                ) : (
+                  <Link 
+                    to="/auth" 
+                    className="text-lg font-medium text-gray-600 flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User size={18} />
+                    Login
+                  </Link>
+                )}
+                
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-amber-500 hover:bg-amber-600 mt-4">
                     Book Now

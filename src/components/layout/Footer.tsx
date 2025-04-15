@@ -9,7 +9,7 @@ const Footer = () => {
           <div>
             <div className="mb-4">
               <img 
-                src="public/lovable-uploads/99dfc6d2-1b5a-4e77-bb77-15d19f26332b.png" 
+                src="/lovable-uploads/99dfc6d2-1b5a-4e77-bb77-15d19f26332b.png" 
                 alt="Grand Hotel Bad Pyrmont" 
                 className="h-24 w-auto bg-white p-2 rounded-lg" 
               />
@@ -23,7 +23,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-400 hover:text-white transition">Home</Link></li>
               <li><Link to="/booking" className="text-gray-400 hover:text-white transition">Book Wellness</Link></li>
-              <li><Link to="#" className="text-gray-400 hover:text-white transition">Packages</Link></li>
+              <li><Link to="/auth" className="text-gray-400 hover:text-white transition">Login / Register</Link></li>
               <li><Link to="#" className="text-gray-400 hover:text-white transition">About</Link></li>
               <li><Link to="#" className="text-gray-400 hover:text-white transition">Contact</Link></li>
             </ul>
