@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+
   useEffect(() => {
     // Set up auth state listener
     const {
@@ -31,25 +33,34 @@ const Header = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
-  const navLinks = [{
-    name: 'Home',
-    path: '/'
-  }, {
-    name: 'Book Room',
-    path: '/book-room'
-  }, {
-    name: 'Wellness Packages',
-    path: '/booking?bookingType=package'
-  }, {
-    name: 'Event Spaces',
-    path: '/booking?bookingType=event'
-  }];
-  return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
+
+  const navLinks = [
+    {
+      name: 'Home',
+      path: '/'
+    },
+    {
+      name: 'Book Room',
+      path: '/book-room'
+    },
+    {
+      name: 'Wellness Packages',
+      path: '/booking?bookingType=package'
+    },
+    {
+      name: 'Event Spaces',
+      path: '/booking?bookingType=event'
+    }
+  ];
+
+  return (
+    <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Bad Pyrmont" className="h-16 object-cover" />
+          {/* Logo replaced with text */}
+          <Link to="/" className="flex flex-col">
+            <h1 className="text-3xl font-bold text-gray-800">Grand Hotel</h1>
+            <h2 className="text-xl text-gray-600 -mt-1">Badpyrmont</h2>
           </Link>
           
           {/* Desktop Navigation */}
@@ -105,6 +116,8 @@ const Header = () => {
           </Sheet>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;
