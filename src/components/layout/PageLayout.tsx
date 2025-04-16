@@ -11,7 +11,7 @@ const PageLayout = ({ children }: PageLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow pt-24">
+      <main className="flex-grow pt-32">
         <div className="container mx-auto px-4 max-w-screen-xl">
           {children}
         </div>
