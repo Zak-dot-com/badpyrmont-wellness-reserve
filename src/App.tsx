@@ -15,6 +15,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoyaltyRewardsPage from "./pages/LoyaltyRewardsPage";
 import LoyaltyActivityPage from "./pages/LoyaltyActivityPage";
 import LoyaltyProfilePage from "./pages/LoyaltyProfilePage";
+import PageLayout from "./components/layout/PageLayout";
 
 const queryClient = new QueryClient();
 

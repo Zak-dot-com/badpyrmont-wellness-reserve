@@ -66,10 +66,13 @@ const Header = () => {
     <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-20">
-          {/* Logo replaced with text */}
-          <Link to="/" className="flex flex-col">
-            <h1 className="text-3xl font-bold text-gray-800">Grand Hotel</h1>
-            <h2 className="text-xl text-gray-600 -mt-1">Badpyrmont</h2>
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" 
+              alt="Grand Hotel Badpyrmont" 
+              className="h-16 w-auto"
+            />
           </Link>
           
           {/* Desktop Navigation */}

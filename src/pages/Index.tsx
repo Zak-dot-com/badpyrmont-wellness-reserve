@@ -1,7 +1,6 @@
 
 import React from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import PageLayout from '@/components/layout/PageLayout';
 import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import PackagesSection from '@/components/home/PackagesSection';
@@ -9,9 +8,9 @@ import CallToAction from '@/components/home/CallToAction';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index = () => {
-  return <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow pt-20">
+  return (
+    <PageLayout>
+      <div>
         <HeroSection />
         <div className="py-12">
           <FeaturesSection />
@@ -19,9 +18,9 @@ const Index = () => {
           <TestimonialsSection />
           <CallToAction />
         </div>
-      </main>
-      <Footer />
-    </div>;
+      </div>
+    </PageLayout>
+  );
 };
 
 export default Index;
