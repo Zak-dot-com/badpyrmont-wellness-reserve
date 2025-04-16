@@ -64,7 +64,7 @@ const HeroSection = () => {
           scaleX: 1
         }} transition={{
           delay: 0.4
-        }} className="w-24 h-0.5 bg-white mx-auto my-0"></motion.div>
+        }} className="w-24 h-0.5 bg-white mx-auto my-0 py-[2px]"></motion.div>
           
           <motion.p initial={{
           opacity: 0,
@@ -124,7 +124,7 @@ const HeroSection = () => {
         duration: 2,
         ease: "easeInOut"
       }}>
-          <div className="w-0.5 h-12 bg-white mx-auto px-px"></div>
+          <div className="w-0.5 h-12 bg-white mx-auto px-px py-[17px] my-[153px]"></div>
         </motion.div>
       </div>
     </section>;
