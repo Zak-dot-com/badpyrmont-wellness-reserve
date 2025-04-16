@@ -5,7 +5,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="mb-4">
-              <img alt="Grand Hotel Bad Pyrmont" className="h-24 w-auto bg-white p-2 rounded-lg" src="/lovable-uploads/4c50b528-431d-475e-aec0-2ac779c53e6e.png" />
+              <img 
+                alt="Grand Hotel Bad Pyrmont" 
+                className="h-auto w-40 mx-auto md:mx-0" 
+                src="/lovable-uploads/6ca7fa2f-e24f-4ed0-a2f9-51ddec87abd1.png" 
+              />
             </div>
             <p className="text-gray-400">
               Experience the ultimate wellness retreat at our luxury hotel and spa.
