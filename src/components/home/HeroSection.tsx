@@ -75,7 +75,7 @@ const HeroSection = () => {
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/30 z-5"></div>
       
-      {/* Flower logo that follows mouse */}
+      {/* Lotus flower that follows mouse */}
       <motion.div
         className="absolute z-20 w-48 h-48 pointer-events-none"
         style={{
@@ -90,8 +90,8 @@ const HeroSection = () => {
         }}
       >
         <img 
-          src="/public/lovable-uploads/7528bc75-6129-4e3b-9071-da196d1b5bc3.png" 
-          alt="Wellness Flower" 
+          src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=480&h=480&crop=entropy" 
+          alt="Lotus Flower" 
           className="w-full h-full object-contain"
         />
       </motion.div>
