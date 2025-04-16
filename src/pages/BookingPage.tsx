@@ -1,4 +1,3 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -17,29 +16,39 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { toast } from 'sonner';
-
 const stepVariants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 100 } },
-  exit: { opacity: 0, x: -50 }
+  hidden: {
+    opacity: 0,
+    x: 50
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 100
+    }
+  },
+  exit: {
+    opacity: 0,
+    x: -50
+  }
 };
-
 const BookingPage = () => {
-  const { 
-    currentStep, 
-    calculateTotalPrice, 
-    selectRoom, 
-    selectPackage, 
-    setCurrentStep, 
-    setStartDate, 
-    setDuration, 
-    setBookingType, 
-    bookingType, 
+  const {
+    currentStep,
+    calculateTotalPrice,
+    selectRoom,
+    selectPackage,
+    setCurrentStep,
+    setStartDate,
+    setDuration,
+    setBookingType,
+    bookingType,
     setEventSpace,
     resetPackage,
     resetRoom
   } = useBooking();
-  
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
@@ -50,10 +59,10 @@ const BookingPage = () => {
   // Parse query parameters to pre-select options - only run once
   useEffect(() => {
     if (initialSetupComplete.current) return;
-    
+
     // First reset all existing selections if switching booking types
     resetExistingSelections();
-    
+
     // Determine booking type
     const type = searchParams.get('bookingType');
     const room = searchParams.get('room');
@@ -62,12 +71,12 @@ const BookingPage = () => {
     const addPackage = searchParams.get('addPackage');
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
-    
+
     // Handle date selection
     if (startDateParam) {
       setStartDate(new Date(startDateParam));
     }
-    
+
     // Set booking type based on query parameters
     if (type === 'room' || room) {
       setBookingType('room');
@@ -82,7 +91,7 @@ const BookingPage = () => {
     } else if (type === 'package' || packageId || addPackage) {
       setBookingType('package');
     }
-    
+
     // Handle room selection from homepage
     if (room) {
       selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
@@ -92,17 +101,16 @@ const BookingPage = () => {
         notificationsShown.current = true;
       }
     }
-    
+
     // Handle package selection from homepage
     if (packageId) {
-      selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : 
-                   packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
+      selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
       if (!notificationsShown.current) {
         toast.info("Package pre-selected. Please customize your wellness journey.");
         notificationsShown.current = true;
       }
     }
-    
+
     // Handle event space selection from homepage
     if (event) {
       setBookingType('event');
@@ -113,7 +121,7 @@ const BookingPage = () => {
         notificationsShown.current = true;
       }
     }
-    
+
     // If coming from "Add Wellness Package" button
     if (addPackage === 'true') {
       setBookingType('package');
@@ -123,13 +131,13 @@ const BookingPage = () => {
         notificationsShown.current = true;
       }
     }
-    
+
     // Calculate duration from start/end dates if both are present
     if (startDateParam && endDateParam) {
       const start = new Date(startDateParam);
       const end = new Date(endDateParam);
       const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       // Set closest duration from available options
       if (diffDays <= 4) {
         setDuration("4");
@@ -139,7 +147,6 @@ const BookingPage = () => {
         setDuration("14");
       }
     }
-    
     initialSetupComplete.current = true;
   }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace]);
 
@@ -149,17 +156,17 @@ const BookingPage = () => {
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
-    
+
     // If switching to room booking, reset package if exists
     if ((type === 'room' || room) && bookingType === 'package') {
       resetPackage();
     }
-    
+
     // If switching to package booking, reset room if exists
     if ((type === 'package' || packageId) && bookingType === 'room') {
       resetRoom();
     }
-    
+
     // If switching to event booking, reset both package and room
     if ((type === 'event' || event) && (bookingType === 'package' || bookingType === 'room')) {
       resetPackage();
@@ -173,7 +180,6 @@ const BookingPage = () => {
       setOpenDrawer(false);
     }
   }, [isMobile, openDrawer]);
-
   const getPageTitle = () => {
     if (bookingType === 'room') {
       return "Book Your Stay";
@@ -183,13 +189,12 @@ const BookingPage = () => {
       return "Book Your Wellness Retreat";
     }
   };
-
   const renderCurrentStep = () => {
     // For event bookings, show event-specific steps
     if (bookingType === 'event' && currentStep !== 4) {
       return <EventSpaceSelection />;
     }
-    
+
     // For wellness packages and room bookings, use standard flow
     // Also show checkout form for all booking types when on step 4
     switch (currentStep) {
@@ -205,19 +210,20 @@ const BookingPage = () => {
         return <PackageSelection />;
     }
   };
-
-  return (
-    <div className="flex flex-col min-h-screen">
+  return <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow bg-gray-100">
-        <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="container mx-auto px-4 md:px-6 py-[115px]">
           <div className="max-w-screen-xl mx-auto">
-            <motion.h1 
-              className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
+            <motion.h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800" initial={{
+            opacity: 0,
+            y: -20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.2
+          }}>
               {getPageTitle()}
             </motion.h1>
             
@@ -226,35 +232,24 @@ const BookingPage = () => {
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
               <div className="lg:col-span-2">
                 <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentStep + (bookingType || '')}
-                    variants={stepVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
+                  <motion.div key={currentStep + (bookingType || '')} variants={stepVariants} initial="hidden" animate="visible" exit="exit">
                     {renderCurrentStep()}
                   </motion.div>
                 </AnimatePresence>
               </div>
               
               {/* Desktop BookingSummary with sticky positioning */}
-              {!isMobile && (
-                <div className="lg:col-span-1">
+              {!isMobile && <div className="lg:col-span-1">
                   <div className="sticky top-8">
                     <BookingSummary />
                   </div>
-                </div>
-              )}
+                </div>}
               
               {/* Mobile floating button with drawer */}
-              {isMobile && (
-                <div className="fixed bottom-6 right-6 z-10">
+              {isMobile && <div className="fixed bottom-6 right-6 z-10">
                   <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
                     <DrawerTrigger asChild>
-                      <Button 
-                        className="rounded-full h-16 w-16 bg-amber-500 hover:bg-amber-600 shadow-lg flex flex-col items-center justify-center"
-                      >
+                      <Button className="rounded-full h-16 w-16 bg-amber-500 hover:bg-amber-600 shadow-lg flex flex-col items-center justify-center">
                         <ShoppingBag className="h-6 w-6" />
                         <span className="text-xs mt-1">€{totalPrice.toFixed(2)}</span>
                       </Button>
@@ -265,15 +260,12 @@ const BookingPage = () => {
                       </div>
                     </DrawerContent>
                   </Drawer>
-                </div>
-              )}
+                </div>}
             </div>
           </div>
         </div>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default BookingPage;
