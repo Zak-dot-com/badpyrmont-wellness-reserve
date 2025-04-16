@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,22 +5,13 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, User, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
-
   useEffect(() => {
     // Set up auth state listener
     const {
@@ -42,37 +32,25 @@ const Header = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
-
-  const navLinks = [
-    {
-      name: 'Home',
-      path: '/'
-    },
-    {
-      name: 'Book Room',
-      path: '/book-room'
-    },
-    {
-      name: 'Wellness Packages',
-      path: '/booking?bookingType=package'
-    },
-    {
-      name: 'Event Spaces',
-      path: '/booking?bookingType=event'
-    }
-  ];
-
-  return (
-    <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
-      <div className="container mx-auto px-4">
+  const navLinks = [{
+    name: 'Home',
+    path: '/'
+  }, {
+    name: 'Book Room',
+    path: '/book-room'
+  }, {
+    name: 'Wellness Packages',
+    path: '/booking?bookingType=package'
+  }, {
+    name: 'Event Spaces',
+    path: '/booking?bookingType=event'
+  }];
+  return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
+      <div className="container mx-auto px-4 py-0">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" 
-              alt="Grand Hotel Badpyrmont" 
-              className="h-16 w-auto"
-            />
+            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Badpyrmont" className="h-16 w-auto" />
           </Link>
           
           {/* Desktop Navigation */}
@@ -81,8 +59,7 @@ const Header = () => {
                 {link.name}
               </Link>)}
             
-            {user ? (
-              <DropdownMenu>
+            {user ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700">
                     <User size={16} />
@@ -106,19 +83,16 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={async () => {
-                    await supabase.auth.signOut();
-                    navigate('/');
-                  }}>
+                await supabase.auth.signOut();
+                navigate('/');
+              }}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/auth')}>
+              </DropdownMenu> : <Button variant="ghost" size="sm" className="flex items-center gap-2 hover:text-amber-700" onClick={() => navigate('/auth')}>
                 <User size={16} />
                 Login
-              </Button>
-            )}
+              </Button>}
             
             <Link to="/booking">
               <Button size="sm" className="bg-amber-500 hover:bg-amber-600">
@@ -141,8 +115,7 @@ const Header = () => {
                     {link.name}
                   </Link>)}
                 
-                {user ? (
-                  <>
+                {user ? <>
                     <div className="pt-4 border-t">
                       <h3 className="font-medium mb-2 flex items-center gap-2">
                         <Gift size={18} />
@@ -163,24 +136,17 @@ const Header = () => {
                         </Link>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      className="justify-start" 
-                      onClick={async () => {
-                        await supabase.auth.signOut();
-                        setIsMenuOpen(false);
-                        navigate('/');
-                      }}
-                    >
+                    <Button variant="outline" className="justify-start" onClick={async () => {
+                  await supabase.auth.signOut();
+                  setIsMenuOpen(false);
+                  navigate('/');
+                }}>
                       Sign Out
                     </Button>
-                  </>
-                ) : (
-                  <Link to="/auth" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  </> : <Link to="/auth" className="text-lg font-medium text-gray-600 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                     <User size={18} />
                     Login
-                  </Link>
-                )}
+                  </Link>}
                 
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-amber-500 hover:bg-amber-600 mt-4">
@@ -192,8 +158,6 @@ const Header = () => {
           </Sheet>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default Header;

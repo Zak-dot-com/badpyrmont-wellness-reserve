@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,12 +7,11 @@ import DateSelector from './DateSelector';
 type BookingBarProps = {
   className?: string;
 };
-
 const BookingBar = ({
   className = ""
 }: BookingBarProps) => {
   const navigate = useNavigate();
-  
+
   // Booking type state to track which flow is active
   const [bookingType, setBookingType] = useState<'package' | 'room' | 'event' | null>(null);
   const [selectedPackage, setSelectedPackage] = useState("");
@@ -40,10 +38,8 @@ const BookingBar = ({
     setEndDate(null);
     setShowDateSelector(false);
   }, [bookingType]);
-
   const handleProceedToBooking = () => {
     const queryParams = new URLSearchParams();
-    
     if (bookingType === 'package' && selectedPackage) {
       queryParams.append('package', selectedPackage);
       queryParams.append('bookingType', 'package');
@@ -54,17 +50,14 @@ const BookingBar = ({
       queryParams.append('event', selectedEventSpace);
       queryParams.append('bookingType', 'event');
     }
-    
     if (startDate) {
       queryParams.append('startDate', startDate.toISOString());
     }
     if (endDate) {
       queryParams.append('endDate', endDate.toISOString());
     }
-    
     navigate(`/booking?${queryParams.toString()}`);
   };
-
   const handleReset = () => {
     // Reset all selections
     setBookingType(null);
@@ -75,11 +68,10 @@ const BookingBar = ({
     setEndDate(null);
     setShowDateSelector(false);
   };
-
   const handleSelectionChange = (type: 'package' | 'room' | 'event', value: string) => {
     // Set booking type first
     setBookingType(type);
-    
+
     // Then set the specific selection
     if (type === 'package') {
       setSelectedPackage(value);
@@ -98,11 +90,10 @@ const BookingBar = ({
 
   // Determine if form is valid for submission
   const isFormValid = hasSelection && startDate;
-  
-  return <div className={`bg-white rounded-md shadow-lg p-4 ${className}`}>
+  return <div className="py-0 my-0">
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
         <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-white-700 mb-1">
             Package
           </label>
           <Select value={selectedPackage} onValueChange={value => handleSelectionChange('package', value)} disabled={bookingType !== null && bookingType !== 'package'}>
