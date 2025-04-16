@@ -31,7 +31,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full container mx-auto px-4 py-0">
         {/* Hero text */}
-        <div className="flex-grow flex flex-col justify-center items-center text-center pt-24 md:pt-28 py-[56px]">
+        <div className="flex-grow flex flex-col justify-center items-center text-center pt-24 md:pt-28 py-[66px]">
           <motion.div className="mb-6" initial={{
           opacity: 0,
           y: 20
@@ -44,7 +44,7 @@ const HeroSection = () => {
             
           </motion.div>
           
-          <motion.h1 className="text-3xl md:text-5xl lg:text-6xl text-white font-light tracking-wide uppercase mb-6" initial={{
+          <motion.h1 initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -52,7 +52,7 @@ const HeroSection = () => {
           y: 0
         }} transition={{
           delay: 0.3
-        }}>
+        }} className="text-3xl md:text-5xl lg:text-6xl text-white font-light tracking-wide uppercase mb-6 py-0 my-0 mx-0">
             Experience True Wellness
           </motion.h1>
           
