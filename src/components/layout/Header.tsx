@@ -46,7 +46,7 @@ const Header = () => {
     path: '/booking?bookingType=event'
   }];
   return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
-      <div className="container mx-auto px-4 py-0">
+      <div className="container mx-auto py-[22px] px-[71px]">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
