@@ -11,12 +11,10 @@ const Index = () => {
   return (
     <PageLayout>
       <HeroSection />
-      <div className="py-12">
-        <FeaturesSection />
-        <PackagesSection />
-        <TestimonialsSection />
-        <CallToAction />
-      </div>
+      <FeaturesSection />
+      <PackagesSection />
+      <TestimonialsSection />
+      <CallToAction />
     </PageLayout>
   );
 };

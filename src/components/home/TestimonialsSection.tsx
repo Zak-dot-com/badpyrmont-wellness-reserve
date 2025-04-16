@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Star } from 'lucide-react';
@@ -65,10 +66,26 @@ const testimonials: Testimonial[] = [
 ];
 
 const TestimonialsSection = () => {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+  
   return (
-    <section className="py-16 bg-gray-50">
+    <section ref={sectionRef} className="py-24 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">What Our Guests Say</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide uppercase mb-4">
+            Guest Experiences
+          </h2>
+          <div className="w-24 h-0.5 bg-hotel-primary mx-auto my-6"></div>
+          <p className="text-gray-600 max-w-3xl mx-auto">
+            Discover what our guests have to say about their transformative journeys with us.
+          </p>
+        </motion.div>
         
         <Carousel
           opts={{
@@ -78,31 +95,43 @@ const TestimonialsSection = () => {
           className="w-full"
         >
           <CarouselContent>
-            {testimonials.map((testimonial) => (
-              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
-                <Card className="h-full">
-                  <CardContent className="pt-6">
-                    <div className="flex mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-5 w-5 ${
-                            i < testimonial.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <blockquote className="text-gray-700 italic mb-4">"{testimonial.text}"</blockquote>
-                  </CardContent>
-                  <CardFooter className="border-t pt-4">
-                    <div>
-                      <p className="font-medium">{testimonial.name}</p>
-                      <p className="text-gray-500 text-sm">{testimonial.country}</p>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </CarouselItem>
-            ))}
+            {testimonials.map((testimonial) => {
+              const testimonialRef = useRef(null);
+              const isTestimonialInView = useInView(testimonialRef, { once: true, amount: 0.3 });
+              
+              return (
+                <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                  <motion.div
+                    ref={testimonialRef}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isTestimonialInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Card className="h-full border-none shadow-sm">
+                      <CardContent className="pt-8">
+                        <div className="flex mb-4">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < testimonial.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <blockquote className="text-gray-700 italic mb-4 text-sm">"{testimonial.text}"</blockquote>
+                      </CardContent>
+                      <CardFooter className="border-t pt-4">
+                        <div>
+                          <p className="font-medium text-sm">{testimonial.name}</p>
+                          <p className="text-gray-500 text-xs">{testimonial.country}</p>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <div className="flex justify-center mt-8 gap-2">
             <CarouselPrevious className="static relative transform-none" />
