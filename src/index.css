@@ -106,11 +106,16 @@
   @apply opacity-100;
 }
 
-/* New golden dropdown styles */
+/* New dropdown styles */
 .golden-dropdown {
   @apply bg-[#FEF7CD] text-amber-900 hover:bg-[#F97316] hover:text-white;
 }
 
 .golden-dropdown-content {
   @apply bg-[#FEF7CD] border-amber-300 text-amber-900;
+}
+
+/* Dark selection styles */
+.dark-select-trigger {
+  @apply bg-black/70 text-white hover:bg-black transition-colors;
 }

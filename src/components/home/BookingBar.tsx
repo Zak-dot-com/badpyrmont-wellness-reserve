@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -93,11 +94,11 @@ const BookingBar = ({
   return <div className="py-0 my-0">
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
         <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-white-700 mb-1">
+          <label className="block text-xs font-medium text-white mb-1 uppercase">
             Package
           </label>
           <Select value={selectedPackage} onValueChange={value => handleSelectionChange('package', value)} disabled={bookingType !== null && bookingType !== 'package'}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'package' ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-black/70 text-white hover:bg-black ${bookingType !== null && bookingType !== 'package' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
                 <SelectValue placeholder="Select package" className="text-gray-100" />
@@ -112,11 +113,11 @@ const BookingBar = ({
         </div>
         
         <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-white mb-1 uppercase">
             Room
           </label>
           <Select value={selectedRoom} onValueChange={value => handleSelectionChange('room', value)} disabled={bookingType !== null && bookingType !== 'room'}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'room' ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-black/70 text-white hover:bg-black ${bookingType !== null && bookingType !== 'room' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <Bed className="h-4 w-4" />
                 <SelectValue placeholder="Select room" className="text-gray-100" />
@@ -131,11 +132,11 @@ const BookingBar = ({
         </div>
         
         <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-white mb-1 uppercase">
             Event
           </label>
           <Select value={selectedEventSpace} onValueChange={value => handleSelectionChange('event', value)} disabled={bookingType !== null && bookingType !== 'event'}>
-            <SelectTrigger className={`w-full bg-blue-900 text-white hover:bg-blue-800 ${bookingType !== null && bookingType !== 'event' ? "opacity-50" : ""}`}>
+            <SelectTrigger className={`w-full bg-black/70 text-white hover:bg-black ${bookingType !== null && bookingType !== 'event' ? "opacity-50" : ""}`}>
               <div className="flex items-center gap-2">
                 <CalendarCheck className="h-4 w-4" />
                 <SelectValue placeholder="Select venue" className="text-gray-100" />
@@ -151,10 +152,10 @@ const BookingBar = ({
         </div>
 
         <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-white mb-1 uppercase">
             Date
           </label>
-          {showDateSelector ? <DateSelector showRange={bookingType === 'room'} startDate={startDate} endDate={endDate} onStartDateChange={setStartDate} onEndDateChange={setEndDate} /> : <Button variant="outline" className="w-full flex justify-start items-center gap-2 bg-blue-900 text-white hover:bg-blue-800" onClick={() => setShowDateSelector(true)} disabled={!hasSelection}>
+          {showDateSelector ? <DateSelector showRange={bookingType === 'room'} startDate={startDate} endDate={endDate} onStartDateChange={setStartDate} onEndDateChange={setEndDate} /> : <Button variant="outline" className="w-full flex justify-start items-center gap-2 bg-black/70 text-white hover:bg-black" onClick={() => setShowDateSelector(true)} disabled={!hasSelection}>
               <Calendar className="h-4 w-4" />
               <span>Select dates</span>
             </Button>}
