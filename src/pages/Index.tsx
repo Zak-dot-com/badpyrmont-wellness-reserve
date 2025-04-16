@@ -10,14 +10,12 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 const Index = () => {
   return (
     <PageLayout>
-      <div>
-        <HeroSection />
-        <div className="py-12">
-          <FeaturesSection />
-          <PackagesSection />
-          <TestimonialsSection />
-          <CallToAction />
-        </div>
+      <HeroSection />
+      <div className="py-12">
+        <FeaturesSection />
+        <PackagesSection />
+        <TestimonialsSection />
+        <CallToAction />
       </div>
     </PageLayout>
   );
