@@ -105,3 +105,12 @@
 .room-option:hover .room-option-overlay {
   @apply opacity-100;
 }
+
+// New golden dropdown styles
+.golden-dropdown {
+  @apply bg-[#FEF7CD] text-amber-900 hover:bg-[#F97316] hover:text-white;
+}
+
+.golden-dropdown-content {
+  @apply bg-[#FEF7CD] border-amber-300 text-amber-900;
+}

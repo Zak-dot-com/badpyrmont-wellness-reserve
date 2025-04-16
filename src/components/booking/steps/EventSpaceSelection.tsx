@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
@@ -86,34 +85,33 @@ const EventSpaceSelection = () => {
     }
     setSelectedAddons(newAddons);
     
-    // Update context immediately to reflect price changes
     setEventAddons(newAddons);
   };
   
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
-    setEventDate(date); // Update context immediately
+    setEventDate(date);
   };
 
   const handleGuestCountChange = (count: number) => {
     setGuestCount(count);
-    setAttendees(count); // Update context immediately
+    setAttendees(count);
   };
   
   const handleDurationChange = (hours: string) => {
     const duration = Number(hours);
     setSelectedDuration(duration);
-    setEventDuration(duration); // Update context immediately
+    setEventDuration(duration);
   };
   
   const handleEventTypeChange = (type: string) => {
     setSelectedEventType(type);
-    setEventType(type); // Update context immediately
+    setEventType(type);
   };
   
   const handleVenueSelect = (venueId: string) => {
     setSelectedVenue(venueId);
-    setEventSpace(venueId); // Update context immediately
+    setEventSpace(venueId);
   };
   
   const handleSubmit = () => {
@@ -122,16 +120,14 @@ const EventSpaceSelection = () => {
       return;
     }
     
-    // Save all selections to context
     setEventSpace(selectedVenue);
     setEventDate(selectedDate);
     setAttendees(guestCount);
     setEventType(selectedEventType);
     setEventDuration(selectedDuration);
     setEventAddons(selectedAddons);
-    setBookingType('event'); // Set booking type to 'event'
+    setBookingType('event');
     
-    // Move to checkout step (step 4)
     goToNextStep();
   };
   
@@ -139,7 +135,7 @@ const EventSpaceSelection = () => {
   
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Select Your Event Space</h2>
+      <h2 className="text-2xl font-bold text-white uppercase tracking-wide">Select Your Event Space</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {venues.map(venue => (

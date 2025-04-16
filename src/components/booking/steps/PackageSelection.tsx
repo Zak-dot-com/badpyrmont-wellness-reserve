@@ -65,7 +65,7 @@ const PackageSelection = ({ isEditMode = false, onEditComplete }: PackageSelecti
     >
       {!isEditMode && (
         <motion.div variants={itemVariants}>
-          <h2 className="text-2xl font-bold mb-6">Select Your Wellness Package</h2>
+          <h2 className="text-2xl font-bold mb-6 text-white uppercase tracking-wide">Select Your Wellness Package</h2>
         </motion.div>
       )}
       
