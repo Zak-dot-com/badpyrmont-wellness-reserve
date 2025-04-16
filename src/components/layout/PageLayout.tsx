@@ -1,8 +1,8 @@
 
 import React, { ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { usePageType } from '@/hooks/usePageType';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -11,12 +11,11 @@ interface PageLayoutProps {
 const PageLayout = ({
   children
 }: PageLayoutProps) => {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const { topPadding } = usePageType();
 
   return <div className="flex flex-col min-h-screen relative">
       <Header />
-      <main className={`flex-grow relative py-0 ${!isHomePage ? 'pt-40' : 'pt-32'}`}>
+      <main className={`flex-grow relative py-0 ${topPadding}`}>
         <div className="container mx-auto max-w-screen-xl px-0">
           {children}
         </div>
