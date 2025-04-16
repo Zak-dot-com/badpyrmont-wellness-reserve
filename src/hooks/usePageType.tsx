@@ -14,6 +14,7 @@ export function usePageType() {
   
   return {
     isHomePage,
+    // Apply top padding equal to header height to prevent content from being hidden
     topPadding: isHomePage ? 'pt-32' : 'pt-40'
   };
 }

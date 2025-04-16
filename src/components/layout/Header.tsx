@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,14 @@ import { Menu, User, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+
   useEffect(() => {
     // Set up auth state listener
     const {
@@ -32,6 +35,7 @@ const Header = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
+
   const navLinks = [{
     name: 'Home',
     path: '/'
@@ -45,7 +49,8 @@ const Header = () => {
     name: 'Event Spaces',
     path: '/booking?bookingType=event'
   }];
-  return <header className="fixed w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
+
+  return <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto py-[22px] px-[71px]">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
