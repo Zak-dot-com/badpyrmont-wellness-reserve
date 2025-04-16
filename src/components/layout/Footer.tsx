@@ -1,18 +1,11 @@
-
 import { Link } from 'react-router-dom';
-
 const Footer = () => {
-  return (
-    <footer className="bg-gray-900 text-white py-12">
+  return <footer className="bg-gray-900 text-white py-12">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="mb-4">
-              <img 
-                src="/lovable-uploads/99dfc6d2-1b5a-4e77-bb77-15d19f26332b.png" 
-                alt="Grand Hotel Bad Pyrmont" 
-                className="h-24 w-auto bg-white p-2 rounded-lg" 
-              />
+              <img alt="Grand Hotel Bad Pyrmont" className="h-24 w-auto bg-white p-2 rounded-lg" src="/lovable-uploads/4c50b528-431d-475e-aec0-2ac779c53e6e.png" />
             </div>
             <p className="text-gray-400">
               Experience the ultimate wellness retreat at our luxury hotel and spa.
@@ -52,8 +45,6 @@ const Footer = () => {
           <p>&copy; {new Date().getFullYear()} Grand Hotel Badpyrmont. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
