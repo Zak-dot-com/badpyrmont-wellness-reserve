@@ -11,9 +11,21 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+
+  // Handle scroll effect for better visual appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     // Set up auth state listener
@@ -50,12 +62,15 @@ const Header = () => {
     path: '/booking?bookingType=event'
   }];
 
-  return <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-sm shadow-sm">
-      <div className="container mx-auto py-[22px] px-[71px]">
-        <div className="flex justify-between items-center h-20">
+  return <header className={cn(
+    "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300",
+    isScrolled ? "bg-white shadow-md" : "bg-white/90 backdrop-blur-sm shadow-sm"
+  )}>
+      <div className="container mx-auto py-4 md:py-[18px] px-4 md:px-[71px]">
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Badpyrmont" className="h-32 w-auto object-fill" />
+            <img src="/lovable-uploads/78397ad2-eb1f-43fb-9dca-2690a664b4ba.png" alt="Grand Hotel Badpyrmont" className="h-20 md:h-32 w-auto object-fill" />
           </Link>
           
           {/* Desktop Navigation */}
