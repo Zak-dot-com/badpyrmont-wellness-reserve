@@ -52,8 +52,8 @@ const PackagesSection = () => {
                 </div>
                 
                 <div className="p-8 flex-grow flex flex-col">
-                  <h3 className="text-xl font-light tracking-wide uppercase mb-3">{pkg.name}</h3>
-                  <div className="w-12 h-0.5 bg-hotel-primary mb-4"></div>
+                  <h3 className="text-xl font-light tracking-wide uppercase mb-3 transition-transform duration-300 group-hover:scale-105">{pkg.name}</h3>
+                  <div className="w-12 h-0.5 bg-orange-500 mb-4"></div>
                   <p className="text-gray-600 text-sm mb-6">{pkg.description}</p>
                   
                   <div className="mt-auto">
@@ -62,8 +62,8 @@ const PackagesSection = () => {
                       <span className="text-gray-500 ml-2 text-sm">/ 4 Days</span>
                     </div>
                     
-                    <Link to={`/booking?package=${pkg.id}`} className="block">
-                      <Button className="w-full bg-hotel-primary hover:bg-hotel-primary/90 rounded-none">
+                    <Link to={`/booking?package=${pkg.id}`} className="block transition-transform duration-300 hover:scale-105">
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600 rounded-none text-white">
                         Book Now
                       </Button>
                     </Link>
