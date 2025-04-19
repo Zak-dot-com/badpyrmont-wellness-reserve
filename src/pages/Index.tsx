@@ -7,6 +7,7 @@ import FeaturesSection from '@/components/home/FeaturesSection';
 import PackagesSection from '@/components/home/PackagesSection';
 import CallToAction from '@/components/home/CallToAction';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
+import SocialMediaSection from '@/components/home/SocialMediaSection';
 
 const Index = () => {
   // Animation variants for page transitions
@@ -29,6 +30,7 @@ const Index = () => {
         <PackagesSection />
         <TestimonialsSection />
         <CallToAction />
+        <SocialMediaSection />
       </PageLayout>
     </motion.div>
   );
