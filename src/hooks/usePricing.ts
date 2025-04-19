@@ -1,3 +1,4 @@
+
 import { useCallback } from "react";
 import { BookingData } from "../types/bookingTypes";
 import { availableRooms } from "../data/roomsData";
@@ -115,6 +116,17 @@ export function usePricing({
         }
       }
     }
+
+    // Add console.log to debug the total calculation
+    console.log('Calculated total price:', total, {
+      eventSpace, 
+      eventType,
+      attendees,
+      eventDuration,
+      eventAddons,
+      selectedRoom: bookingData.selectedRoom,
+      selectedPackage: bookingData.selectedPackage
+    });
 
     return total;
   }, [eventSpace, eventType, eventDuration, attendees, eventAddons, getStandardRoom]);

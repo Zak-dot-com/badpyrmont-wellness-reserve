@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,32 @@ const BookingSummary = () => {
     setEventAddons
   } = useBooking();
 
+  // Force re-render when any of these values change
+  useEffect(() => {
+    // This empty effect will trigger a re-render when dependencies change
+    console.log("BookingSummary re-rendering with:", {
+      eventSpace,
+      eventType,
+      attendees,
+      eventDuration,
+      eventAddons,
+      selectedRoom,
+      selectedPackage,
+      selectedDuration,
+      startDate
+    });
+  }, [
+    eventSpace,
+    eventType,
+    attendees,
+    eventDuration,
+    eventAddons,
+    selectedRoom,
+    selectedPackage,
+    selectedDuration,
+    startDate
+  ]);
+
   const formatDate = (date: Date | null) => {
     if (!date) return 'Not selected';
     return new Intl.DateTimeFormat('en-US', {
@@ -42,6 +69,7 @@ const BookingSummary = () => {
     }).format(date);
   };
 
+  // Make sure we call calculateTotalPrice to get the latest value
   const totalPrice = calculateTotalPrice();
 
   const handleReset = () => {
