@@ -10,7 +10,8 @@ import {
   ShoppingBag, 
   Mail,
   X,
-  ChevronDown 
+  ChevronDown,
+  LogIn 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -125,7 +126,7 @@ const Header = () => {
                     ref={searchInputRef}
                     type="search"
                     placeholder="Search..."
-                    className="w-full h-8 px-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-black"
+                    className="w-full h-8 px-3 rounded-full border border-gray-300 focus:outline-none focus:ring-1 focus:ring-black"
                   />
                   <Button 
                     type="button" 
@@ -188,13 +189,39 @@ const Header = () => {
                       </div>
                     </PopoverContent>
                   </Popover>
+
+                  <Link to="/auth">
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <LogIn className="h-5 w-5" />
+                    </Button>
+                  </Link>
                 </>
               )}
               
               <div className="hidden md:block">
-                <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-none px-6">
-                  MENU
-                </Button>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-none px-6">
+                      MENU
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-1/2 bg-slate-900 text-white p-0">
+                    <div className="flex flex-col h-full">
+                      <div className="flex justify-between items-center p-6 border-b border-slate-800">
+                        <span className="text-xl font-light">MENU</span>
+                        <Button variant="ghost" size="sm" className="text-white">
+                          CLOSE
+                        </Button>
+                      </div>
+                      <div className="flex flex-col p-8 gap-6">
+                        <Link to="/" className="text-2xl font-light">CONCEPT</Link>
+                        <Link to="/health-guide" className="text-2xl font-light">HEALTH GUIDE</Link>
+                        <Link to="/packages" className="text-2xl font-light">PACKAGES</Link>
+                        <Link to="/locations" className="text-2xl font-light">CONTACT</Link>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
               
               <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
