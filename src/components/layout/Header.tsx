@@ -147,7 +147,8 @@ const Header = () => {
                         size="sm" 
                         className="text-black font-light flex items-center transition-transform duration-200 hover:scale-110"
                       >
-                        <span className="mr-1 text-xs">{currentLanguage.flag}</span> {currentLanguage.label} <ChevronDown className="h-3 w-3 ml-1" />
+                        <span className="mr-1 text-xs">{currentLanguage.flag}</span>
+                        <ChevronDown className="h-3 w-3 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="min-w-[5rem]">
@@ -157,8 +158,8 @@ const Header = () => {
                           className="flex items-center justify-between" 
                           onClick={() => setCurrentLanguage(option)}
                         >
-                          <span>{option.label}</span>
-                          <span className="ml-2 text-xs">{option.flag}</span>
+                          <span className="text-xs">{option.flag}</span>
+                          <span className="ml-2">{option.label}</span>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
