@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -45,19 +44,15 @@ const BookingSummary = () => {
 
   const totalPrice = calculateTotalPrice();
 
-  // Complete reset function to clear all selections
   const handleReset = () => {
-    // Reset package selection if applicable
     if (selectedPackage) {
       resetPackage();
     }
     
-    // Reset room selection if applicable
     if (selectedRoom) {
       resetRoom();
     }
     
-    // Reset event selection if applicable
     if (eventSpace) {
       setEventSpace('');
       setEventDate(null);
@@ -67,16 +62,13 @@ const BookingSummary = () => {
       setEventAddons([]);
     }
     
-    // Reset booking type to null
     setBookingType(null);
     
-    // Go back to first step
     setCurrentStep(1);
     
     toast.success("Booking reset successfully. You can start a new selection.");
   };
 
-  // Helper to get event specific details
   const getEventSpaceDetail = (id: string | null) => {
     if (!id) return null;
     
@@ -110,6 +102,7 @@ const BookingSummary = () => {
       'liveMusic': 'Live Music',
       'decoration': 'Deluxe Decoration',
       'extendedHours': 'Extended Hours',
+      'room-booking': 'Room Booking',
     };
     
     return addons[id as keyof typeof addons] || id;
@@ -159,12 +152,31 @@ const BookingSummary = () => {
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
             <ul className="mt-1">
-              {eventAddons.map(addon => (
-                <li key={addon} className="flex items-center gap-1.5 text-sm">
-                  <Check className="h-4 w-4 text-green-500" />
-                  {getEventAddonDetail(addon)}
-                </li>
-              ))}
+              {eventAddons.map(addon => {
+                if (addon === 'room-booking' && selectedRoom && attendees) {
+                  const roomCount = Math.round(attendees * 0.1);
+                  const nights = selectedDuration ? parseInt(selectedDuration) : 1;
+                  return (
+                    <li key={addon} className="flex items-start gap-1.5 text-sm">
+                      <Check className="h-4 w-4 text-green-500 mt-0.5" />
+                      <div>
+                        <span>{getEventAddonDetail(addon)}</span>
+                        <div className="text-xs text-gray-600">
+                          {roomCount} x {selectedRoom.name} for {nights} night{nights > 1 ? 's' : ''} 
+                          <span className="text-amber-600"> (€{selectedRoom.price} per room/night)</span>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                }
+                
+                return (
+                  <li key={addon} className="flex items-center gap-1.5 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {getEventAddonDetail(addon)}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -251,7 +263,6 @@ const BookingSummary = () => {
     );
   };
 
-  // Get booking details based on booking type
   const renderBookingDetails = () => {
     if (eventSpace || bookingType === 'event') {
       return renderEventBookingSummary();
@@ -260,7 +271,6 @@ const BookingSummary = () => {
     }
   };
 
-  // Show reset button only if there's something to reset
   const hasSelections = bookingType || selectedPackage || selectedRoom || eventSpace;
 
   return (

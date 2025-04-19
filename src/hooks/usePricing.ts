@@ -1,5 +1,7 @@
+
 import { useCallback } from "react";
 import { BookingData } from "../types/bookingTypes";
+import { availableRooms } from "../data/roomsData";
 
 type PricingProps = {
   getStandardRoom: () => any;
@@ -109,12 +111,12 @@ export function usePricing({
 
       // Add room booking costs
       if (eventAddons.includes('room-booking')) {
-        const roomType = bookingData.selectedRoom?.id;
+        const roomType = bookingData.selectedRoom?.id || '';
         if (roomType) {
           const room = availableRooms.find(r => r.id === roomType);
           if (room) {
             const roomCount = Math.round(attendees * 0.1);
-            const nights = bookingData.duration === "4" ? 1 : bookingData.duration === "7" ? 2 : 3;
+            const nights = parseInt(bookingData.duration) || 1;
             total += room.price * roomCount * nights;
           }
         }
