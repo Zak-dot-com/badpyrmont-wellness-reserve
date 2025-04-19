@@ -87,9 +87,12 @@ const NewsletterSection = () => {
                 <Button 
                   type="submit"
                   disabled={!agreed}
-                  className="group bg-black text-white hover:bg-gray-800 rounded-full w-16 h-16 p-0 flex items-center justify-center"
+                  className="group bg-black text-white hover:bg-gray-800 transition-all duration-300 w-16 h-16 hover:w-32 rounded-full hover:rounded-lg p-0 flex items-center justify-center overflow-hidden"
                 >
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-6 h-6 group-hover:opacity-0 absolute transition-opacity duration-200" />
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">
+                    Submit
+                  </span>
                 </Button>
               </form>
             </div>
