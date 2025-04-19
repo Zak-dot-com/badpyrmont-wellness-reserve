@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,13 +15,29 @@ const HeroSection = () => {
     "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop"
   ];
 
+  const heroContent = [
+    {
+      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1470&auto=format&fit=crop",
+      title: "DISCOVER TRANQUILITY",
+      subtitle: "Where Wellness Meets Luxury"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop",
+      title: "Mindful Living",
+      subtitle: "EMBRACE THE JOURNEY"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop",
+      title: "HOLISTIC HEALING",
+      subtitle: "Transform Your Life"
+    }
+  ];
+
   useEffect(() => {
-    // Initial animation delay
     setTimeout(() => {
       setIsLoaded(true);
     }, 500);
 
-    // Set up the image carousel
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % heroImages.length);
     }, 6000);
@@ -30,7 +45,6 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Square expansion animation
   const squareVariants = {
     initial: { 
       width: "100px", 
@@ -51,7 +65,6 @@ const HeroSection = () => {
     }
   };
 
-  // Content fade in animation
   const contentVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -70,21 +83,43 @@ const HeroSection = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   };
 
+  const textVariants = {
+    enter: {
+      x: 50,
+      opacity: 0
+    },
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.33, 1, 0.68, 1]
+      }
+    },
+    exit: {
+      x: -50,
+      opacity: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.33, 1, 0.68, 1]
+      }
+    }
+  };
+
   return (
     <section className="relative w-full h-screen overflow-hidden bg-black">
-      {/* Initial square animation with background image */}
       <motion.div 
         className="absolute bg-black overflow-hidden z-30"
         initial="initial"
         animate={isLoaded ? "expanded" : "initial"}
         variants={squareVariants}
       >
-        {heroImages.map((img, index) => (
+        {heroContent.map((content, index) => (
           <motion.div
             key={index}
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('${img}')`
+              backgroundImage: `url('${content.image}')`
             }}
             initial={{ opacity: 0 }}
             animate={{
@@ -93,14 +128,37 @@ const HeroSection = () => {
                 duration: 1.5
               }
             }}
-          />
+          >
+            <AnimatePresence mode="wait">
+              {currentSlide === index && (
+                <div className="absolute right-10 top-1/2 -translate-y-1/2 text-right">
+                  <motion.h2
+                    variants={textVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="text-5xl md:text-7xl font-serif text-white mb-4 tracking-wider"
+                  >
+                    {content.title}
+                  </motion.h2>
+                  <motion.p
+                    variants={textVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="text-2xl md:text-3xl font-light text-white tracking-widest"
+                  >
+                    {content.subtitle}
+                  </motion.p>
+                </div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         ))}
       </motion.div>
-      
-      {/* Overlay for better text readability */}
+
       <div className="absolute inset-0 bg-black/20 z-10" />
 
-      {/* Central LANSERHOF logo */}
       <motion.div 
         className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-white text-center"
         initial={{ opacity: 0 }}
@@ -115,7 +173,6 @@ const HeroSection = () => {
           <div>HOF</div>
         </div>
         
-        {/* Circular button below logo */}
         <div className="mt-12">
           <motion.div 
             className="w-16 h-16 rounded-full border border-white mx-auto flex items-center justify-center cursor-pointer"
@@ -134,7 +191,6 @@ const HeroSection = () => {
         </div>
       </motion.div>
 
-      {/* Main content (right-aligned) */}
       <motion.div 
         className="absolute right-0 bottom-1/4 z-20 text-white max-w-lg px-8 md:pr-16 lg:pr-24"
         initial="hidden"
@@ -166,8 +222,7 @@ const HeroSection = () => {
           </Link>
         </motion.div>
       </motion.div>
-      
-      {/* Package info panel (left bottom) */}
+
       <motion.div 
         className="absolute left-0 bottom-0 bg-slate-900/90 z-20 text-white md:w-80"
         initial={{ opacity: 0, y: 100 }}
@@ -193,7 +248,6 @@ const HeroSection = () => {
         </div>
       </motion.div>
 
-      {/* Booking bar at bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-30 bg-black/70 p-4">
         <div className="container mx-auto">
           <BookingBar />
