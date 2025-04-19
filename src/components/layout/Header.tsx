@@ -27,6 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import BookingSummary from '@/components/booking/BookingSummary';
 
 const languageOptions = [
@@ -147,7 +148,7 @@ const Header = () => {
                         size="sm" 
                         className="text-black font-light flex items-center transition-transform duration-200 hover:scale-110"
                       >
-                        {currentLanguage.flag} <span className="ml-1">{currentLanguage.label}</span> <ChevronDown className="h-3 w-3 ml-1" />
+                        <span className="mr-1 text-xs">{currentLanguage.flag}</span> {currentLanguage.label} <ChevronDown className="h-3 w-3 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="min-w-[5rem]">
@@ -158,7 +159,7 @@ const Header = () => {
                           onClick={() => setCurrentLanguage(option)}
                         >
                           <span>{option.label}</span>
-                          <span className="ml-2">{option.flag}</span>
+                          <span className="ml-2 text-xs">{option.flag}</span>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -171,7 +172,7 @@ const Header = () => {
                     onClick={handleSearchToggle}
                   >
                     <Search className="h-5 w-5" />
-                    <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Search</span>
+                    <span className="absolute -bottom-5 text-xs bg-[#F97316] px-2 py-0.5 rounded text-white z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Search</span>
                   </Button>
 
                   <Link to="/contact">
@@ -181,7 +182,7 @@ const Header = () => {
                       className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
                     >
                       <Mail className="h-5 w-5" />
-                      <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Contact</span>
+                      <span className="absolute -bottom-5 text-xs bg-[#F97316] px-2 py-0.5 rounded text-white z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Contact</span>
                     </Button>
                   </Link>
                   
@@ -193,16 +194,18 @@ const Header = () => {
                         className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
                       >
                         <ShoppingBag className="h-5 w-5" />
-                        <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Cart</span>
+                        <span className="absolute -bottom-5 text-xs bg-[#F97316] px-2 py-0.5 rounded text-white z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Cart</span>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0" align="end">
+                    <PopoverContent className="w-80 p-0 max-h-80" align="end">
                       <div className="p-4 border-b border-gray-100">
                         <h3 className="font-medium">Your Booking</h3>
                       </div>
-                      <div className="p-4">
-                        <BookingSummary />
-                      </div>
+                      <ScrollArea className="h-60">
+                        <div className="p-4">
+                          <BookingSummary />
+                        </div>
+                      </ScrollArea>
                     </PopoverContent>
                   </Popover>
 
@@ -213,7 +216,7 @@ const Header = () => {
                       className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
                     >
                       <LogIn className="h-5 w-5" />
-                      <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Login</span>
+                      <span className="absolute -bottom-5 text-xs bg-[#F97316] px-2 py-0.5 rounded text-white z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Login</span>
                     </Button>
                   </Link>
                 </>
@@ -230,9 +233,11 @@ const Header = () => {
                     <div className="flex flex-col h-full">
                       <div className="flex justify-between items-center p-6 border-b border-slate-800">
                         <span className="text-xl font-light">MENU</span>
-                        <Button variant="ghost" size="sm" className="text-white">
-                          CLOSE
-                        </Button>
+                        <SheetTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-white">
+                            CLOSE
+                          </Button>
+                        </SheetTrigger>
                       </div>
                       <div className="flex flex-col p-8 gap-6">
                         <Link to="/" className="text-2xl font-light">CONCEPT</Link>
