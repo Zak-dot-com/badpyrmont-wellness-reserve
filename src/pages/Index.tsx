@@ -5,15 +5,21 @@ import PageLayout from '@/components/layout/PageLayout';
 import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import PackagesSection from '@/components/home/PackagesSection';
+import NewsletterSection from '@/components/home/NewsletterSection';
 import CallToAction from '@/components/home/CallToAction';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import SocialMediaSection from '@/components/home/SocialMediaSection';
 
 const Index = () => {
-  // Animation variants for page transitions
   const pageVariants = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 0.6 } },
+    animate: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.6,
+        staggerChildren: 0.2
+      }
+    },
     exit: { opacity: 0, transition: { duration: 0.4 } }
   };
 
@@ -23,13 +29,47 @@ const Index = () => {
       animate="animate"
       exit="exit"
       variants={pageVariants}
+      className="relative overflow-hidden"
     >
       <HeroSection />
       <PageLayout>
-        <FeaturesSection />
-        <PackagesSection />
-        <TestimonialsSection />
-        <CallToAction />
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <FeaturesSection />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <PackagesSection />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <TestimonialsSection />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <CallToAction />
+        </motion.div>
+        
+        <NewsletterSection />
         <SocialMediaSection />
       </PageLayout>
     </motion.div>
