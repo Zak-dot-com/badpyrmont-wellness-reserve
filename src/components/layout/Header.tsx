@@ -70,21 +70,9 @@ const Header = () => {
       <div className="border-b border-gray-100">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 relative">
-            <div className="w-1/3" />
+            <div className="flex-1" />
             
-            <div className="absolute left-1/2 transform -translate-x-1/2 bg-white">
-              <Link to="/" className="block">
-                <motion.img 
-                  src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png" 
-                  alt="Grand Hotel Bad Pyrmont" 
-                  variants={logoVariants} 
-                  animate="animate" 
-                  className="h-[80px] w-auto object-contain"
-                />
-              </Link>
-            </div>
-            
-            <div className="flex items-center space-x-4 w-1/3 justify-end">
+            <div className="flex items-center space-x-4 justify-end flex-1">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-black font-light">
@@ -144,19 +132,28 @@ const Header = () => {
                 </SheetContent>
               </Sheet>
             </div>
+
+            <div className="absolute right-2 top-2 bg-white">
+              <Link to="/" className="block">
+                <motion.img 
+                  src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png" 
+                  alt="Grand Hotel Bad Pyrmont" 
+                  variants={logoVariants} 
+                  animate="animate" 
+                  className="h-[250px] w-auto object-contain"
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
       
       <div className="hidden md:block bg-[#0b1426] text-white">
         <div className="container mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-12">
+          <div className="flex justify-end h-12">
             <div className="flex space-x-8">
               <Link to="/" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Concept</Link>
               <Link to="/health-guide" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Health Guide</Link>
-            </div>
-            
-            <div className="flex space-x-8">
               <Link to="/locations/lans" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Lans</Link>
               <Link to="/locations/tegernsee" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Tegernsee</Link>
               <Link to="/locations/sylt" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Sylt</Link>
