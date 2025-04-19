@@ -1,4 +1,3 @@
-
 import { useCallback } from "react";
 import { BookingData } from "../types/bookingTypes";
 import { availableRooms } from "../data/roomsData";
@@ -30,12 +29,10 @@ export function usePricing({
   const calculateTotalPrice = useCallback((bookingData: BookingData): number => {
     let total = 0;
     
-    // Package price calculation
     if (bookingData.selectedPackage) {
       total += bookingData.selectedPackage.basePrice * parseInt(bookingData.duration);
     }
 
-    // Add-ons price calculation
     bookingData.addOnCategories.forEach(category => {
       category.items.forEach(item => {
         if (item.selected) {
@@ -44,7 +41,6 @@ export function usePricing({
       });
     });
 
-    // Room price calculation
     if (bookingData.selectedRoom && !bookingData.selectedRoom.isStandard && bookingData.selectedPackage?.includesStandardRoom) {
       const standardRoom = getStandardRoom();
       if (standardRoom) {
@@ -55,14 +51,12 @@ export function usePricing({
       total += bookingData.selectedRoom.price * parseInt(bookingData.duration);
     }
 
-    // Room add-ons price calculation
     bookingData.roomAddOns.forEach(addon => {
       if (addon.selected) {
         total += addon.price;
       }
     });
 
-    // Event space price calculation
     if (eventSpace && eventType && attendees) {
       const venuePrices: Record<string, number> = {
         'garden-pavilion': 1200,
@@ -109,7 +103,6 @@ export function usePricing({
         total += eventDuration * 300;
       }
 
-      // Add room booking costs
       if (eventAddons.includes('room-booking')) {
         const roomType = bookingData.selectedRoom?.id || '';
         if (roomType) {
