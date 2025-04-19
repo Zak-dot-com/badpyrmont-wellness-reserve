@@ -1,14 +1,14 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
-  CardContent, 
+  CardContent,
   CardDescription, 
   CardFooter, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { 
   Bed, 
@@ -18,7 +18,7 @@ import {
   CircleParking,
   BadgeDollarSign,
   ArrowUpCircle,
-  Sparkles
+  Users
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +43,12 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   const { selectedPackage, selectedRoom, roomAddOns } = bookingData;
   const standardRoom = getStandardRoom();
 
-  // Room images mapping
+  const [guestCount, setGuestCount] = useState(1);
+
+  const handleGuestChange = (value: number[]) => {
+    setGuestCount(value[0]);
+  };
+
   const roomImages = {
     'single-standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
     'deluxe-room': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
@@ -195,6 +200,30 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           );
         })}
       </div>
+
+      {selectedRoom && (
+        <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+          <div className="flex items-center gap-2 text-lg font-medium">
+            <Users className="h-5 w-5" />
+            <span>Number of Guests</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Slider
+              defaultValue={[1]}
+              max={4}
+              min={1}
+              step={1}
+              value={[guestCount]}
+              onValueChange={handleGuestChange}
+              className="w-[200px]"
+            />
+            <span className="text-sm text-gray-600">
+              {guestCount} {guestCount === 1 ? 'guest' : 'guests'}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-xl font-bold mb-4">Room Add-ons</h3>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -197,15 +196,30 @@ const Header = () => {
                         <span className="absolute -bottom-5 text-xs bg-[#F97316] px-2 py-0.5 rounded text-white z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Cart</span>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0 max-h-80" align="end">
+                    <PopoverContent className="w-80 p-0 max-h-[85vh]" align="end">
                       <div className="p-4 border-b border-gray-100">
                         <h3 className="font-medium">Your Booking</h3>
                       </div>
-                      <ScrollArea className="h-60">
+                      <ScrollArea className="h-[calc(85vh-180px)]">
                         <div className="p-4">
                           <BookingSummary />
                         </div>
                       </ScrollArea>
+                      <div className="p-4 border-t border-gray-100 space-y-2">
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-orange-500 text-orange-600 hover:bg-orange-50"
+                          onClick={() => navigate('/booking')}
+                        >
+                          Complete Booking
+                        </Button>
+                        <Button 
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={() => navigate('/booking?step=checkout')}
+                        >
+                          Checkout
+                        </Button>
+                      </div>
                     </PopoverContent>
                   </Popover>
 
