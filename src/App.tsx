@@ -15,6 +15,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoyaltyRewardsPage from "./pages/LoyaltyRewardsPage";
 import LoyaltyActivityPage from "./pages/LoyaltyActivityPage";
 import LoyaltyProfilePage from "./pages/LoyaltyProfilePage";
+import ContactPage from "./pages/ContactPage";
 import PageLayout from "./components/layout/PageLayout";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/rewards" element={<LoyaltyRewardsPage />} />
               <Route path="/activity" element={<LoyaltyActivityPage />} />
               <Route path="/profile" element={<LoyaltyProfilePage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

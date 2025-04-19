@@ -1,31 +1,49 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Search, ShoppingBag, Mail } from 'lucide-react';
+import { 
+  Menu, 
+  Search, 
+  ShoppingBag, 
+  Mail,
+  X,
+  ChevronDown 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
+import BookingSummary from '@/components/booking/BookingSummary';
 
-const languageOptions = [{
-  label: 'EN',
-  code: 'en'
-}, {
-  label: 'DE',
-  code: 'de'
-}, {
-  label: 'FR',
-  code: 'fr'
-}];
+const languageOptions = [
+  { label: 'EN', code: 'en', flag: '🇬🇧' },
+  { label: 'DE', code: 'de', flag: '🇩🇪' },
+  { label: 'FR', code: 'fr', flag: '🇫🇷' },
+  { label: 'ES', code: 'es', flag: '🇪🇸' }
+];
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('EN');
+  const [currentLanguage, setCurrentLanguage] = useState(languageOptions[0]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  
   const location = useLocation();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +53,27 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  const handleSearchToggle = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle search submission
+    if (searchInputRef.current) {
+      console.log("Search query:", searchInputRef.current.value);
+      // Here you would typically navigate to search results page
+      // navigate(`/search?q=${searchInputRef.current.value}`);
+      setIsSearchOpen(false);
+    }
+  };
 
   const headerVariants = {
     visible: {
@@ -74,34 +113,83 @@ const Header = () => {
             <div className="flex-1" />
             
             <div className="flex items-center space-x-4 justify-end flex-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-black font-light">
-                    {currentLanguage} <span className="ml-1">▼</span>
+              {isSearchOpen ? (
+                <motion.form 
+                  initial={{ width: 40, opacity: 0 }}
+                  animate={{ width: 200, opacity: 1 }}
+                  exit={{ width: 40, opacity: 0 }}
+                  className="flex items-center"
+                  onSubmit={handleSearchSubmit}
+                >
+                  <input
+                    ref={searchInputRef}
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full h-8 px-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-black"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="ml-1 rounded-full" 
+                    onClick={handleSearchToggle}
+                  >
+                    <X className="h-5 w-5" />
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[5rem]">
-                  {languageOptions.map(option => (
-                    <DropdownMenuItem 
-                      key={option.code} 
-                      className="text-center" 
-                      onClick={() => setCurrentLanguage(option.label)}
-                    >
-                      {option.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Search className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Mail className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <ShoppingBag className="h-5 w-5" />
-              </Button>
+                </motion.form>
+              ) : (
+                <>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-black font-light flex items-center">
+                        {currentLanguage.flag} <span className="ml-1">{currentLanguage.label}</span> <ChevronDown className="h-3 w-3 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-[5rem]">
+                      {languageOptions.map(option => (
+                        <DropdownMenuItem 
+                          key={option.code} 
+                          className="flex items-center" 
+                          onClick={() => setCurrentLanguage(option)}
+                        >
+                          <span className="mr-2">{option.flag}</span> {option.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full"
+                    onClick={handleSearchToggle}
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
+
+                  <Link to="/contact">
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <Mail className="h-5 w-5" />
+                    </Button>
+                  </Link>
+                  
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full">
+                        <ShoppingBag className="h-5 w-5" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0" align="end">
+                      <div className="p-4 border-b border-gray-100">
+                        <h3 className="font-medium">Your Booking</h3>
+                      </div>
+                      <div className="p-4">
+                        <BookingSummary />
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
               
               <div className="hidden md:block">
                 <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-none px-6">
@@ -127,7 +215,7 @@ const Header = () => {
                       <Link to="/" className="text-2xl font-light" onClick={() => setIsMenuOpen(false)}>CONCEPT</Link>
                       <Link to="/health-guide" className="text-2xl font-light" onClick={() => setIsMenuOpen(false)}>HEALTH GUIDE</Link>
                       <Link to="/packages" className="text-2xl font-light" onClick={() => setIsMenuOpen(false)}>PACKAGES</Link>
-                      <Link to="/locations" className="text-2xl font-light" onClick={() => setIsMenuOpen(false)}>LOCATIONS</Link>
+                      <Link to="/locations" className="text-2xl font-light" onClick={() => setIsMenuOpen(false)}>CONTACT</Link>
                     </div>
                   </div>
                 </SheetContent>
@@ -167,4 +255,3 @@ const Header = () => {
 };
 
 export default Header;
-
