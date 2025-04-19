@@ -8,11 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { CalendarClock, Users, Music, Utensils, Clock, Calendar } from 'lucide-react';
+import RoomBookingSection from './event-space/RoomBookingSection';
+import { availableRooms } from '@/data/roomsData';
 
 const EventSpaceSelection = () => {
   const { eventSpace, setEventSpace, eventDate, setEventDate, attendees, setAttendees, 
           eventType, setEventType, eventDuration, setEventDuration, 
-          eventAddons, setEventAddons, calculateTotalPrice, goToNextStep, setBookingType } = useBooking();
+          eventAddons, setEventAddons, calculateTotalPrice, goToNextStep, setBookingType, bookingData } = useBooking();
   
   const [selectedVenue, setSelectedVenue] = useState(eventSpace || '');
   const [selectedDate, setSelectedDate] = useState<Date | null>(eventDate || null);
@@ -21,6 +23,18 @@ const EventSpaceSelection = () => {
   const [selectedDuration, setSelectedDuration] = useState<number>(eventDuration || 4);
   const [selectedAddons, setSelectedAddons] = useState<string[]>(eventAddons || []);
   const [specialRequests, setSpecialRequests] = useState<string>('');
+
+  const [roomBooking, setRoomBooking] = useState<{
+    enabled: boolean;
+    numberOfRooms: number;
+    roomType: string;
+    nights: number;
+  }>({
+    enabled: false,
+    numberOfRooms: 0,
+    roomType: "",
+    nights: 1
+  });
   
   const venues = [
     { 
@@ -112,6 +126,35 @@ const EventSpaceSelection = () => {
   const handleVenueSelect = (venueId: string) => {
     setSelectedVenue(venueId);
     setEventSpace(venueId);
+  };
+
+  const handleRoomBookingChange = (booking: {
+    enabled: boolean;
+    numberOfRooms: number;
+    roomType: string;
+    nights: number;
+  }) => {
+    setRoomBooking(booking);
+    
+    // Add the room cost to the total price by updating addons
+    const updatedAddons = [...selectedAddons];
+    const roomAddonId = 'room-booking';
+    
+    if (booking.enabled && booking.roomType) {
+      const selectedRoom = availableRooms.find(room => room.id === booking.roomType);
+      if (selectedRoom) {
+        if (!updatedAddons.includes(roomAddonId)) {
+          updatedAddons.push(roomAddonId);
+        }
+      }
+    } else {
+      const index = updatedAddons.indexOf(roomAddonId);
+      if (index > -1) {
+        updatedAddons.splice(index, 1);
+      }
+    }
+    
+    setEventAddons(updatedAddons);
   };
   
   const handleSubmit = () => {
@@ -279,6 +322,13 @@ const EventSpaceSelection = () => {
                   );
                 })}
               </div>
+            </div>
+            
+            <div className="space-y-4">
+              <RoomBookingSection 
+                attendees={guestCount} 
+                onRoomBookingChange={handleRoomBookingChange}
+              />
             </div>
             
             <div className="space-y-2">

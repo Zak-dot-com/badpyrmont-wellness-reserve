@@ -1,4 +1,3 @@
-
 import { useCallback } from "react";
 import { BookingData } from "../types/bookingTypes";
 
@@ -106,6 +105,19 @@ export function usePricing({
       
       if (eventAddons.includes('extendedHours') && eventDuration) {
         total += eventDuration * 300;
+      }
+
+      // Add room booking costs
+      if (eventAddons.includes('room-booking')) {
+        const roomType = bookingData.selectedRoom?.id;
+        if (roomType) {
+          const room = availableRooms.find(r => r.id === roomType);
+          if (room) {
+            const roomCount = Math.round(attendees * 0.1);
+            const nights = bookingData.duration === "4" ? 1 : bookingData.duration === "7" ? 2 : 3;
+            total += room.price * roomCount * nights;
+          }
+        }
       }
     }
 
