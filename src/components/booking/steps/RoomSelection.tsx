@@ -1,4 +1,3 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -102,7 +101,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
       {!isEditMode && (
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold mb-2 text-white uppercase tracking-wide">Select Your Accommodation</h2>
+            <h2 className="text-2xl font-bold mb-2 text-black uppercase tracking-wide">Select Your Accommodation</h2>
             <p className="text-gray-600">
               {selectedPackage?.includesStandardRoom 
                 ? "Your package includes a Standard Room. You can upgrade to a better room for an additional fee." 
