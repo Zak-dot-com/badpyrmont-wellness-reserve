@@ -8,35 +8,40 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-
-const languageOptions = [
-  { label: 'EN', code: 'en' },
-  { label: 'DE', code: 'de' },
-  { label: 'FR', code: 'fr' }
-];
-
+const languageOptions = [{
+  label: 'EN',
+  code: 'en'
+}, {
+  label: 'DE',
+  code: 'de'
+}, {
+  label: 'FR',
+  code: 'fr'
+}];
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('EN');
   const location = useLocation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setIsScrolled(scrollPosition > 50);
     };
-    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
   const headerVariants = {
-    visible: { opacity: 1, y: 0 },
-    hidden: { opacity: 0, y: -25 }
+    visible: {
+      opacity: 1,
+      y: 0
+    },
+    hidden: {
+      opacity: 0,
+      y: -25
+    }
   };
-
   const logoVariants = {
     animate: {
       scale: [1, 1.02, 1],
@@ -47,30 +52,15 @@ const Header = () => {
       }
     }
   };
-
-  return (
-    <motion.header 
-      initial="hidden"
-      animate="visible"
-      variants={headerVariants}
-      transition={{ duration: 0.5 }}
-      className={cn(
-        "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500",
-        isScrolled ? "bg-white shadow-sm" : "bg-white"
-      )}
-    >
+  return <motion.header initial="hidden" animate="visible" variants={headerVariants} transition={{
+    duration: 0.5
+  }} className={cn("fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500", isScrolled ? "bg-white shadow-sm" : "bg-white")}>
       <div className="border-b border-gray-100">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link to="/" className="bg-white p-3">
-                <motion.img
-                  src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png"
-                  alt="Grand Hotel Bad Pyrmont"
-                  className="h-[250px] w-auto"
-                  variants={logoVariants}
-                  animate="animate"
-                />
+                <motion.img src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png" alt="Grand Hotel Bad Pyrmont" variants={logoVariants} animate="animate" className="h-[250px] w-auto object-fill" />
               </Link>
             </div>
             
@@ -82,15 +72,9 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[5rem]">
-                  {languageOptions.map(option => (
-                    <DropdownMenuItem 
-                      key={option.code}
-                      className="text-center"
-                      onClick={() => setCurrentLanguage(option.label)}
-                    >
+                  {languageOptions.map(option => <DropdownMenuItem key={option.code} className="text-center" onClick={() => setCurrentLanguage(option.label)}>
                       {option.label}
-                    </DropdownMenuItem>
-                  ))}
+                    </DropdownMenuItem>)}
                 </DropdownMenuContent>
               </DropdownMenu>
               
@@ -120,12 +104,7 @@ const Header = () => {
                   <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center p-6 border-b border-slate-800">
                       <span className="text-xl font-light">MENU</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-white" 
-                        onClick={() => setIsMenuOpen(false)}
-                      >
+                      <Button variant="ghost" size="sm" className="text-white" onClick={() => setIsMenuOpen(false)}>
                         CLOSE
                       </Button>
                     </div>
@@ -159,8 +138,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </motion.header>
-  );
+    </motion.header>;
 };
-
 export default Header;
