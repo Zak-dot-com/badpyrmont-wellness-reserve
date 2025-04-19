@@ -30,10 +30,10 @@ import {
 import BookingSummary from '@/components/booking/BookingSummary';
 
 const languageOptions = [
-  { label: 'EN', code: 'en', flag: '🇬🇧' },
+  { label: 'EN', code: 'en', flag: '🇺🇸' },
   { label: 'DE', code: 'de', flag: '🇩🇪' },
-  { label: 'FR', code: 'fr', flag: '🇫🇷' },
-  { label: 'ES', code: 'es', flag: '🇪🇸' }
+  { label: 'ES', code: 'es', flag: '🇪🇸' },
+  { label: 'FR', code: 'fr', flag: '🇫🇷' }
 ];
 
 const Header = () => {
@@ -142,7 +142,11 @@ const Header = () => {
                 <>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-black font-light flex items-center">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-black font-light flex items-center transition-transform duration-200 hover:scale-110"
+                      >
                         {currentLanguage.flag} <span className="ml-1">{currentLanguage.label}</span> <ChevronDown className="h-3 w-3 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -150,10 +154,11 @@ const Header = () => {
                       {languageOptions.map(option => (
                         <DropdownMenuItem 
                           key={option.code} 
-                          className="flex items-center" 
+                          className="flex items-center justify-between" 
                           onClick={() => setCurrentLanguage(option)}
                         >
-                          <span className="mr-2">{option.flag}</span> {option.label}
+                          <span>{option.label}</span>
+                          <span className="ml-2">{option.flag}</span>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -162,22 +167,33 @@ const Header = () => {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="rounded-full"
+                    className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
                     onClick={handleSearchToggle}
                   >
                     <Search className="h-5 w-5" />
+                    <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Search</span>
                   </Button>
 
                   <Link to="/contact">
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
+                    >
                       <Mail className="h-5 w-5" />
+                      <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Contact</span>
                     </Button>
                   </Link>
                   
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" className="rounded-full">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
+                      >
                         <ShoppingBag className="h-5 w-5" />
+                        <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Cart</span>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-0" align="end">
@@ -191,8 +207,13 @@ const Header = () => {
                   </Popover>
 
                   <Link to="/auth">
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="rounded-full group transition-transform duration-200 hover:scale-110 relative"
+                    >
                       <LogIn className="h-5 w-5" />
+                      <span className="absolute -bottom-5 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">Login</span>
                     </Button>
                   </Link>
                 </>
