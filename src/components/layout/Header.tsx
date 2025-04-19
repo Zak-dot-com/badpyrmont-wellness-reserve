@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,12 +6,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Search, ShoppingBag, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import MegaMenu from './MegaMenu';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu';
 
 const languageOptions = [
   { label: 'EN', code: 'en' },
