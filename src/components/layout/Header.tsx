@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -133,7 +134,7 @@ const Header = () => {
               </Sheet>
             </div>
 
-            <div className="absolute right-2 top-2 bg-white">
+            <div className="absolute left-5 top-0 bg-white">
               <Link to="/" className="block">
                 <motion.img 
                   src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png" 
@@ -150,8 +151,8 @@ const Header = () => {
       
       <div className="hidden md:block bg-[#0b1426] text-white">
         <div className="container mx-auto px-6 lg:px-8">
-          <div className="flex justify-end h-12">
-            <div className="flex space-x-8">
+          <div className="flex justify-end h-10">
+            <div className="flex space-x-8 items-center">
               <Link to="/" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Concept</Link>
               <Link to="/health-guide" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Health Guide</Link>
               <Link to="/locations/lans" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Lans</Link>
@@ -166,3 +167,4 @@ const Header = () => {
 };
 
 export default Header;
+
