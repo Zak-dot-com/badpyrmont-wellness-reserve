@@ -48,7 +48,7 @@ const SocialMediaSection = () => {
             <motion.img
               src="/lovable-uploads/c4d377d2-a6b6-4185-9f0e-6daddccf4c78.png"
               alt="Grand Hotel Logo"
-              className="w-24 h-24" // Enlarged logo
+              className="w-24 h-24"
             />
             <h2 className="text-white text-2xl tracking-wider">FOLLOW US</h2>
           </motion.div>
@@ -65,7 +65,7 @@ const SocialMediaSection = () => {
               >
                 <Link to={href}>
                   <Icon 
-                    className="text-white w-6 h-6 transition-transform duration-300" 
+                    className="text-white w-8 h-8 hover:text-gray-300 transition-all duration-300" 
                   />
                 </Link>
               </motion.div>
