@@ -18,18 +18,21 @@ const HeroSection = () => {
   const heroContent = [
     {
       image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1470&auto=format&fit=crop",
-      title: "DISCOVER TRANQUILITY",
-      subtitle: "Where Wellness Meets Luxury"
+      title: "DISCOVER",
+      subtitle: "LONGEVITY WELLNESS",
+      description: "WHERE HEALTH MEETS LUXURY"
     },
     {
       image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop",
-      title: "Mindful Living",
-      subtitle: "EMBRACE THE JOURNEY"
+      title: "MINDFUL",
+      subtitle: "LIVING SPACES",
+      description: "EMBRACE THE JOURNEY"
     },
     {
       image: "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop",
-      title: "HOLISTIC HEALING",
-      subtitle: "Transform Your Life"
+      title: "HOLISTIC",
+      subtitle: "HEALING RETREAT",
+      description: "TRANSFORM YOUR LIFE"
     }
   ];
 
@@ -93,7 +96,8 @@ const HeroSection = () => {
       opacity: 1,
       transition: {
         duration: 0.8,
-        ease: [0.33, 1, 0.68, 1]
+        ease: [0.33, 1, 0.68, 1],
+        staggerChildren: 0.2
       }
     },
     exit: {
@@ -124,32 +128,38 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{
               opacity: currentSlide === index ? 1 : 0,
-              transition: {
-                duration: 1.5
-              }
+              transition: { duration: 1.5 }
             }}
           >
             <AnimatePresence mode="wait">
               {currentSlide === index && (
                 <div className="absolute right-10 top-1/2 -translate-y-1/2 text-right">
-                  <motion.h2
+                  <motion.div
                     variants={textVariants}
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="text-5xl md:text-7xl font-serif text-white mb-4 tracking-wider"
+                    className="space-y-2"
                   >
-                    {content.title}
-                  </motion.h2>
-                  <motion.p
-                    variants={textVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="text-2xl md:text-3xl font-light text-white tracking-widest"
-                  >
-                    {content.subtitle}
-                  </motion.p>
+                    <motion.h2
+                      variants={textVariants}
+                      className="text-2xl md:text-3xl font-light text-white tracking-widest"
+                    >
+                      {content.title}
+                    </motion.h2>
+                    <motion.h3
+                      variants={textVariants}
+                      className="text-3xl md:text-4xl font-serif text-white mb-1"
+                    >
+                      {content.subtitle}
+                    </motion.h3>
+                    <motion.p
+                      variants={textVariants}
+                      className="text-sm md:text-base font-light text-white tracking-[0.2em]"
+                    >
+                      {content.description}
+                    </motion.p>
+                  </motion.div>
                 </div>
               )}
             </AnimatePresence>
