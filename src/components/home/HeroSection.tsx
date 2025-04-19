@@ -139,8 +139,10 @@ const HeroSection = () => {
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="space-y-2"
+                    className="relative"
                   >
+                    <div className="absolute inset-0 bg-black/20 -right-4 -left-4 -top-2 -bottom-2 z-[-1] rounded-sm" />
+                    
                     <motion.h2
                       variants={textVariants}
                       className="text-2xl md:text-3xl font-light text-white tracking-widest"
