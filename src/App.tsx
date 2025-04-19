@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,33 +19,42 @@ import LoyaltyProfilePage from "./pages/LoyaltyProfilePage";
 import ContactPage from "./pages/ContactPage";
 import PageLayout from "./components/layout/PageLayout";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false
+    },
+  },
+});
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BookingProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/booking" element={<BookingPage />} />
-              <Route path="/book-room" element={<RoomBookingPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/rewards" element={<LoyaltyRewardsPage />} />
-              <Route path="/activity" element={<LoyaltyActivityPage />} />
-              <Route path="/profile" element={<LoyaltyProfilePage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AnimatePresence>
-        </BrowserRouter>
-      </BookingProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BookingProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/booking" element={<BookingPage />} />
+                <Route path="/book-room" element={<RoomBookingPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/rewards" element={<LoyaltyRewardsPage />} />
+                <Route path="/activity" element={<LoyaltyActivityPage />} />
+                <Route path="/profile" element={<LoyaltyProfilePage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AnimatePresence>
+          </BrowserRouter>
+        </BookingProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;

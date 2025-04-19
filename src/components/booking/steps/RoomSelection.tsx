@@ -1,4 +1,6 @@
+
 import { useBooking } from '@/contexts/BookingContext';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -18,7 +20,8 @@ import {
   CircleParking,
   BadgeDollarSign,
   ArrowUpCircle,
-  Users
+  Users,
+  Sparkles
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
