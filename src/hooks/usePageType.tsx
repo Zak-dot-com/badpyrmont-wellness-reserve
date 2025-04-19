@@ -15,19 +15,22 @@ export function usePageType() {
   
   // Calculate proper header spacing based on device size
   const getHeaderSpacing = () => {
+    if (isHomePage) {
+      return ''; // No padding needed for home page as hero takes full height
+    }
+    
     if (isMobile) {
-      return isHomePage ? 'pt-24' : 'pt-32';
+      return 'pt-16'; // Mobile header is smaller
     } else if (isTablet) {
-      return isHomePage ? 'pt-28' : 'pt-36';
+      return 'pt-28';
     } else {
-      return isHomePage ? 'pt-32' : 'pt-40';
+      return 'pt-28'; // Desktop includes main header + secondary nav
     }
   };
   
   return {
     isHomePage,
     topPadding: getHeaderSpacing(),
-    // Additional metadata about the current page that might be useful
     currentPath: location.pathname
   };
 }

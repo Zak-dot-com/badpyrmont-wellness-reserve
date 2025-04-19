@@ -1,176 +1,199 @@
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import BookingBar from './BookingBar';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ArrowRight } from 'lucide-react';
+
 const HeroSection = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const images = ["https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1470&auto=format&fit=crop", "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop", "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop"];
+  const heroImages = [
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1470&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop"
+  ];
 
-  // Mouse cursor effect variables
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // Create spring animations for smoother movement
-  const springConfig = {
-    damping: 25,
-    stiffness: 700
-  };
-  const cursorX = useSpring(mouseX, springConfig);
-  const cursorY = useSpring(mouseY, springConfig);
-
-  // Handle mouse movement for cursor effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const {
-      clientX,
-      clientY
-    } = e;
-    mouseX.set(clientX);
-    mouseY.set(clientY);
-  };
   useEffect(() => {
+    // Initial animation delay
+    setTimeout(() => {
+      setIsLoaded(true);
+    }, 500);
+
+    // Set up the image carousel
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % images.length);
+      setCurrentSlide(prev => (prev + 1) % heroImages.length);
     }, 6000);
+
     return () => clearInterval(interval);
   }, []);
-  return <section className="relative h-screen overflow-hidden" onMouseMove={handleMouseMove}>
-      {/* Background image carousel */}
-      {images.map((img, index) => <motion.div key={index} className="absolute inset-0 z-0 bg-cover bg-center" style={{
-      backgroundImage: `url('${img}')`
-    }} initial={{
-      opacity: 0
-    }} animate={{
-      opacity: currentSlide === index ? 1 : 0,
-      transition: {
-        duration: 1.5
+
+  // Square expansion animation
+  const squareVariants = {
+    initial: { 
+      width: "100px", 
+      height: "100px", 
+      top: "50%", 
+      left: "50%",
+      x: "-50%",
+      y: "-50%",
+    },
+    expanded: { 
+      width: "100vw", 
+      height: "100vh", 
+      top: "0%", 
+      left: "0%",
+      x: "0%",
+      y: "0%",
+      transition: { duration: 1.2, ease: [0.33, 1, 0.68, 1] }
+    }
+  };
+
+  // Content fade in animation
+  const contentVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        delay: 1, 
+        duration: 1,
+        staggerChildren: 0.2,
+        delayChildren: 1.2
       }
-    }} />)}
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+  };
+
+  return (
+    <section className="relative w-full h-screen overflow-hidden bg-black">
+      {/* Initial square animation */}
+      <motion.div 
+        className="absolute bg-black z-30"
+        initial="initial"
+        animate={isLoaded ? "expanded" : "initial"}
+        variants={squareVariants}
+      />
       
-      {/* Custom cursor effect - only visible in the hero section */}
-      <motion.div ref={cursorRef} className="pointer-events-none fixed z-50 mix-blend-difference" style={{
-      x: cursorX,
-      y: cursorY,
-      translateX: "-50%",
-      translateY: "-50%"
-    }}>
-        <div className="relative">
-          <motion.div className="w-12 h-12 rounded-full bg-white opacity-60" initial={{
-          scale: 0.8
-        }} animate={{
-          scale: [0.8, 1.2, 0.8],
-          opacity: [0.6, 0.9, 0.6]
-        }} transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }} />
+      {/* Background image carousel */}
+      {heroImages.map((img, index) => (
+        <motion.div
+          key={index}
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url('${img}')`
+          }}
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: currentSlide === index ? 1 : 0,
+            transition: {
+              duration: 1.5
+            }
+          }}
+        />
+      ))}
+
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20 z-10" />
+
+      {/* Central LANSERHOF logo */}
+      <motion.div 
+        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-white text-center"
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: 1,
+          transition: { delay: 1.5, duration: 0.8 }
+        }}
+      >
+        <div className="text-5xl md:text-7xl lg:text-8xl font-light tracking-wider leading-none">
+          <div>LAN</div>
+          <div>SER</div>
+          <div>HOF</div>
+        </div>
+        
+        {/* Circular button below logo */}
+        <div className="mt-12">
+          <motion.div 
+            className="w-16 h-16 rounded-full border border-white mx-auto flex items-center justify-center cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            animate={{ 
+              y: [0, -10, 0], 
+              transition: { 
+                duration: 2, 
+                repeat: Infinity, 
+                repeatType: "reverse" 
+              } 
+            }}
+          >
+            <ArrowRight className="h-6 w-6 text-white" />
+          </motion.div>
         </div>
       </motion.div>
+
+      {/* Main content (right-aligned) */}
+      <motion.div 
+        className="absolute right-0 bottom-1/4 z-20 text-white max-w-lg px-8 md:pr-16 lg:pr-24"
+        initial="hidden"
+        animate={isLoaded ? "visible" : "hidden"}
+        variants={contentVariants}
+      >
+        <motion.h2 
+          className="text-3xl md:text-5xl font-light mb-4"
+          variants={itemVariants}
+        >
+          WORLD'S BEST<br />LONGEVITY CLINIC
+        </motion.h2>
+        
+        <motion.p 
+          className="text-xl md:text-2xl font-light mb-8"
+          variants={itemVariants}
+        >
+          WE ARE THE LANSERHOF.
+        </motion.p>
+
+        <motion.div variants={itemVariants}>
+          <Link to="/booking">
+            <Button 
+              className="bg-transparent border border-white text-white hover:bg-white hover:text-black transition-colors rounded-none px-8 py-6"
+              size="lg"
+            >
+              PLAN YOUR STAY
+            </Button>
+          </Link>
+        </motion.div>
+      </motion.div>
       
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/30 z-5"></div>
-      
-      {/* Content */}
-      <div className="relative z-10 flex flex-col h-full container mx-auto px-4 py-0">
-        {/* Hero text */}
-        <div className="flex-grow flex flex-col justify-center items-center text-center pt-24 md:pt-28 py-[82px]">
-          <motion.div className="mb-6" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }}>
-            
-          </motion.div>
+      {/* Package info panel (left bottom) */}
+      <motion.div 
+        className="absolute left-0 bottom-0 bg-slate-900/90 z-20 text-white md:w-80"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.8, duration: 0.8 }}
+      >
+        <div className="p-8">
+          <div className="mb-4">
+            <h3 className="text-2xl font-light mb-1">7 OVERNIGHT STAYS</h3>
+            <p className="text-sm font-light">incl. medical basic package</p>
+          </div>
           
-          <motion.h1 initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.3
-        }} className="text-3xl md:text-5xl lg:text-6xl text-white font-light tracking-wide uppercase mb-6 py-0 my-0 mx-0">
-            Experience True Wellness
-          </motion.h1>
+          <div className="mb-4">
+            <h4 className="text-lg font-light">Lanserhof Sylt</h4>
+            <p className="text-sm font-light">from 6.900 EUR p.P</p>
+          </div>
           
-          <motion.div initial={{
-          opacity: 0,
-          scaleX: 0
-        }} animate={{
-          opacity: 1,
-          scaleX: 1
-        }} transition={{
-          delay: 0.4
-        }} className="w-24 h-0.5 bg-white mx-auto my-0 py-[2px]"></motion.div>
-          
-          <motion.p initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.5
-        }} className="mt-4 text-base md:text-xl text-white max-w-2xl mx-auto font-light my-0 py-0">
-            Discover a harmonious blend of luxury and healing at our exclusive wellness retreat,
-            where personalized care meets natural rejuvenation.
-          </motion.p>
-          
-          <motion.div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.7
-        }}>
-            <Link to="/booking">
-              <Button size="lg" className="bg-white text-black hover:bg-opacity-90 px-8 rounded-none py-0">
-                Book Your Stay
-              </Button>
-            </Link>
-            
-            <Link to="/rewards">
-              <Button size="lg" variant="outline" className="border-white hover:bg-white rounded-none text-zinc-950 py-[16px] px-[23px]">
-                Explore Packages
-              </Button>
-            </Link>
-          </motion.div>
+          <Link to="/booking" className="inline-block">
+            <div className="w-10 h-10 rounded-full border border-white flex items-center justify-center">
+              <ArrowRight className="h-5 w-5 text-white" />
+            </div>
+          </Link>
         </div>
-        
-        {/* Booking bar */}
-        <motion.div className="mb-16 w-full" initial={{
-        opacity: 0,
-        y: 40
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 0.9,
-        duration: 0.5
-      }}>
-          <BookingBar />
-        </motion.div>
-        
-        {/* Scroll indicator */}
-        <motion.div className="absolute bottom-8 left-1/2 transform -translate-x-1/2" animate={{
-        y: [0, 10, 0]
-      }} transition={{
-        repeat: Infinity,
-        duration: 2,
-        ease: "easeInOut"
-      }}>
-          <div className="w-0.5 h-12 bg-white mx-auto px-px py-[17px] my-[153px]"></div>
-        </motion.div>
-      </div>
-    </section>;
+      </motion.div>
+    </section>
+  );
 };
+
 export default HeroSection;

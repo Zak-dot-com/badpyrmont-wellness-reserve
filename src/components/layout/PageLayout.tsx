@@ -7,9 +7,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 interface PageLayoutProps {
   children: ReactNode;
+  includeHeader?: boolean;
 }
 
-const PageLayout = ({ children }: PageLayoutProps) => {
+const PageLayout = ({ children, includeHeader = true }: PageLayoutProps) => {
   const { topPadding } = usePageType();
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -24,7 +25,7 @@ const PageLayout = ({ children }: PageLayoutProps) => {
 
   return (
     <div className="relative min-h-screen bg-white overflow-hidden">
-      <Header />
+      {includeHeader && <Header />}
       
       <AnimatePresence mode="wait">
         {isLoaded && (

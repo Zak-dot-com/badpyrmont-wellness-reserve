@@ -23,8 +23,8 @@ const Index = () => {
       exit="exit"
       variants={pageVariants}
     >
+      <HeroSection />
       <PageLayout>
-        <HeroSection />
         <FeaturesSection />
         <PackagesSection />
         <TestimonialsSection />
