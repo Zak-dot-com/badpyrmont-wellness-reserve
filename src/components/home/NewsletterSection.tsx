@@ -46,9 +46,12 @@ const NewsletterSection = () => {
               <h2 className="text-4xl md:text-5xl font-light mb-4">
                 Stay connected
               </h2>
-              <h3 className="text-3xl md:text-4xl font-light mb-6">
-                with the Lanserhof world
+              <h3 className="text-3xl md:text-4xl font-light mb-2">
+                with GRAND HOTEL Badpyrmont
               </h3>
+              <p className="text-2xl md:text-3xl font-light text-gray-500 text-center">
+                Powered by STEINBERGER
+              </p>
             </div>
             
             <div>
@@ -87,7 +90,7 @@ const NewsletterSection = () => {
                 <Button 
                   type="submit"
                   disabled={!agreed}
-                  className="group bg-black text-white hover:bg-gray-800 transition-all duration-300 w-16 h-16 hover:w-32 rounded-full hover:rounded-lg p-0 flex items-center justify-center overflow-hidden"
+                  className="group bg-black text-white transition-all duration-300 w-16 h-16 hover:w-32 rounded-lg hover:rounded-lg p-0 flex items-center justify-center overflow-hidden"
                 >
                   <ArrowRight className="w-6 h-6 group-hover:opacity-0 absolute transition-opacity duration-200" />
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">
