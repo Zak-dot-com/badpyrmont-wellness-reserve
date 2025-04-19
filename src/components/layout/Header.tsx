@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,7 +22,6 @@ const Header = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Handle scroll effect for better visual appearance
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -39,6 +37,17 @@ const Header = () => {
     hidden: { opacity: 0, y: -25 }
   };
 
+  const logoVariants = {
+    animate: {
+      scale: [1, 1.02, 1],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
     <motion.header 
       initial="hidden"
@@ -50,21 +59,22 @@ const Header = () => {
         isScrolled ? "bg-white shadow-sm" : "bg-white"
       )}
     >
-      {/* Top navigation bar */}
       <div className="border-b border-gray-100">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <div className="flex items-center">
-              <Link to="/" className="text-xl font-semibold tracking-wide uppercase text-black">
-                LANSERHOF.
-                <span className="text-xs ml-3 font-light uppercase tracking-wide hidden md:inline-block">WORLD'S BEST LONGEVITY CLINIC</span>
+              <Link to="/" className="bg-white p-3">
+                <motion.img
+                  src="/lovable-uploads/83754743-c943-4cb3-b419-3d34b82cb22b.png"
+                  alt="Grand Hotel Bad Pyrmont"
+                  className="h-[250px] w-auto"
+                  variants={logoVariants}
+                  animate="animate"
+                />
               </Link>
             </div>
             
-            {/* Right side elements */}
             <div className="flex items-center space-x-6">
-              {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-black font-light">
@@ -84,7 +94,6 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {/* Action Icons */}
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Search className="h-5 w-5" />
               </Button>
@@ -95,14 +104,12 @@ const Header = () => {
                 <ShoppingBag className="h-5 w-5" />
               </Button>
               
-              {/* Menu Button - Desktop */}
               <div className="hidden md:block">
                 <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-none px-6">
                   MENU
                 </Button>
               </div>
               
-              {/* Menu Button - Mobile */}
               <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild className="md:hidden">
                   <Button variant="ghost" size="icon">
@@ -136,17 +143,14 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Secondary navigation - navy blue bar */}
       <div className="hidden md:block bg-[#0b1426] text-white">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-12">
-            {/* Left menu items */}
             <div className="flex space-x-8">
               <Link to="/" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Concept</Link>
               <Link to="/health-guide" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Health Guide</Link>
             </div>
             
-            {/* Right menu items */}
             <div className="flex space-x-8">
               <Link to="/locations/lans" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Lans</Link>
               <Link to="/locations/tegernsee" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Tegernsee</Link>
