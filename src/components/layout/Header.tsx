@@ -47,7 +47,7 @@ const Header = () => {
       transition={{ duration: 0.5 }}
       className={cn(
         "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500",
-        isScrolled ? "bg-white shadow-sm" : "bg-transparent"
+        isScrolled ? "bg-white shadow-sm" : "bg-white"
       )}
     >
       {/* Top navigation bar */}
@@ -56,7 +56,7 @@ const Header = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Link to="/" className="text-xl font-semibold tracking-wide uppercase">
+              <Link to="/" className="text-xl font-semibold tracking-wide uppercase text-black">
                 LANSERHOF.
                 <span className="text-xs ml-3 font-light uppercase tracking-wide hidden md:inline-block">WORLD'S BEST LONGEVITY CLINIC</span>
               </Link>
@@ -136,8 +136,8 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Secondary navigation */}
-      <div className="hidden md:block bg-slate-900 text-white">
+      {/* Secondary navigation - navy blue bar */}
+      <div className="hidden md:block bg-[#0b1426] text-white">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-12">
             {/* Left menu items */}

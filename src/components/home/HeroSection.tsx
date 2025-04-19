@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ArrowRight } from 'lucide-react';
+import BookingBar from './BookingBar';
 
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -71,32 +72,31 @@ const HeroSection = () => {
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-black">
-      {/* Initial square animation */}
+      {/* Initial square animation with background image */}
       <motion.div 
-        className="absolute bg-black z-30"
+        className="absolute bg-black overflow-hidden z-30"
         initial="initial"
         animate={isLoaded ? "expanded" : "initial"}
         variants={squareVariants}
-      />
+      >
+        {heroImages.map((img, index) => (
+          <motion.div
+            key={index}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url('${img}')`
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: currentSlide === index ? 1 : 0,
+              transition: {
+                duration: 1.5
+              }
+            }}
+          />
+        ))}
+      </motion.div>
       
-      {/* Background image carousel */}
-      {heroImages.map((img, index) => (
-        <motion.div
-          key={index}
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('${img}')`
-          }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: currentSlide === index ? 1 : 0,
-            transition: {
-              duration: 1.5
-            }
-          }}
-        />
-      ))}
-
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/20 z-10" />
 
@@ -192,6 +192,13 @@ const HeroSection = () => {
           </Link>
         </div>
       </motion.div>
+
+      {/* Booking bar at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 bg-black/70 p-4">
+        <div className="container mx-auto">
+          <BookingBar />
+        </div>
+      </div>
     </section>
   );
 };
