@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -229,7 +229,11 @@ const Header = () => {
                   alt="Grand Hotel Bad Pyrmont" 
                   variants={logoVariants} 
                   animate="animate" 
-                  className="h-[250px] w-auto object-contain"
+                  className="h-[144px] w-auto object-contain" 
+                  style={{ 
+                    maxHeight: '144px', 
+                    padding: '3px 0' 
+                  }}
                 />
               </Link>
             </div>
