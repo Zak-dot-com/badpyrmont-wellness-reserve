@@ -1,7 +1,7 @@
-
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/layout/PageLayout';
 import ContactForm from '@/components/contact/ContactForm';
+import HotelMapSection from '@/components/contact/HotelMapSection';
 
 const ContactPage = () => {
   const pageVariants = {
@@ -57,6 +57,7 @@ const ContactPage = () => {
             </div>
           </div>
         </div>
+        <HotelMapSection />
       </PageLayout>
     </motion.div>
   );
