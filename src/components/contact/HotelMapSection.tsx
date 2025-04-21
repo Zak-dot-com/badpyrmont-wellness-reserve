@@ -1,6 +1,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+// Define types for Google Maps to avoid TypeScript errors
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 type Place = {
   name: string;
   lat: number;
@@ -36,7 +43,7 @@ const FAMOUS_PLACES: Place[] = [
 // Google Maps loader utility
 function loadGoogleMaps(apiKey: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if ((window as any).google && (window as any).google.maps) {
+    if (window.google && window.google.maps) {
       resolve();
       return;
     }
@@ -91,7 +98,6 @@ const HotelMapSection: React.FC = () => {
   useEffect(() => {
     if (!gmapsLoaded || !mapRef.current) return;
 
-    // @ts-ignore
     const map = new window.google.maps.Map(mapRef.current, {
       center: { lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng },
       zoom: 13,
@@ -99,7 +105,6 @@ const HotelMapSection: React.FC = () => {
     });
 
     // Hotel marker
-    // @ts-ignore
     const hotelMarker = new window.google.maps.Marker({
       position: { lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng },
       map,
@@ -114,7 +119,6 @@ const HotelMapSection: React.FC = () => {
     let placeMarker: any = null;
 
     if (selectedPlace) {
-      // @ts-ignore
       placeMarker = new window.google.maps.Marker({
         position: { lat: selectedPlace.lat, lng: selectedPlace.lng },
         map,
@@ -126,7 +130,6 @@ const HotelMapSection: React.FC = () => {
       });
 
       // Draw a polyline to connect
-      // @ts-ignore
       const line = new window.google.maps.Polyline({
         path: [
           { lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng },
