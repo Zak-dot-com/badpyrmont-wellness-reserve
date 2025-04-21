@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -167,7 +166,7 @@ const BookingBar = ({
               Reset
             </button>}
           
-          <Button onClick={handleProceedToBooking} disabled={!isFormValid} className="w-full md:w-auto whitespace-nowrap text-white bg-orange-500 hover:bg-orange-400">
+          <Button onClick={handleProceedToBooking} disabled={!isFormValid} className="w-full md:w-auto whitespace-nowrap text-white bg-hotel-accent px-[5px]">
             Proceed to Booking
           </Button>
         </div>
