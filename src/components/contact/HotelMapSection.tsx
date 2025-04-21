@@ -15,28 +15,28 @@ type Place = {
 };
 
 const HOTEL_LOCATION = {
-  name: "Lanserhof Tegernsee",
-  lat: 47.6768,  // You can adjust to actual hotel coordinates
-  lng: 11.7531,
-  address: `Gut Steinberg 1-4, 83666 Marienstein, Germany`
+  name: "Grand Hotel Badpyrmont - by STEINBERGER",
+  lat: 51.984896,  // Updated to actual hotel coordinates for Bad Pyrmont
+  lng: 9.258026,
+  address: "Heiligenangerstraße 2-4, 31812 Bad Pyrmont, Germany"
 };
 
 const FAMOUS_PLACES: Place[] = [
   {
-    name: "Tegernsee Lake",
-    lat: 47.705, lng: 11.751
+    name: "Hufeland Therme",
+    lat: 51.985398, lng: 9.265441
   },
   {
-    name: "Bad Wiessee Casino",
-    lat: 47.713, lng: 11.728
+    name: "Kurpark Bad Pyrmont",
+    lat: 51.985600, lng: 9.252420
   },
   {
-    name: "Wallberg Mountain",
-    lat: 47.681, lng: 11.793
+    name: "Bad Pyrmont Castle",
+    lat: 51.983693, lng: 9.253293
   },
   {
-    name: "Rottach-Egern",
-    lat: 47.664, lng: 11.779
+    name: "Dunsthöhle Cave",
+    lat: 51.978395, lng: 9.260283
   }
 ];
 
@@ -69,7 +69,8 @@ function calcDistanceKM(lat1: number, lng1: number, lat2: number, lng2: number):
   return R * c;
 }
 
-const GOOGLE_MAPS_API_KEY = ""; // TODO: Add your Google Maps API key here
+// Set property API key as per instruction
+const GOOGLE_MAPS_API_KEY = "AIzaSyDMqjEE2xJko-qH7TLgpZ9sNE372Jg3EBM";
 
 const HotelMapSection: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -84,6 +85,7 @@ const HotelMapSection: React.FC = () => {
   const [inputApiKey, setInputApiKey] = useState("");
   const [customApiKey, setCustomApiKey] = useState("");
 
+  // Always use the main API key now unless user overwrites
   const apiKey = (GOOGLE_MAPS_API_KEY || customApiKey || inputApiKey).trim();
 
   // Load Google Maps JS API
@@ -100,7 +102,7 @@ const HotelMapSection: React.FC = () => {
 
     const map = new window.google.maps.Map(mapRef.current, {
       center: { lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng },
-      zoom: 13,
+      zoom: 15,
       mapId: "standard"
     });
 
@@ -146,7 +148,7 @@ const HotelMapSection: React.FC = () => {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(new window.google.maps.LatLng(HOTEL_LOCATION.lat, HOTEL_LOCATION.lng));
       bounds.extend(new window.google.maps.LatLng(selectedPlace.lat, selectedPlace.lng));
-      map.fitBounds(bounds, 140);
+      map.fitBounds(bounds, 120);
     }
 
     // Clean up
@@ -186,7 +188,7 @@ const HotelMapSection: React.FC = () => {
             <div>
               <h2 className="text-2xl font-light mb-3">Famous Nearby Places</h2>
               <p className="text-sm text-gray-500 mb-2">
-                Discover the region around Lanserhof Tegernsee.
+                Discover the region around {HOTEL_LOCATION.name}.
               </p>
             </div>
             <div className="flex flex-col gap-2">
