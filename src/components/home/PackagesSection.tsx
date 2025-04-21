@@ -1,23 +1,25 @@
-
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { availablePackages } from '@/data/packagesData';
-
 const PackagesSection = () => {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
-  
-  return (
-    <section ref={sectionRef} className="py-24 bg-gray-50">
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.2
+  });
+  return <section ref={sectionRef} className="py-24 bg-gray-50">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-16"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 30
+      }} animate={isInView ? {
+        opacity: 1,
+        y: 0
+      } : {}} transition={{
+        duration: 0.7
+      }} className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide uppercase mb-4">
             Curated Wellness Experiences
           </h2>
@@ -30,24 +32,23 @@ const PackagesSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {availablePackages.map((pkg, index) => {
-            const itemRef = useRef(null);
-            const isItemInView = useInView(itemRef, { once: true, amount: 0.3 });
-            
-            return (
-              <motion.div 
-                key={pkg.id}
-                ref={itemRef}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isItemInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white overflow-hidden flex flex-col group"
-              >
+          const itemRef = useRef(null);
+          const isItemInView = useInView(itemRef, {
+            once: true,
+            amount: 0.3
+          });
+          return <motion.div key={pkg.id} ref={itemRef} initial={{
+            opacity: 0,
+            y: 30
+          }} animate={isItemInView ? {
+            opacity: 1,
+            y: 0
+          } : {}} transition={{
+            duration: 0.5,
+            delay: index * 0.1
+          }} className="bg-white overflow-hidden flex flex-col group">
                 <div className="relative h-64 overflow-hidden">
-                  <img 
-                    src={pkg.image} 
-                    alt={pkg.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  />
+                  <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-500 group-hover:bg-opacity-30"></div>
                 </div>
                 
@@ -63,19 +64,16 @@ const PackagesSection = () => {
                     </div>
                     
                     <Link to={`/booking?package=${pkg.id}`} className="block transition-transform duration-300 hover:scale-105">
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600 rounded-none text-white">
+                      <Button className="w-full rounded-none text-white bg-hotel-accent">
                         Book Now
                       </Button>
                     </Link>
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
+              </motion.div>;
+        })}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default PackagesSection;
