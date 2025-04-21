@@ -238,9 +238,9 @@ const Header = () => {
             <div className="flex space-x-8 items-center">
               <Link to="/" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Concept</Link>
               <Link to="/health-guide" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Health Guide</Link>
-              <Link to="/locations/lans" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Lans</Link>
-              <Link to="/locations/tegernsee" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Tegernsee</Link>
-              <Link to="/locations/sylt" className="text-sm font-light uppercase tracking-wide hover:opacity-80">Sylt</Link>
+              <Link to="/locations/lans" className="text-sm font-light uppercase tracking-wide hover:opacity-80">TREEATMENTS</Link>
+              <Link to="/locations/tegernsee" className="text-sm font-light uppercase tracking-wide hover:opacity-80">HISTORY</Link>
+              <Link to="/locations/sylt" className="text-sm font-light uppercase tracking-wide hover:opacity-80">AMENITIES</Link>
             </div>
           </div>
         </div>
