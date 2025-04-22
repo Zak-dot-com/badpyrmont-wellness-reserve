@@ -4,9 +4,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Package, Bed, CalendarCheck, RefreshCcw, Calendar } from 'lucide-react';
 import DateSelector from './DateSelector';
+
 type BookingBarProps = {
   className?: string;
 };
+
 const BookingBar = ({
   className = ""
 }: BookingBarProps) => {
@@ -38,6 +40,7 @@ const BookingBar = ({
     setEndDate(null);
     setShowDateSelector(false);
   }, [bookingType]);
+
   const handleProceedToBooking = () => {
     const queryParams = new URLSearchParams();
     if (bookingType === 'package' && selectedPackage) {
@@ -58,6 +61,7 @@ const BookingBar = ({
     }
     navigate(`/booking?${queryParams.toString()}`);
   };
+
   const handleReset = () => {
     // Reset all selections
     setBookingType(null);
@@ -68,6 +72,7 @@ const BookingBar = ({
     setEndDate(null);
     setShowDateSelector(false);
   };
+
   const handleSelectionChange = (type: 'package' | 'room' | 'event', value: string) => {
     // Set booking type first
     setBookingType(type);
@@ -90,6 +95,7 @@ const BookingBar = ({
 
   // Determine if form is valid for submission
   const isFormValid = hasSelection && startDate;
+
   return <div className="py-0 my-0">
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
         <div className="w-full md:w-auto flex-1">
@@ -150,27 +156,29 @@ const BookingBar = ({
           </Select>
         </div>
 
-        <div className="w-full md:w-auto flex-1">
-          <label className="block text-xs font-medium text-white mb-1 uppercase">
-            Date
-          </label>
-          {showDateSelector ? <DateSelector showRange={bookingType === 'room'} startDate={startDate} endDate={endDate} onStartDateChange={setStartDate} onEndDateChange={setEndDate} /> : <Button variant="outline" className="w-full flex justify-start items-center gap-2 bg-black/70 text-white hover:bg-black" onClick={() => setShowDateSelector(true)} disabled={!hasSelection}>
-              <Calendar className="h-4 w-4" />
-              <span>Select dates</span>
-            </Button>}
-        </div>
-
         <div className="w-full md:w-auto flex items-center gap-3">
-          {hasSelection && <button onClick={handleReset} className="flex items-center text-xs text-gray-500 hover:text-hotel-primary">
-              <RefreshCcw className="h-3.5 w-3.5 mr-1" />
+          {hasSelection && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleReset}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-hotel-primary"
+            >
+              <RefreshCcw className="h-3.5 w-3.5" />
               Reset
-            </button>}
+            </Button>
+          )}
           
-          <Button onClick={handleProceedToBooking} disabled={!isFormValid} className="w-full md:w-auto whitespace-nowrap text-white bg-hotel-accent px-[5px]">
+          <Button 
+            onClick={handleProceedToBooking} 
+            disabled={!isFormValid} 
+            className="w-full md:w-auto whitespace-nowrap text-white bg-hotel-accent px-[5px]"
+          >
             Proceed to Booking
           </Button>
         </div>
       </div>
     </div>;
 };
+
 export default BookingBar;
