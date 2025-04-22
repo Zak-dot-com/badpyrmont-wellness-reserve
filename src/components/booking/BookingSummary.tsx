@@ -311,7 +311,7 @@ const BookingSummary = () => {
             variant="ghost" 
             size="sm"
             onClick={handleReset}
-            className="flex items-center text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+            className="flex items-center text-white font-bold hover:bg-white/20"
           >
             <RefreshCcw className="h-4 w-4 mr-1.5" />
             Start over
