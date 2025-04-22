@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -308,12 +307,12 @@ const BookingSummary = () => {
         
         {hasSelections && (
           <Button 
-            variant="ghost" 
+            variant="accent" 
             size="sm"
             onClick={handleReset}
-            className="flex items-center text-white font-bold hover:bg-white/20"
+            className="flex items-center gap-1.5"
           >
-            <RefreshCcw className="h-4 w-4 mr-1.5" />
+            <RefreshCcw className="h-4 w-4" />
             Start over
           </Button>
         )}
