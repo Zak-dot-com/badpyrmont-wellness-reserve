@@ -9,6 +9,7 @@ import { useBooking } from "@/contexts/BookingContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonDetailDialog from "./AddonDetailDialog";
 import { availablePackages } from "@/data/packagesData";
+import { DurationType } from "@/types/bookingTypes";
 
 const AddOnTreatmentsContent = () => {
   const { bookingData, toggleAddOn } = useBooking();
@@ -105,7 +106,14 @@ const CustomPackageContent = () => {
   // When either changes, update context instantly
   React.useEffect(() => {
     selectPackage(selected);
-    setDuration(days.toString());
+    
+    // Fix: Cast the days string to a DurationType before setting it
+    // Only allow valid duration values (4, 7, 14)
+    let validDuration: DurationType = "4";
+    if (days === 7) validDuration = "7";
+    if (days === 14) validDuration = "14";
+    
+    setDuration(validDuration);
     // eslint-disable-next-line
   }, [selected, days]);
 
