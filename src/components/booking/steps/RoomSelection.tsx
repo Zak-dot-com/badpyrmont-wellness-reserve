@@ -20,11 +20,13 @@ import {
   BadgeDollarSign,
   ArrowUpCircle,
   Users,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import WellnessPackageDialog from "./WellnessPackageDialog";
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -46,6 +48,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   const standardRoom = getStandardRoom();
 
   const [guestCount, setGuestCount] = useState(1);
+  const [wellnessDialogOpen, setWellnessDialogOpen] = useState(false);
 
   const handleGuestChange = (value: number[]) => {
     setGuestCount(value[0]);
@@ -110,15 +113,17 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           </div>
 
           {isRoomOnlyBooking && (
-            <Link to="/booking?addPackage=true">
+            <>
               <Button 
-                variant="outline" 
-                className="flex items-center gap-2 border-amber-500 text-amber-700 hover:bg-amber-50"
+                variant="outline"
+                onClick={() => setWellnessDialogOpen(true)}
+                className="flex items-center gap-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-semibold transition px-4 py-2 border-[1.5px] rounded-lg"
               >
-                <Sparkles className="h-4 w-4" />
+                <Star className="h-4 w-4 text-amber-500" />
                 Add Wellness Package
               </Button>
-            </Link>
+              <WellnessPackageDialog open={wellnessDialogOpen} onOpenChange={setWellnessDialogOpen} />
+            </>
           )}
         </div>
       )}
