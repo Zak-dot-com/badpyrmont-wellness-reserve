@@ -21,18 +21,8 @@ const AddOnTreatmentsContent = () => {
   }>(null);
   const [showDialog, setShowDialog] = useState(false);
 
-  // Collect add-ons that are not "main options"
-  const addOns = bookingData.addOnCategories
-    .flatMap((cat) => cat.items)
-    .filter((item) =>
-      ![
-        "spa-credit",
-        "private-training",
-        "nutrition",
-        "airport-transfer",
-        "excursion",
-      ].includes(item.id)
-    );
+  // Include all add-ons from all categories
+  const addOns = bookingData.addOnCategories.flatMap((cat) => cat.items);
 
   const handleReadMore = (item: typeof addOns[number]) => {
     setSelectedAddon(item);
@@ -142,14 +132,15 @@ const CustomPackageContent = () => {
           <label className="block text-sm font-medium mb-1">
             Number of Nights <span className="text-xs text-gray-400">(1-{maxDays})</span>
           </label>
-          <input
-            type="number"
-            min={minDays}
-            max={maxDays}
+          <select
             value={days}
-            onChange={(e) => setDays(Math.max(minDays, Math.min(maxDays, parseInt(e.target.value) || 1)))}
+            onChange={(e) => setDays(parseInt(e.target.value))}
             className="w-24 border rounded px-2 py-1 font-semibold"
-          />
+          >
+            <option value="4">4 nights</option>
+            <option value="7">7 nights</option>
+            <option value="14">14 nights</option>
+          </select>
         </div>
         {pkg && (
           <div className="flex items-center gap-3 border-t pt-4">
@@ -176,6 +167,12 @@ type Props = {
 };
 const WellnessPackageDialog = ({ open, onOpenChange }: Props) => {
   const [tab, setTab] = useState("package");
+  
+  const handleConfirm = () => {
+    // Close the dialog after confirming selection
+    onOpenChange(false);
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg p-0 max-h-[90vh]">
@@ -191,7 +188,7 @@ const WellnessPackageDialog = ({ open, onOpenChange }: Props) => {
             <TabsTrigger value="addon" className="flex-1">Add-on Treatments</TabsTrigger>
           </TabsList>
           <TabsContent value="package" className="p-4">
-            <ScrollArea className="h-[500px] w-full">
+            <ScrollArea className="h-[400px] w-full">
               <PackageSelection isEditMode />
             </ScrollArea>
           </TabsContent>
@@ -202,6 +199,14 @@ const WellnessPackageDialog = ({ open, onOpenChange }: Props) => {
             <AddOnTreatmentsContent />
           </TabsContent>
         </Tabs>
+        <div className="p-4 border-t border-gray-200 flex justify-end">
+          <Button 
+            onClick={handleConfirm} 
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            Confirm Selection
+          </Button>
+        </div>
         <DialogClose />
       </DialogContent>
     </Dialog>
