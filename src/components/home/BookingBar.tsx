@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -161,11 +162,18 @@ const BookingBar = ({
         </div>
 
         <div className="w-full md:w-auto flex items-center gap-3">
-          {hasSelection && <button onClick={handleReset} className="flex items-center text-xs text-gray-500 hover:text-hotel-primary">
+          {hasSelection && (
+            <Button
+              type="button"
+              onClick={handleReset}
+              size="sm"
+              className="bg-hotel-accent text-white font-medium px-3 py-1 h-8 rounded transition-colors duration-200 hover:bg-yellow-400 whitespace-nowrap flex items-center"
+              style={{ minWidth: 0 }}
+            >
               <RefreshCcw className="h-3.5 w-3.5 mr-1" />
               Reset
-            </button>}
-          
+            </Button>
+          )}
           <Button onClick={handleProceedToBooking} disabled={!isFormValid} className="w-full md:w-auto whitespace-nowrap text-white bg-hotel-accent px-[5px]">
             Proceed to Booking
           </Button>
