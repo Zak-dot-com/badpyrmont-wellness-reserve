@@ -30,6 +30,15 @@ export function usePricing({
   const calculateTotalPrice = useCallback((bookingData: BookingData): number => {
     let total = 0;
     
+    // Check for event booking from session storage first
+    const sessionEventBooking = sessionStorage.getItem('eventBooking');
+    if (sessionEventBooking) {
+      const eventBooking = JSON.parse(sessionEventBooking);
+      if (eventBooking?.event?.earlyBirdPrice && eventBooking?.registration?.attendees) {
+        return eventBooking.event.earlyBirdPrice * eventBooking.registration.attendees;
+      }
+    }
+    
     if (bookingData.selectedPackage) {
       total += bookingData.selectedPackage.basePrice * parseInt(bookingData.duration);
     }
@@ -84,8 +93,10 @@ export function usePricing({
         total += (eventDuration - 4) * 300;
       }
       
+      // Update per attendee cost calculation
       if (attendees > 0) {
-        total += attendees * 25;
+        // Base ticket price per attendee
+        total += attendees * 75; // Base ticket price
         
         if (eventAddons.includes('catering')) {
           total += attendees * 45;
@@ -125,7 +136,8 @@ export function usePricing({
       eventDuration,
       eventAddons,
       selectedRoom: bookingData.selectedRoom,
-      selectedPackage: bookingData.selectedPackage
+      selectedPackage: bookingData.selectedPackage,
+      sessionEventBooking: sessionStorage.getItem('eventBooking')
     });
 
     return total;

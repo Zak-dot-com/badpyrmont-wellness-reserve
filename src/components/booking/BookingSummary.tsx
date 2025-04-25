@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -137,54 +136,123 @@ const BookingSummary = () => {
   };
 
   const renderEventBookingSummary = () => {
-    if (!eventBooking || !eventBooking.event || !eventBooking.registration) {
+    if (!eventBooking && !eventSpace) {
       return (
         <p className="text-gray-500 italic text-sm">No event booking details available</p>
       );
     }
 
-    const { event, registration } = eventBooking;
-    const totalPrice = event.earlyBirdPrice * registration.attendees;
+    if (eventBooking) {
+      const { event, registration } = eventBooking;
+      const totalTicketPrice = event.earlyBirdPrice * registration.attendees;
+
+      return (
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Event</h4>
+            <p className="font-semibold text-lg">{event.title}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Date</h4>
+            <p>{new Date(event.date).toLocaleDateString()}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Location</h4>
+            <p>{event.location}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Attendees</h4>
+            <p>{registration.attendees}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Contact Information</h4>
+            <p>{registration.name}</p>
+            <p>{registration.email}</p>
+            <p>{registration.countryCode} {registration.phone}</p>
+          </div>
+
+          <div className="pt-2">
+            <div className="flex justify-between text-sm">
+              <span>Ticket Price (per person):</span>
+              <span>€{event.earlyBirdPrice}</span>
+            </div>
+            <div className="flex justify-between font-semibold mt-1">
+              <span>Number of Attendees:</span>
+              <span>{registration.attendees}</span>
+            </div>
+            <div className="flex justify-between font-semibold mt-2 text-amber-600">
+              <span>Total Ticket Price:</span>
+              <span>€{totalTicketPrice.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="space-y-4">
         <div>
-          <h4 className="text-sm font-medium text-gray-700">Event</h4>
-          <p className="font-semibold text-lg">{event.title}</p>
+          <h4 className="text-sm font-medium text-gray-700">Package</h4>
+          <p className="font-semibold text-lg">
+            {selectedPackage.id === 'relaxation-retreat'
+              ? 'Relaxation Retreat'
+              : selectedPackage.id === 'detox-revitalize'
+              ? 'Detox & Revitalize'
+              : 'Luxury Wellness Escape'}
+          </p>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-700">Date</h4>
-          <p>{new Date(event.date).toLocaleDateString()}</p>
+          <h4 className="text-sm font-medium text-gray-700">Duration</h4>
+          <p>{selectedDuration} days</p>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-700">Location</h4>
-          <p>{event.location}</p>
+          <h4 className="text-sm font-medium text-gray-700">Start Date</h4>
+          <p>{formatDate(startDate)}</p>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-700">Attendees</h4>
-          <p>{registration.attendees}</p>
+          <h4 className="text-sm font-medium text-gray-700">Room</h4>
+          <p>
+            {selectedRoom.id === 'single-standard'
+              ? 'Standard Room'
+              : selectedRoom.id === 'deluxe-room'
+              ? 'Deluxe Room'
+              : 'VIP Suite'}
+          </p>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-700">Contact Information</h4>
-          <p>{registration.name}</p>
-          <p>{registration.email}</p>
-          <p>{registration.countryCode} {registration.phone}</p>
+          <h4 className="text-sm font-medium text-gray-700">Stay Length</h4>
+          <p>{bookedDays} nights</p>
         </div>
 
-        <div className="pt-2">
-          <div className="flex justify-between text-sm">
-            <span>Super Early Bird Price (per person):</span>
-            <span>€{event.earlyBirdPrice}</span>
+        {selectedAddOns && selectedAddOns.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
+            <ul className="mt-1">
+              {selectedAddOns.map(addon => (
+                <li key={addon} className="flex items-center gap-1.5 text-sm">
+                  <Check className="h-4 w-4 text-green-500" />
+                  {addon === 'spa-credit'
+                    ? 'Spa Treatment Credit'
+                    : addon === 'private-training'
+                    ? 'Private Fitness Training'
+                    : addon === 'nutrition'
+                    ? 'Nutrition Consultation'
+                    : addon === 'airport-transfer'
+                    ? 'Airport Transfer'
+                    : 'Excursion Package'}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="flex justify-between font-semibold mt-1">
-            <span>Number of Attendees:</span>
-            <span>{registration.attendees}</span>
-          </div>
-        </div>
+        )}
       </div>
     );
   };
