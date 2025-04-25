@@ -23,6 +23,7 @@ const EventSpaceSelection = () => {
   const [selectedDuration, setSelectedDuration] = useState<number>(eventDuration || 4);
   const [selectedAddons, setSelectedAddons] = useState<string[]>(eventAddons || []);
   const [specialRequests, setSpecialRequests] = useState<string>('');
+  const [gatheringMode, setGatheringMode] = useState<string>('parliamentary');
 
   const [roomBooking, setRoomBooking] = useState<{
     enabled: boolean;
@@ -288,6 +289,21 @@ const EventSpaceSelection = () => {
                   <CalendarClock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 z-10" />
                 </div>
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="gatheringMode">Gathering Mode</Label>
+                <Select value={gatheringMode} onValueChange={setGatheringMode}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select gathering mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="parliamentary">Parliamentary</SelectItem>
+                    <SelectItem value="banquet">Banquet</SelectItem>
+                    <SelectItem value="standing">Standing</SelectItem>
+                    <SelectItem value="lounge">Lounge</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -312,9 +328,7 @@ const EventSpaceSelection = () => {
                         <div>
                           <div className="font-medium">{addon.name}</div>
                           <div className="text-sm text-gray-500">
-                            {addon.pricePerPerson && `€${addon.pricePerPerson} per person`}
-                            {addon.flatPrice && `€${addon.flatPrice} flat fee`}
-                            {addon.pricePerHour && `€${addon.pricePerHour} per hour`}
+                            Add this option and the Event Manager will contact you for details
                           </div>
                         </div>
                       </div>
@@ -325,10 +339,17 @@ const EventSpaceSelection = () => {
             </div>
             
             <div className="space-y-4">
-              <RoomBookingSection 
-                attendees={guestCount} 
-                onRoomBookingChange={handleRoomBookingChange}
-              />
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h4 className="font-semibold text-amber-800 mb-2">Room Booking Required</h4>
+                <p className="text-sm text-amber-700 mb-4">
+                  For events, we require booking rooms to ensure the best experience for your guests
+                </p>
+                <RoomBookingSection 
+                  attendees={guestCount} 
+                  onRoomBookingChange={handleRoomBookingChange}
+                  required={true}
+                />
+              </div>
             </div>
             
             <div className="space-y-2">
