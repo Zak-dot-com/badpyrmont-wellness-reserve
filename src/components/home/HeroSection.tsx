@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import BookingBar from './BookingBar';
 import { events } from '@/data/eventsData';
 import EventRegistrationModal from './EventRegistrationModal';
+import MiniEventSlider from './MiniEventSlider';
 
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -176,6 +177,8 @@ const HeroSection = () => {
           </motion.div>
         ))}
       </motion.div>
+
+      <MiniEventSlider />
 
       <div className="absolute inset-0 bg-black/20 z-10" />
 
