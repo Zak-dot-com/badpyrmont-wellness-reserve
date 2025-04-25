@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -17,6 +16,7 @@ import LoyaltyRewardsPage from "./pages/LoyaltyRewardsPage";
 import LoyaltyActivityPage from "./pages/LoyaltyActivityPage";
 import LoyaltyProfilePage from "./pages/LoyaltyProfilePage";
 import ContactPage from "./pages/ContactPage";
+import EventDetailsPage from "./pages/EventDetailsPage";
 import PageLayout from "./components/layout/PageLayout";
 
 const queryClient = new QueryClient({
@@ -39,6 +39,7 @@ const App = () => (
             <AnimatePresence mode="wait">
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/events/:eventId" element={<EventDetailsPage />} />
                 <Route path="/booking" element={<BookingPage />} />
                 <Route path="/book-room" element={<RoomBookingPage />} />
                 <Route path="/auth" element={<AuthPage />} />

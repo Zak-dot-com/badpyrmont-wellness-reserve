@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import CountryCodeSelect from '@/components/booking/steps/checkout/CountryCodeSelect';
 import { Event } from '@/data/eventsData';
 import { useNavigate } from 'react-router-dom';
+
 interface EventRegistrationModalProps {
   event: Event | null;
   isOpen: boolean;
   onClose: () => void;
 }
+
 const EventRegistrationModal = ({
   event,
   isOpen,
@@ -25,7 +27,6 @@ const EventRegistrationModal = ({
     attendees: 1
   });
 
-  // If no event is provided, don't render the modal contents
   if (!event) {
     return <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[500px]">
@@ -37,9 +38,9 @@ const EventRegistrationModal = ({
         </DialogContent>
       </Dialog>;
   }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Store event registration data in sessionStorage
     sessionStorage.setItem('eventBooking', JSON.stringify({
       event,
       registration: formData,
@@ -48,6 +49,12 @@ const EventRegistrationModal = ({
     onClose();
     navigate('/booking?type=event');
   };
+
+  const handleViewDetails = () => {
+    onClose();
+    navigate(`/events/${event?.id}`, { state: { event } });
+  };
+
   return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
@@ -99,9 +106,19 @@ const EventRegistrationModal = ({
               <p className="text-xl text-amber-600">€{event.earlyBirdPrice} per person</p>
               <p className="text-sm text-gray-500">Valid until {new Date(event.earlyBirdEndDate).toLocaleDateString()}</p>
             </div>
-            <div className="flex justify-between items-center">
-              <p className="text-lg font-bold">Total: €{event.earlyBirdPrice * formData.attendees}</p>
-              <Button type="submit" className="bg-orange-500 hover:bg-orange-400 text-zinc-50">
+            <div className="flex justify-between items-center gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleViewDetails}
+                className="flex-1"
+              >
+                More Details
+              </Button>
+              <Button 
+                type="submit" 
+                className="bg-orange-500 hover:bg-orange-400 text-zinc-50 flex-1"
+              >
                 Proceed to Checkout
               </Button>
             </div>
@@ -110,4 +127,5 @@ const EventRegistrationModal = ({
       </DialogContent>
     </Dialog>;
 };
+
 export default EventRegistrationModal;
