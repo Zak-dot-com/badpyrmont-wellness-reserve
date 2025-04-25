@@ -6,6 +6,8 @@ import { availableRooms } from '@/data/roomsData';
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { Minus, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface RoomBookingSectionProps {
   attendees: number;
@@ -22,6 +24,7 @@ interface RoomBookingSectionProps {
 const RoomBookingSection = ({ attendees, onRoomBookingChange, required = false }: RoomBookingSectionProps) => {
   const recommendedRooms = Math.max(1, Math.round(attendees * 0.1));
   const [selectedRoomType, setSelectedRoomType] = useState(availableRooms[0].id);
+  const [numberOfRooms, setNumberOfRooms] = useState(recommendedRooms);
   const [date, setDate] = useState<DateRange | undefined>({
     from: addDays(new Date(), 1),
     to: addDays(new Date(), 2),
@@ -38,14 +41,14 @@ const RoomBookingSection = ({ attendees, onRoomBookingChange, required = false }
   const calculateSubtotal = () => {
     const selectedRoom = availableRooms.find(room => room.id === selectedRoomType);
     if (!selectedRoom) return 0;
-    return selectedRoom.price * recommendedRooms * calculateNights();
+    return selectedRoom.price * numberOfRooms * calculateNights();
   };
 
   const handleRoomTypeChange = (roomType: string) => {
     setSelectedRoomType(roomType);
     onRoomBookingChange({
       enabled: true,
-      numberOfRooms: recommendedRooms,
+      numberOfRooms,
       roomType,
       nights: calculateNights(),
       dates: date
@@ -57,12 +60,36 @@ const RoomBookingSection = ({ attendees, onRoomBookingChange, required = false }
     if (range?.from && range?.to) {
       onRoomBookingChange({
         enabled: true,
-        numberOfRooms: recommendedRooms,
+        numberOfRooms,
         roomType: selectedRoomType,
         nights: calculateNights(),
         dates: range
       });
     }
+  };
+
+  const incrementRooms = () => {
+    const newNumber = numberOfRooms + 1;
+    setNumberOfRooms(newNumber);
+    updateRoomBooking(newNumber);
+  };
+
+  const decrementRooms = () => {
+    if (numberOfRooms > 1) {
+      const newNumber = numberOfRooms - 1;
+      setNumberOfRooms(newNumber);
+      updateRoomBooking(newNumber);
+    }
+  };
+
+  const updateRoomBooking = (rooms: number) => {
+    onRoomBookingChange({
+      enabled: true,
+      numberOfRooms: rooms,
+      roomType: selectedRoomType,
+      nights: calculateNights(),
+      dates: date
+    });
   };
 
   return (
@@ -82,6 +109,30 @@ const RoomBookingSection = ({ attendees, onRoomBookingChange, required = false }
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Number of Rooms</Label>
+          <div className="flex items-center space-x-4">
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={decrementRooms}
+              disabled={numberOfRooms <= 1}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <span className="text-lg font-semibold min-w-[2rem] text-center">
+              {numberOfRooms}
+            </span>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={incrementRooms}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -106,7 +157,7 @@ const RoomBookingSection = ({ attendees, onRoomBookingChange, required = false }
             <span className="text-lg font-semibold text-amber-800">€{calculateSubtotal().toFixed(2)}</span>
           </div>
           <p className="text-sm text-amber-700 mt-1">
-            {recommendedRooms} {recommendedRooms === 1 ? 'room' : 'rooms'} × {calculateNights()} {calculateNights() === 1 ? 'night' : 'nights'}
+            {numberOfRooms} {numberOfRooms === 1 ? 'room' : 'rooms'} × {calculateNights()} {calculateNights() === 1 ? 'night' : 'nights'}
           </p>
         </div>
       </div>
