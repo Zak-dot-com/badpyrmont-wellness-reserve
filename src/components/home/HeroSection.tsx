@@ -206,7 +206,7 @@ const HeroSection = () => {
 
       <EventRegistrationModal event={selectedEvent} isOpen={!!selectedEvent} onClose={() => setSelectedEvent(null)} />
 
-      <div className="absolute bottom-0 right-0 mb-[calc(72px+0.75rem)] mr-3 z-30">
+      <div className="absolute bottom-0 right-0 mb-[calc(72px+0.75rem)] mr-3 z-30 my-0 py-[52px]">
         <AnimatedLotus />
       </div>
     </section>;
