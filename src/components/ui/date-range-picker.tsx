@@ -18,7 +18,7 @@ import {
 interface DatePickerWithRangeProps {
   className?: string;
   date: DateRange | undefined;
-  setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  setDate: (date: DateRange | undefined) => void;
 }
 
 export function DatePickerWithRange({
@@ -42,14 +42,14 @@ export function DatePickerWithRange({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, "MMM dd, yyyy")} -{" "}
+                  {format(date.to, "MMM dd, yyyy")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "MMM dd, yyyy")
               )
             ) : (
-              <span>Pick a date range</span>
+              <span>Pick check-in & check-out dates</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -61,6 +61,8 @@ export function DatePickerWithRange({
             selected={date}
             onSelect={setDate}
             numberOfMonths={2}
+            disabled={(date) => date < new Date()}
+            className="pointer-events-auto"
           />
         </PopoverContent>
       </Popover>
