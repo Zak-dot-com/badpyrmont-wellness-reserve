@@ -33,9 +33,10 @@ const BookingSummary = () => {
     setEventAddons
   } = useBooking();
 
-  // Force re-render when any of these values change
+  const sessionEventBooking = sessionStorage.getItem('eventBooking');
+  const eventBooking = sessionEventBooking ? JSON.parse(sessionEventBooking) : null;
+
   useEffect(() => {
-    // This empty effect will trigger a re-render when dependencies change
     console.log("BookingSummary re-rendering with:", {
       eventSpace,
       eventType,
@@ -68,7 +69,6 @@ const BookingSummary = () => {
     }).format(date);
   };
 
-  // Make sure we call calculateTotalPrice to get the latest value
   const totalPrice = calculateTotalPrice();
 
   const handleReset = () => {
@@ -136,77 +136,50 @@ const BookingSummary = () => {
   };
 
   const renderEventBookingSummary = () => {
-    if (!eventSpace) {
-      return <p className="text-gray-500 italic text-sm">Select an event space to see booking details</p>;
-    }
+    if (!eventBooking) return null;
+
+    const { event, registration } = eventBooking;
+    const totalPrice = event.earlyBirdPrice * registration.attendees;
 
     return (
-      <div>
-        <div className="mb-4">
-          <h4 className="text-sm font-medium text-gray-700">Venue</h4>
-          <p className="font-semibold text-lg">{getEventSpaceDetail(eventSpace)}</p>
+      <div className="space-y-4">
+        <div>
+          <h4 className="text-sm font-medium text-gray-700">Event</h4>
+          <p className="font-semibold text-lg">{event.title}</p>
         </div>
-        
-        {eventType && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Event Type</h4>
-            <p>{getEventTypeDetail(eventType)}</p>
+
+        <div>
+          <h4 className="text-sm font-medium text-gray-700">Date</h4>
+          <p>{new Date(event.date).toLocaleDateString()}</p>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-medium text-gray-700">Location</h4>
+          <p>{event.location}</p>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-medium text-gray-700">Attendees</h4>
+          <p>{registration.attendees}</p>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-medium text-gray-700">Contact Information</h4>
+          <p>{registration.name}</p>
+          <p>{registration.email}</p>
+          <p>{registration.countryCode} {registration.phone}</p>
+        </div>
+
+        <div className="pt-2">
+          <div className="flex justify-between text-sm">
+            <span>Super Early Bird Price (per person):</span>
+            <span>€{event.earlyBirdPrice}</span>
           </div>
-        )}
-        
-        {eventDate && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Date</h4>
-            <p>{formatDate(eventDate)}</p>
+          <div className="flex justify-between font-semibold mt-1">
+            <span>Number of Attendees:</span>
+            <span>{registration.attendees}</span>
           </div>
-        )}
-        
-        {attendees && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Attendees</h4>
-            <p>{attendees} people</p>
-          </div>
-        )}
-        
-        {eventDuration && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Duration</h4>
-            <p>{eventDuration} hours</p>
-          </div>
-        )}
-        
-        {eventAddons && eventAddons.length > 0 && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
-            <ul className="mt-1">
-              {eventAddons.map(addon => {
-                if (addon === 'room-booking' && selectedRoom && attendees) {
-                  const roomCount = Math.round(attendees * 0.1);
-                  const nights = selectedDuration ? parseInt(selectedDuration) : 1;
-                  return (
-                    <li key={addon} className="flex items-start gap-1.5 text-sm">
-                      <Check className="h-4 w-4 text-green-500 mt-0.5" />
-                      <div>
-                        <span>{getEventAddonDetail(addon)}</span>
-                        <div className="text-xs text-gray-600">
-                          {roomCount} x {selectedRoom.name} for {nights} night{nights > 1 ? 's' : ''} 
-                          <span className="text-amber-600"> (€{selectedRoom.price} per room/night)</span>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                }
-                
-                return (
-                  <li key={addon} className="flex items-center gap-1.5 text-sm">
-                    <Check className="h-4 w-4 text-green-500" />
-                    {getEventAddonDetail(addon)}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        </div>
       </div>
     );
   };
@@ -291,7 +264,9 @@ const BookingSummary = () => {
   };
 
   const renderBookingDetails = () => {
-    if (eventSpace || bookingType === 'event') {
+    if (eventBooking) {
+      return renderEventBookingSummary();
+    } else if (bookingType === 'event') {
       return renderEventBookingSummary();
     } else {
       return renderWellnessPackageSummary();

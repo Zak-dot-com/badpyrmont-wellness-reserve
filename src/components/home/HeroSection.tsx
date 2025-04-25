@@ -2,38 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ArrowRight } from 'lucide-react';
 import BookingBar from './BookingBar';
+import { events } from '@/data/eventsData';
+import EventRegistrationModal from './EventRegistrationModal';
 
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const heroImages = [
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1470&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop"
-  ];
+  const [selectedEvent, setSelectedEvent] = useState<typeof events[0] | null>(null);
 
-  const heroContent = [
+  const allContent = [
     {
       image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1470&auto=format&fit=crop",
       title: "DISCOVER",
       subtitle: "LONGEVITY WELLNESS",
-      description: "WHERE HEALTH MEETS LUXURY"
+      description: "WHERE HEALTH MEETS LUXURY",
+      isEvent: false
     },
-    {
-      image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=1470&auto=format&fit=crop",
-      title: "MINDFUL",
-      subtitle: "LIVING SPACES",
-      description: "EMBRACE THE JOURNEY"
-    },
-    {
-      image: "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?q=80&w=1470&auto=format&fit=crop",
-      title: "HOLISTIC",
-      subtitle: "HEALING RETREAT",
-      description: "TRANSFORM YOUR LIFE"
-    }
+    ...events.map(event => ({
+      image: event.image,
+      title: event.title.toUpperCase(),
+      subtitle: `${new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+      description: event.description,
+      isEvent: true,
+      event
+    }))
   ];
 
   useEffect(() => {
@@ -42,7 +36,7 @@ const HeroSection = () => {
     }, 500);
 
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % heroImages.length);
+      setCurrentSlide(prev => (prev + 1) % allContent.length);
     }, 6000);
 
     return () => clearInterval(interval);
@@ -118,7 +112,7 @@ const HeroSection = () => {
         animate={isLoaded ? "expanded" : "initial"}
         variants={squareVariants}
       >
-        {heroContent.map((content, index) => (
+        {allContent.map((content, index) => (
           <motion.div
             key={index}
             className="absolute inset-0 bg-cover bg-center"
@@ -161,6 +155,20 @@ const HeroSection = () => {
                     >
                       {content.description}
                     </motion.p>
+                    
+                    {content.isEvent && (
+                      <motion.div
+                        variants={textVariants}
+                        className="mt-4"
+                      >
+                        <Button 
+                          onClick={() => setSelectedEvent(content.event)}
+                          className="bg-amber-500 hover:bg-amber-600 text-white"
+                        >
+                          Book Tickets
+                        </Button>
+                      </motion.div>
+                    )}
                   </motion.div>
                 </div>
               )}
@@ -265,6 +273,12 @@ const HeroSection = () => {
           <BookingBar />
         </div>
       </div>
+
+      <EventRegistrationModal
+        event={selectedEvent!}
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
     </section>
   );
 };
