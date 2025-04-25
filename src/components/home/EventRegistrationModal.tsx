@@ -9,7 +9,7 @@ import { Event } from '@/data/eventsData';
 import { useNavigate } from 'react-router-dom';
 
 interface EventRegistrationModalProps {
-  event: Event;
+  event: Event | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -23,6 +23,21 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
     email: '',
     attendees: 1
   });
+
+  // If no event is provided, don't render the modal contents
+  if (!event) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Event Not Found</DialogTitle>
+          </DialogHeader>
+          <p className="py-4">Sorry, the event information could not be loaded.</p>
+          <Button onClick={onClose}>Close</Button>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -156,7 +156,7 @@ const HeroSection = () => {
                       {content.description}
                     </motion.p>
                     
-                    {content.isEvent && (
+                    {content.isEvent && 'event' in content && (
                       <motion.div
                         variants={textVariants}
                         className="mt-4"
@@ -275,7 +275,7 @@ const HeroSection = () => {
       </div>
 
       <EventRegistrationModal
-        event={selectedEvent!}
+        event={selectedEvent}
         isOpen={!!selectedEvent}
         onClose={() => setSelectedEvent(null)}
       />
