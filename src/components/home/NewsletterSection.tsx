@@ -43,7 +43,7 @@ const NewsletterSection = () => {
               <h3 className="text-3xl md:text-4xl font-light mb-2">
                 with GRAND HOTEL Badpyrmont
               </h3>
-              <p className="text-2xl md:text-3xl font-light text-gray-500 text-center">
+              <p className="text-2xl md:text-3xl font-light text-left text-zinc-600">
                 Powered by STEINBERGER
               </p>
             </div>
