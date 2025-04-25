@@ -7,6 +7,8 @@ import BookingBar from './BookingBar';
 import { events } from '@/data/eventsData';
 import EventRegistrationModal from './EventRegistrationModal';
 import MiniEventSlider from './MiniEventSlider';
+import AnimatedLotus from './AnimatedLotus';
+
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -215,6 +217,11 @@ const HeroSection = () => {
       </div>
 
       <EventRegistrationModal event={selectedEvent} isOpen={!!selectedEvent} onClose={() => setSelectedEvent(null)} />
+
+      <div className="absolute bottom-0 right-0 mb-[calc(72px+0.75rem)] mr-3 z-30">
+        <AnimatedLotus />
+      </div>
     </section>;
 };
+
 export default HeroSection;
