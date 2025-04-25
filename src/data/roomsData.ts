@@ -1,4 +1,3 @@
-
 import { RoomType, RoomAddOn } from "../types/bookingTypes";
 
 export const availableRooms: RoomType[] = [
@@ -49,19 +48,11 @@ export const initialRoomAddOns: RoomAddOn[] = [
     selected: false
   },
   {
-    id: "high-speed-wifi",
-    name: "High Speed WiFi",
-    description: "Dedicated high-speed internet connection",
-    price: 15,
-    icon: "wifi",
-    selected: false
-  },
-  {
-    id: "breakfast-in-bed",
-    name: "Breakfast in Bed",
-    description: "Daily gourmet breakfast delivered to your room",
-    price: 40,
-    icon: "bed",
+    id: "airport-transport",
+    name: "Airport Transport",
+    description: "Complimentary round-trip airport shuttle service",
+    price: 50,
+    icon: "car",
     selected: false
   }
 ];
