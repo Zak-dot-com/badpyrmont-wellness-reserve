@@ -1,3 +1,4 @@
+
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -16,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { toast } from 'sonner';
+
 const stepVariants = {
   hidden: {
     opacity: 0,
@@ -34,6 +36,7 @@ const stepVariants = {
     x: -50
   }
 };
+
 const BookingPage = () => {
   const {
     currentStep,
@@ -49,6 +52,7 @@ const BookingPage = () => {
     resetPackage,
     resetRoom
   } = useBooking();
+  
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const totalPrice = calculateTotalPrice();
@@ -64,95 +68,107 @@ const BookingPage = () => {
     resetExistingSelections();
 
     // Determine booking type
-    const type = searchParams.get('bookingType');
+    const type = searchParams.get('type') || searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
     const addPackage = searchParams.get('addPackage');
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
+    const eventBookingStr = sessionStorage.getItem('eventBooking');
 
-    // Handle date selection
-    if (startDateParam) {
-      setStartDate(new Date(startDateParam));
-    }
-
-    // Set booking type based on query parameters
-    if (type === 'room' || room) {
-      setBookingType('room');
-    } else if (type === 'event' || event) {
+    // If we have an event booking in session storage, handle that first
+    if (eventBookingStr) {
       setBookingType('event');
-      setCurrentStep(1); // Event space selection is the first step in event flow
-      // Handle event space booking logic
+      setCurrentStep(4); // Go directly to checkout for event booking
       if (!notificationsShown.current) {
-        toast.info("Event space booking selected. Choose your preferred venue and details.");
+        toast.info("Event booking details loaded. Please complete your checkout.");
         notificationsShown.current = true;
       }
-    } else if (type === 'package' || packageId || addPackage) {
-      setBookingType('package');
-    }
+    } else {
+      // Handle date selection
+      if (startDateParam) {
+        setStartDate(new Date(startDateParam));
+      }
 
-    // Handle room selection from homepage
-    if (room) {
-      selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
-      setCurrentStep(3); // Jump to room selection step
-      if (!notificationsShown.current) {
-        toast.info("Room type pre-selected. Please confirm your selection.");
-        notificationsShown.current = true;
+      // Set booking type based on query parameters
+      if (type === 'room' || room) {
+        setBookingType('room');
+      } else if (type === 'event' || event) {
+        setBookingType('event');
+        setCurrentStep(1); // Event space selection is the first step in event flow
+        // Handle event space booking logic
+        if (!notificationsShown.current) {
+          toast.info("Event space booking selected. Choose your preferred venue and details.");
+          notificationsShown.current = true;
+        }
+      } else if (type === 'package' || packageId || addPackage) {
+        setBookingType('package');
+      }
+
+      // Handle room selection from homepage
+      if (room) {
+        selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
+        setCurrentStep(3); // Jump to room selection step
+        if (!notificationsShown.current) {
+          toast.info("Room type pre-selected. Please confirm your selection.");
+          notificationsShown.current = true;
+        }
+      }
+
+      // Handle package selection from homepage
+      if (packageId) {
+        selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
+        if (!notificationsShown.current) {
+          toast.info("Package pre-selected. Please customize your wellness journey.");
+          notificationsShown.current = true;
+        }
+      }
+
+      // Handle event space selection from homepage
+      if (event) {
+        setBookingType('event');
+        setEventSpace(event);
+        setCurrentStep(1); // Event space selection is the first step
+        if (!notificationsShown.current) {
+          toast.info("Event space pre-selected. Please customize your event details.");
+          notificationsShown.current = true;
+        }
+      }
+
+      // If coming from "Add Wellness Package" button
+      if (addPackage === 'true') {
+        setBookingType('package');
+        setCurrentStep(1); // Go to package selection step
+        if (!notificationsShown.current) {
+          toast.info("Select a wellness package to enhance your stay.");
+          notificationsShown.current = true;
+        }
+      }
+
+      // Calculate duration from start/end dates if both are present
+      if (startDateParam && endDateParam) {
+        const start = new Date(startDateParam);
+        const end = new Date(endDateParam);
+        const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+        // Set closest duration from available options
+        if (diffDays <= 4) {
+          setDuration("4");
+        } else if (diffDays <= 7) {
+          setDuration("7");
+        } else {
+          setDuration("14");
+        }
       }
     }
-
-    // Handle package selection from homepage
-    if (packageId) {
-      selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
-      if (!notificationsShown.current) {
-        toast.info("Package pre-selected. Please customize your wellness journey.");
-        notificationsShown.current = true;
-      }
-    }
-
-    // Handle event space selection from homepage
-    if (event) {
-      setBookingType('event');
-      setEventSpace(event);
-      setCurrentStep(1); // Event space selection is the first step
-      if (!notificationsShown.current) {
-        toast.info("Event space pre-selected. Please customize your event details.");
-        notificationsShown.current = true;
-      }
-    }
-
-    // If coming from "Add Wellness Package" button
-    if (addPackage === 'true') {
-      setBookingType('package');
-      setCurrentStep(1); // Go to package selection step
-      if (!notificationsShown.current) {
-        toast.info("Select a wellness package to enhance your stay.");
-        notificationsShown.current = true;
-      }
-    }
-
-    // Calculate duration from start/end dates if both are present
-    if (startDateParam && endDateParam) {
-      const start = new Date(startDateParam);
-      const end = new Date(endDateParam);
-      const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-      // Set closest duration from available options
-      if (diffDays <= 4) {
-        setDuration("4");
-      } else if (diffDays <= 7) {
-        setDuration("7");
-      } else {
-        setDuration("14");
-      }
-    }
+    
     initialSetupComplete.current = true;
   }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace]);
 
   // Reset existing selections when switching booking types
   const resetExistingSelections = () => {
-    const type = searchParams.get('bookingType');
+    const type = searchParams.get('type') || searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
@@ -180,6 +196,7 @@ const BookingPage = () => {
       setOpenDrawer(false);
     }
   }, [isMobile, openDrawer]);
+  
   const getPageTitle = () => {
     if (bookingType === 'room') {
       return "Book Your Stay";
@@ -189,8 +206,16 @@ const BookingPage = () => {
       return "Book Your Wellness Retreat";
     }
   };
+  
   const renderCurrentStep = () => {
-    // For event bookings, show event-specific steps
+    // For event bookings from event registration, go straight to checkout
+    const eventBooking = sessionStorage.getItem('eventBooking');
+    if (eventBooking && bookingType === 'event' && currentStep !== 4) {
+      setCurrentStep(4);
+      return <CheckoutForm />;
+    }
+
+    // For event bookings from regular flow, show event-specific steps
     if (bookingType === 'event' && currentStep !== 4) {
       return <EventSpaceSelection />;
     }
@@ -210,6 +235,7 @@ const BookingPage = () => {
         return <PackageSelection />;
     }
   };
+  
   return <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow bg-gray-100">
@@ -268,4 +294,5 @@ const BookingPage = () => {
       <Footer />
     </div>;
 };
+
 export default BookingPage;

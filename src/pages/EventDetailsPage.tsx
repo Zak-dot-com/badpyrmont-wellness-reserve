@@ -1,15 +1,23 @@
 
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { Event } from '@/data/eventsData';
+import { Event, events } from '@/data/eventsData';
 import { ArrowRight } from 'lucide-react';
 
 const EventDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const event = location.state?.event as Event;
+  const params = useParams();
+  
+  // Try to get event from location state first
+  let event = location.state?.event as Event;
+  
+  // If not in location state, try to find by ID from URL params
+  if (!event && params.eventId) {
+    event = events.find(e => e.id === params.eventId) as Event;
+  }
 
   if (!event) {
     return (
@@ -23,11 +31,19 @@ const EventDetailsPage = () => {
   }
 
   const handleBookNow = () => {
-    sessionStorage.setItem('eventBooking', JSON.stringify({
+    const eventBookingData = {
       event,
-      registration: null,
+      registration: {
+        name: '',
+        email: '',
+        phone: '',
+        countryCode: '+49',
+        attendees: 1
+      },
       totalPrice: event.earlyBirdPrice
-    }));
+    };
+    
+    sessionStorage.setItem('eventBooking', JSON.stringify(eventBookingData));
     navigate('/booking?type=event');
   };
 

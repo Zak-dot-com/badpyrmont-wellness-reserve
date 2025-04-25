@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -136,7 +137,11 @@ const BookingSummary = () => {
   };
 
   const renderEventBookingSummary = () => {
-    if (!eventBooking) return null;
+    if (!eventBooking || !eventBooking.event || !eventBooking.registration) {
+      return (
+        <p className="text-gray-500 italic text-sm">No event booking details available</p>
+      );
+    }
 
     const { event, registration } = eventBooking;
     const totalPrice = event.earlyBirdPrice * registration.attendees;

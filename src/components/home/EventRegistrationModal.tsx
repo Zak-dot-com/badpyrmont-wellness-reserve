@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -28,7 +29,8 @@ const EventRegistrationModal = ({
   });
 
   if (!event) {
-    return <Dialog open={isOpen} onOpenChange={onClose}>
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Event Not Found</DialogTitle>
@@ -36,7 +38,8 @@ const EventRegistrationModal = ({
           <p className="py-4">Sorry, the event information could not be loaded.</p>
           <Button onClick={onClose}>Close</Button>
         </DialogContent>
-      </Dialog>;
+      </Dialog>
+    );
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,7 +58,8 @@ const EventRegistrationModal = ({
     navigate(`/events/${event?.id}`, { state: { event } });
   };
 
-  return <Dialog open={isOpen} onOpenChange={onClose}>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{event.title}</DialogTitle>
@@ -125,7 +129,8 @@ const EventRegistrationModal = ({
           </div>
         </form>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
 
 export default EventRegistrationModal;
