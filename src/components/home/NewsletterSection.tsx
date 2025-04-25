@@ -37,7 +37,7 @@ const NewsletterSection = () => {
         <div className="max-w-6xl mx-auto bg-white p-8 md:p-16">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-light mb-4">
+              <h2 className="text-4xl md:text-5xl font-light mb-4 text-amber-500">
                 Stay connected
               </h2>
               <h3 className="text-3xl md:text-4xl font-light mb-2">
