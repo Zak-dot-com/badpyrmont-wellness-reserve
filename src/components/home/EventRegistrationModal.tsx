@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -7,14 +6,16 @@ import { Button } from "@/components/ui/button";
 import CountryCodeSelect from '@/components/booking/steps/checkout/CountryCodeSelect';
 import { Event } from '@/data/eventsData';
 import { useNavigate } from 'react-router-dom';
-
 interface EventRegistrationModalProps {
   event: Event | null;
   isOpen: boolean;
   onClose: () => void;
 }
-
-const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationModalProps) => {
+const EventRegistrationModal = ({
+  event,
+  isOpen,
+  onClose
+}: EventRegistrationModalProps) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -26,8 +27,7 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
 
   // If no event is provided, don't render the modal contents
   if (!event) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+    return <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Event Not Found</DialogTitle>
@@ -35,10 +35,8 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
           <p className="py-4">Sorry, the event information could not be loaded.</p>
           <Button onClick={onClose}>Close</Button>
         </DialogContent>
-      </Dialog>
-    );
+      </Dialog>;
   }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Store event registration data in sessionStorage
@@ -50,9 +48,7 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
     onClose();
     navigate('/booking?type=event');
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{event.title}</DialogTitle>
@@ -61,54 +57,40 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              required
-            />
+            <Input id="name" value={formData.name} onChange={e => setFormData(prev => ({
+            ...prev,
+            name: e.target.value
+          }))} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              required
-            />
+            <Input id="email" type="email" value={formData.email} onChange={e => setFormData(prev => ({
+            ...prev,
+            email: e.target.value
+          }))} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
             <div className="flex gap-2">
-              <CountryCodeSelect
-                value={formData.countryCode}
-                onChange={(code) => setFormData(prev => ({ ...prev, countryCode: code }))}
-              />
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                required
-                className="flex-1"
-              />
+              <CountryCodeSelect value={formData.countryCode} onChange={code => setFormData(prev => ({
+              ...prev,
+              countryCode: code
+            }))} />
+              <Input id="phone" type="tel" value={formData.phone} onChange={e => setFormData(prev => ({
+              ...prev,
+              phone: e.target.value
+            }))} required className="flex-1" />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="attendees">Number of Attendees</Label>
-            <Input
-              id="attendees"
-              type="number"
-              min="1"
-              max="10"
-              value={formData.attendees}
-              onChange={(e) => setFormData(prev => ({ ...prev, attendees: parseInt(e.target.value) }))}
-              required
-            />
+            <Input id="attendees" type="number" min="1" max="10" value={formData.attendees} onChange={e => setFormData(prev => ({
+            ...prev,
+            attendees: parseInt(e.target.value)
+          }))} required />
           </div>
 
           <div className="pt-4">
@@ -119,15 +101,13 @@ const EventRegistrationModal = ({ event, isOpen, onClose }: EventRegistrationMod
             </div>
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold">Total: €{event.earlyBirdPrice * formData.attendees}</p>
-              <Button type="submit" className="bg-hotel-primary hover:bg-hotel-primary/90">
+              <Button type="submit" className="bg-orange-500 hover:bg-orange-400 text-zinc-50">
                 Proceed to Checkout
               </Button>
             </div>
           </div>
         </form>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default EventRegistrationModal;
