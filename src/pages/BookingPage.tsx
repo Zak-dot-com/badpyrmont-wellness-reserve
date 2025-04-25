@@ -1,4 +1,3 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -60,14 +59,11 @@ const BookingPage = () => {
   const initialSetupComplete = useRef(false);
   const notificationsShown = useRef(false);
 
-  // Parse query parameters to pre-select options - only run once
   useEffect(() => {
     if (initialSetupComplete.current) return;
 
-    // First reset all existing selections if switching booking types
     resetExistingSelections();
 
-    // Determine booking type
     const type = searchParams.get('type') || searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
@@ -77,27 +73,23 @@ const BookingPage = () => {
     const endDateParam = searchParams.get('endDate');
     const eventBookingStr = sessionStorage.getItem('eventBooking');
 
-    // If we have an event booking in session storage, handle that first
     if (eventBookingStr) {
       setBookingType('event');
-      setCurrentStep(4); // Go directly to checkout for event booking
+      setCurrentStep(4);
       if (!notificationsShown.current) {
         toast.info("Event booking details loaded. Please complete your checkout.");
         notificationsShown.current = true;
       }
     } else {
-      // Handle date selection
       if (startDateParam) {
         setStartDate(new Date(startDateParam));
       }
 
-      // Set booking type based on query parameters
       if (type === 'room' || room) {
         setBookingType('room');
       } else if (type === 'event' || event) {
         setBookingType('event');
-        setCurrentStep(1); // Event space selection is the first step in event flow
-        // Handle event space booking logic
+        setCurrentStep(1);
         if (!notificationsShown.current) {
           toast.info("Event space booking selected. Choose your preferred venue and details.");
           notificationsShown.current = true;
@@ -106,17 +98,15 @@ const BookingPage = () => {
         setBookingType('package');
       }
 
-      // Handle room selection from homepage
       if (room) {
         selectRoom(room === 'standard' ? 'single-standard' : room === 'deluxe' ? 'deluxe-room' : 'vip-suite');
-        setCurrentStep(3); // Jump to room selection step
+        setCurrentStep(3);
         if (!notificationsShown.current) {
           toast.info("Room type pre-selected. Please confirm your selection.");
           notificationsShown.current = true;
         }
       }
 
-      // Handle package selection from homepage
       if (packageId) {
         selectPackage(packageId === 'relaxation' ? 'relaxation-retreat' : packageId === 'detox' ? 'detox-revitalize' : 'luxury-escape');
         if (!notificationsShown.current) {
@@ -125,34 +115,30 @@ const BookingPage = () => {
         }
       }
 
-      // Handle event space selection from homepage
       if (event) {
         setBookingType('event');
         setEventSpace(event);
-        setCurrentStep(1); // Event space selection is the first step
+        setCurrentStep(1);
         if (!notificationsShown.current) {
           toast.info("Event space pre-selected. Please customize your event details.");
           notificationsShown.current = true;
         }
       }
 
-      // If coming from "Add Wellness Package" button
       if (addPackage === 'true') {
         setBookingType('package');
-        setCurrentStep(1); // Go to package selection step
+        setCurrentStep(1);
         if (!notificationsShown.current) {
           toast.info("Select a wellness package to enhance your stay.");
           notificationsShown.current = true;
         }
       }
 
-      // Calculate duration from start/end dates if both are present
       if (startDateParam && endDateParam) {
         const start = new Date(startDateParam);
         const end = new Date(endDateParam);
         const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
-        // Set closest duration from available options
         if (diffDays <= 4) {
           setDuration("4");
         } else if (diffDays <= 7) {
@@ -166,31 +152,26 @@ const BookingPage = () => {
     initialSetupComplete.current = true;
   }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace]);
 
-  // Reset existing selections when switching booking types
   const resetExistingSelections = () => {
     const type = searchParams.get('type') || searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
 
-    // If switching to room booking, reset package if exists
     if ((type === 'room' || room) && bookingType === 'package') {
       resetPackage();
     }
 
-    // If switching to package booking, reset room if exists
     if ((type === 'package' || packageId) && bookingType === 'room') {
       resetRoom();
     }
 
-    // If switching to event booking, reset both package and room
     if ((type === 'event' || event) && (bookingType === 'package' || bookingType === 'room')) {
       resetPackage();
       resetRoom();
     }
   };
 
-  // Make sure drawer is closed when switching to desktop view
   useEffect(() => {
     if (!isMobile && openDrawer) {
       setOpenDrawer(false);
@@ -201,27 +182,23 @@ const BookingPage = () => {
     if (bookingType === 'room') {
       return "Book Your Stay";
     } else if (bookingType === 'event') {
-      return "Book Your Event Space";
+      return "Book Your Tickets";
     } else {
       return "Book Your Wellness Retreat";
     }
   };
   
   const renderCurrentStep = () => {
-    // For event bookings from event registration, go straight to checkout
     const eventBooking = sessionStorage.getItem('eventBooking');
     if (eventBooking && bookingType === 'event' && currentStep !== 4) {
       setCurrentStep(4);
       return <CheckoutForm />;
     }
 
-    // For event bookings from regular flow, show event-specific steps
     if (bookingType === 'event' && currentStep !== 4) {
       return <EventSpaceSelection />;
     }
 
-    // For wellness packages and room bookings, use standard flow
-    // Also show checkout form for all booking types when on step 4
     switch (currentStep) {
       case 1:
         return <PackageSelection />;
@@ -264,14 +241,12 @@ const BookingPage = () => {
                 </AnimatePresence>
               </div>
               
-              {/* Desktop BookingSummary with sticky positioning */}
               {!isMobile && <div className="lg:col-span-1">
                   <div className="sticky top-8">
                     <BookingSummary />
                   </div>
                 </div>}
               
-              {/* Mobile floating button with drawer */}
               {isMobile && <div className="fixed bottom-6 right-6 z-10">
                   <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
                     <DrawerTrigger asChild>
