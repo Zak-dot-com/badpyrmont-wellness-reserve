@@ -11,16 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 const LoyaltyActivityPage = () => {
   const [profile, setProfile] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [redemptions, setRedemptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined
   });
@@ -91,14 +89,14 @@ const LoyaltyActivityPage = () => {
 
   // Filter transactions by date range
   const filteredTransactions = transactions.filter(transaction => {
-    if (!dateRange.from && !dateRange.to) return true;
+    if (!dateRange?.from && !dateRange?.to) return true;
     
     const txDate = new Date(transaction.created_at);
-    if (dateRange.from && dateRange.to) {
+    if (dateRange?.from && dateRange?.to) {
       return txDate >= dateRange.from && txDate <= dateRange.to;
-    } else if (dateRange.from) {
+    } else if (dateRange?.from) {
       return txDate >= dateRange.from;
-    } else if (dateRange.to) {
+    } else if (dateRange?.to) {
       return txDate <= dateRange.to;
     }
     return true;
@@ -149,7 +147,7 @@ const LoyaltyActivityPage = () => {
                       <Button 
                         variant="outline" 
                         className="w-full flex items-center justify-center" 
-                        onClick={() => setDateRange({ from: undefined, to: undefined })}
+                        onClick={() => setDateRange(undefined)}
                       >
                         Clear Filter
                       </Button>
@@ -177,7 +175,7 @@ const LoyaltyActivityPage = () => {
                     <CardTitle>Points Activity</CardTitle>
                     <div className="text-sm text-gray-500">
                       Showing {filteredTransactions.length} transactions
-                      {dateRange.from && dateRange.to && (
+                      {dateRange?.from && dateRange?.to && (
                         <span> from {format(dateRange.from, "MMM d, yyyy")} to {format(dateRange.to, "MMM d, yyyy")}</span>
                       )}
                     </div>
