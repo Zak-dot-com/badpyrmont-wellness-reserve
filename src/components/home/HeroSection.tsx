@@ -108,7 +108,7 @@ const HeroSection = () => {
   return (
     <section className="relative w-full h-screen overflow-hidden bg-black">
       <motion.div 
-        className="absolute bg-black overflow-hidden z-30"
+        className="absolute bg-black overflow-hidden z-20"
         initial="initial"
         animate={isLoaded ? "expanded" : "initial"}
         variants={squareVariants}
@@ -128,7 +128,7 @@ const HeroSection = () => {
           >
             <AnimatePresence mode="wait">
               {currentSlide === index && (
-                <div className="absolute right-10 top-1/2 -translate-y-1/2 text-right">
+                <div className="absolute right-10 top-1/2 -translate-y-1/2 text-right z-30">
                   <motion.div
                     variants={textVariants}
                     initial="enter"
@@ -160,11 +160,11 @@ const HeroSection = () => {
                     {content.isEvent && 'event' in content && (
                       <motion.div
                         variants={textVariants}
-                        className="mt-4"
+                        className="mt-4 relative z-40"
                       >
                         <Button 
                           onClick={() => setSelectedEvent(content.event)}
-                          className="bg-amber-500 hover:bg-amber-600 text-white"
+                          className="bg-amber-500 hover:bg-amber-600 text-white pointer-events-auto"
                         >
                           Book Tickets
                         </Button>
@@ -215,7 +215,7 @@ const HeroSection = () => {
       </motion.div>
 
       <motion.div 
-        className="absolute right-0 bottom-1/4 z-20 text-white max-w-lg px-8 md:pr-16 lg:pr-24"
+        className="absolute right-0 bottom-1/4 z-30 text-white max-w-lg px-8 md:pr-16 lg:pr-24"
         initial="hidden"
         animate={isLoaded ? "visible" : "hidden"}
         variants={contentVariants}

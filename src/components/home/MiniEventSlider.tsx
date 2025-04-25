@@ -18,7 +18,7 @@ const MiniEventSlider = () => {
   };
 
   return (
-    <div className="absolute left-2 bottom-24 bg-black/70 p-4 rounded-lg max-w-xs">
+    <div className="absolute left-2 bottom-24 bg-black/70 p-4 rounded-lg max-w-xs z-50">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}

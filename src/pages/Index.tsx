@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/layout/PageLayout';
@@ -38,6 +39,7 @@ const Index = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}
+          className="z-10 relative"
         >
           <EventsShowcase />
         </motion.div>
