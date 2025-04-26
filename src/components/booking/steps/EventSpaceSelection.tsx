@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
@@ -10,8 +11,10 @@ import { toast } from 'sonner';
 import { CalendarClock, Users, Music, Utensils, Clock, Calendar } from 'lucide-react';
 import RoomBookingSection from './event-space/RoomBookingSection';
 import { availableRooms } from '@/data/roomsData';
+import { useNavigate } from 'react-router-dom';
 
 const EventSpaceSelection = () => {
+  const navigate = useNavigate();
   const { eventSpace, setEventSpace, eventDate, setEventDate, attendees, setAttendees, 
           eventType, setEventType, eventDuration, setEventDuration, 
           eventAddons, setEventAddons, calculateTotalPrice, goToNextStep, setBookingType, bookingData } = useBooking();
@@ -164,6 +167,7 @@ const EventSpaceSelection = () => {
       return;
     }
     
+    // Save all the selected data into the booking context
     setEventSpace(selectedVenue);
     setEventDate(selectedDate);
     setAttendees(guestCount);
@@ -172,14 +176,26 @@ const EventSpaceSelection = () => {
     setEventAddons(selectedAddons);
     setBookingType('event');
     
-    goToNextStep();
+    // Store room booking data if enabled
+    if (roomBooking.enabled && roomBooking.roomType && roomBooking.numberOfRooms > 0) {
+      // We're already handling this in the roomBooking change handler
+      console.log("Room booking enabled:", roomBooking);
+    }
+    
+    // Clear any existing event booking data from sessionStorage
+    // to prevent conflicts with our current booking flow
+    sessionStorage.removeItem('eventBooking');
+    
+    // Navigate directly to checkout instead of using goToNextStep
+    // This ensures we're triggering the right step in the booking flow
+    navigate('/booking?bookingType=event&step=checkout');
   };
   
   const selectedVenueData = venues.find(venue => venue.id === selectedVenue);
   
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-white uppercase tracking-wide">Select Your Event Space</h2>
+      <h2 className="text-2xl font-bold text-gray-800 uppercase tracking-wide">Select Your Event Space</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {venues.map(venue => (

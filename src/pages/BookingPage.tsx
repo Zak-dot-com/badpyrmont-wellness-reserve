@@ -79,6 +79,7 @@ const BookingPage = () => {
     const addPackage = searchParams.get('addPackage');
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
+    const step = searchParams.get('step');
     const eventBookingStr = sessionStorage.getItem('eventBooking');
 
     if (eventBookingStr) {
@@ -97,10 +98,20 @@ const BookingPage = () => {
         setBookingType('room');
       } else if (type === 'event' || event) {
         setBookingType('event');
-        setCurrentStep(1);
-        if (!notificationsShown.current) {
-          toast.info("Event space booking selected. Choose your preferred venue and details.");
-          notificationsShown.current = true;
+        
+        // Check if we should go directly to checkout
+        if (step === 'checkout') {
+          setCurrentStep(4);
+          if (!notificationsShown.current) {
+            toast.info("Please complete your event booking checkout.");
+            notificationsShown.current = true;
+          }
+        } else {
+          setCurrentStep(1);
+          if (!notificationsShown.current) {
+            toast.info("Event space booking selected. Choose your preferred venue and details.");
+            notificationsShown.current = true;
+          }
         }
       } else if (type === 'package' || packageId || addPackage) {
         setBookingType('package');
@@ -198,15 +209,22 @@ const BookingPage = () => {
   
   const renderCurrentStep = () => {
     const eventBooking = sessionStorage.getItem('eventBooking');
-    if (eventBooking && bookingType === 'event' && currentStep !== 4) {
-      setCurrentStep(4);
+    
+    // If we have event booking data in session storage, go directly to checkout
+    if (eventBooking && bookingType === 'event') {
       return <CheckoutForm />;
     }
 
+    // For event type bookings
     if (bookingType === 'event') {
+      // If step is explicitly set to checkout (from the URL) or currentStep is 4
+      if (currentStep === 4 || searchParams.get('step') === 'checkout') {
+        return <CheckoutForm />;
+      }
       return <EventSpaceSelection />;
     }
 
+    // For package and room bookings
     switch (currentStep) {
       case 1:
         return <PackageSelection />;

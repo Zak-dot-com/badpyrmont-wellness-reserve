@@ -45,9 +45,7 @@ const BookingBar = ({
 
   const handleProceedToBooking = () => {
     // Clean up any existing event booking data to prevent conflicts
-    if (bookingType !== 'event') {
-      sessionStorage.removeItem('eventBooking');
-    }
+    sessionStorage.removeItem('eventBooking');
 
     const queryParams = new URLSearchParams();
     
@@ -63,7 +61,9 @@ const BookingBar = ({
       queryParams.append('event', selectedEventSpace);
       queryParams.append('bookingType', 'event');
       
-      toast.success("Event space selected. Let's continue with your event booking.");
+      // Navigate directly to the booking page with event parameters
+      navigate(`/booking?${queryParams.toString()}`);
+      return;
     } else {
       toast.error("Please make a selection to continue.");
       return;
