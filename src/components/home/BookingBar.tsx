@@ -164,7 +164,7 @@ const BookingBar = ({
                 <SelectValue placeholder="Select venue" className="text-gray-100" />
               </div>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="garden-pavilion">Garden Pavilion</SelectItem>
               <SelectItem value="grand-ballroom">Grand Ballroom</SelectItem>
               <SelectItem value="executive-hall">Executive Hall</SelectItem>
