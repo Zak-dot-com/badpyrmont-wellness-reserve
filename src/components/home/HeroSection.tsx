@@ -8,6 +8,7 @@ import { events } from '@/data/eventsData';
 import EventRegistrationModal from './EventRegistrationModal';
 import MiniEventSlider from './MiniEventSlider';
 import AnimatedLotus from './AnimatedLotus';
+
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -169,7 +170,18 @@ const HeroSection = () => {
         </div>
         
         <div className="mt-12">
-          
+          <motion.div className="w-16 h-16 rounded-full border border-white mx-auto flex items-center justify-center cursor-pointer" whileHover={{
+          scale: 1.1
+        }} animate={{
+          y: [0, -10, 0],
+          transition: {
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }
+        }}>
+            <ArrowRight className="h-6 w-6 text-white" />
+          </motion.div>
         </div>
       </motion.div>
 
@@ -206,9 +218,10 @@ const HeroSection = () => {
 
       <EventRegistrationModal event={selectedEvent} isOpen={!!selectedEvent} onClose={() => setSelectedEvent(null)} />
 
-      <div className="absolute bottom-0 right-0 mb-[calc(72px+0.75rem)] mr-3 z-30 my-0 py-[52px]">
+      <div className="absolute bottom-0 right-0 mb-[calc(72px+0.75rem)] mr-3 z-30">
         <AnimatedLotus />
       </div>
     </section>;
 };
+
 export default HeroSection;

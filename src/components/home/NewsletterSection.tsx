@@ -37,13 +37,13 @@ const NewsletterSection = () => {
         <div className="max-w-6xl mx-auto bg-white p-8 md:p-16">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-light mb-4 text-amber-500">
+              <h2 className="text-4xl md:text-5xl font-light mb-4">
                 Stay connected
               </h2>
               <h3 className="text-3xl md:text-4xl font-light mb-2">
                 with GRAND HOTEL Badpyrmont
               </h3>
-              <p className="text-2xl md:text-3xl font-light text-left text-zinc-600">
+              <p className="text-2xl md:text-3xl font-light text-gray-500 text-center">
                 Powered by STEINBERGER
               </p>
             </div>
