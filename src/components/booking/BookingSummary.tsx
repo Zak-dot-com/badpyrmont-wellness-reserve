@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -193,67 +194,222 @@ const BookingSummary = () => {
       );
     }
 
-    return (
-      <div className="space-y-4">
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Package</h4>
-          <p className="font-semibold text-lg">
-            {selectedPackage.id === 'relaxation-retreat'
-              ? 'Relaxation Retreat'
-              : selectedPackage.id === 'detox-revitalize'
-              ? 'Detox & Revitalize'
-              : 'Luxury Wellness Escape'}
-          </p>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Duration</h4>
-          <p>{selectedDuration} days</p>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Start Date</h4>
-          <p>{formatDate(startDate)}</p>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Room</h4>
-          <p>
-            {selectedRoom.id === 'single-standard'
-              ? 'Standard Room'
-              : selectedRoom.id === 'deluxe-room'
-              ? 'Deluxe Room'
-              : 'VIP Suite'}
-          </p>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Stay Length</h4>
-          <p>{bookedDays} nights</p>
-        </div>
-
-        {selectedAddOns && selectedAddOns.length > 0 && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
-            <ul className="mt-1">
-              {selectedAddOns.map(addon => (
-                <li key={addon} className="flex items-center gap-1.5 text-sm">
-                  <Check className="h-4 w-4 text-green-500" />
-                  {addon === 'spa-credit'
-                    ? 'Spa Treatment Credit'
-                    : addon === 'private-training'
-                    ? 'Private Fitness Training'
-                    : addon === 'nutrition'
-                    ? 'Nutrition Consultation'
-                    : addon === 'airport-transfer'
-                    ? 'Airport Transfer'
-                    : 'Excursion Package'}
-                </li>
-              ))}
-            </ul>
+    // Fix for the null event booking issue
+    if (eventSpace && bookingType === 'event') {
+      return (
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Event Space</h4>
+            <p className="font-semibold text-lg">{getEventSpaceDetail(eventSpace)}</p>
           </div>
-        )}
-      </div>
+
+          {eventDate && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Event Date</h4>
+              <p>{formatDate(eventDate)}</p>
+            </div>
+          )}
+
+          {eventType && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Event Type</h4>
+              <p>{getEventTypeDetail(eventType)}</p>
+            </div>
+          )}
+
+          {attendees && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Attendees</h4>
+              <p>{attendees}</p>
+            </div>
+          )}
+
+          {eventDuration && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Duration</h4>
+              <p>{eventDuration} hours</p>
+            </div>
+          )}
+
+          {eventAddons && eventAddons.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Add-ons</h4>
+              <ul className="mt-1">
+                {eventAddons.map(addon => (
+                  <li key={addon} className="flex items-center gap-1.5 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {getEventAddonDetail(addon)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Handle case for a package with room
+    if (selectedPackage && selectedRoom) {
+      return (
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Package</h4>
+            <p className="font-semibold text-lg">
+              {selectedPackage?.id === 'relaxation-retreat'
+                ? 'Relaxation Retreat'
+                : selectedPackage?.id === 'detox-revitalize'
+                ? 'Detox & Revitalize'
+                : 'Luxury Wellness Escape'}
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Duration</h4>
+            <p>{selectedDuration} days</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Start Date</h4>
+            <p>{formatDate(startDate)}</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Room</h4>
+            <p>
+              {selectedRoom?.id === 'single-standard'
+                ? 'Standard Room'
+                : selectedRoom?.id === 'deluxe-room'
+                ? 'Deluxe Room'
+                : 'VIP Suite'}
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Stay Length</h4>
+            <p>{bookedDays} nights</p>
+          </div>
+
+          {selectedAddOns && selectedAddOns.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
+              <ul className="mt-1">
+                {selectedAddOns.map(addon => (
+                  <li key={addon} className="flex items-center gap-1.5 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {addon === 'spa-credit'
+                      ? 'Spa Treatment Credit'
+                      : addon === 'private-training'
+                      ? 'Private Fitness Training'
+                      : addon === 'nutrition'
+                      ? 'Nutrition Consultation'
+                      : addon === 'airport-transfer'
+                      ? 'Airport Transfer'
+                      : 'Excursion Package'}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // For room-only bookings
+    if (selectedRoom) {
+      return (
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Room</h4>
+            <p className="font-semibold text-lg">
+              {selectedRoom.id === 'single-standard'
+                ? 'Standard Room'
+                : selectedRoom.id === 'deluxe-room'
+                ? 'Deluxe Room'
+                : 'VIP Suite'}
+            </p>
+          </div>
+
+          {startDate && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Check-in Date</h4>
+              <p>{formatDate(startDate)}</p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Stay Length</h4>
+            <p>{bookedDays} nights</p>
+          </div>
+
+          {selectedAddOns && selectedAddOns.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Room Add-ons</h4>
+              <ul className="mt-1">
+                {selectedAddOns.map(addon => (
+                  <li key={addon} className="flex items-center gap-1.5 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {addon}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // For package-only bookings
+    if (selectedPackage) {
+      return (
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Package</h4>
+            <p className="font-semibold text-lg">
+              {selectedPackage.id === 'relaxation-retreat'
+                ? 'Relaxation Retreat'
+                : selectedPackage.id === 'detox-revitalize'
+                ? 'Detox & Revitalize'
+                : 'Luxury Wellness Escape'}
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Duration</h4>
+            <p>{selectedDuration} days</p>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700">Start Date</h4>
+            <p>{formatDate(startDate)}</p>
+          </div>
+
+          {selectedAddOns && selectedAddOns.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700">Selected Add-ons</h4>
+              <ul className="mt-1">
+                {selectedAddOns.map(addon => (
+                  <li key={addon} className="flex items-center gap-1.5 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {addon === 'spa-credit'
+                      ? 'Spa Treatment Credit'
+                      : addon === 'private-training'
+                      ? 'Private Fitness Training'
+                      : addon === 'nutrition'
+                      ? 'Nutrition Consultation'
+                      : addon === 'airport-transfer'
+                      ? 'Airport Transfer'
+                      : 'Excursion Package'}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <p className="text-gray-500 italic text-sm">Select a package, room or event to see booking details</p>
     );
   };
 

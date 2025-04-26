@@ -1,3 +1,4 @@
+
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -62,9 +63,16 @@ const BookingPage = () => {
   useEffect(() => {
     if (initialSetupComplete.current) return;
 
+    // Clean existing event booking if not continuing an event booking
+    const eventParam = searchParams.get('event');
+    const type = searchParams.get('type') || searchParams.get('bookingType');
+    
+    if (type !== 'event' && !eventParam) {
+      sessionStorage.removeItem('eventBooking');
+    }
+    
     resetExistingSelections();
 
-    const type = searchParams.get('type') || searchParams.get('bookingType');
     const room = searchParams.get('room');
     const packageId = searchParams.get('package');
     const event = searchParams.get('event');
@@ -182,7 +190,7 @@ const BookingPage = () => {
     if (bookingType === 'room') {
       return "Book Your Stay";
     } else if (bookingType === 'event') {
-      return "Book Your Tickets";
+      return "Book Your Event Space";
     } else {
       return "Book Your Wellness Retreat";
     }
@@ -195,7 +203,7 @@ const BookingPage = () => {
       return <CheckoutForm />;
     }
 
-    if (bookingType === 'event' && currentStep !== 4) {
+    if (bookingType === 'event') {
       return <EventSpaceSelection />;
     }
 

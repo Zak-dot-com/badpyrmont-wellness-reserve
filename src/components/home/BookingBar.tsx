@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Package, Bed, CalendarCheck, RefreshCcw, Calendar } from 'lucide-react';
 import DateSelector from './DateSelector';
+import { toast } from 'sonner';
 
 type BookingBarProps = {
   className?: string;
@@ -42,23 +44,38 @@ const BookingBar = ({
   }, [bookingType]);
 
   const handleProceedToBooking = () => {
+    // Clean up any existing event booking data to prevent conflicts
+    if (bookingType !== 'event') {
+      sessionStorage.removeItem('eventBooking');
+    }
+
     const queryParams = new URLSearchParams();
+    
     if (bookingType === 'package' && selectedPackage) {
       queryParams.append('package', selectedPackage);
       queryParams.append('bookingType', 'package');
     } else if (bookingType === 'room' && selectedRoom) {
       queryParams.append('room', selectedRoom);
       queryParams.append('bookingType', 'room');
+      navigate(`/book-room?${queryParams.toString()}`);
+      return;
     } else if (bookingType === 'event' && selectedEventSpace) {
       queryParams.append('event', selectedEventSpace);
       queryParams.append('bookingType', 'event');
+      
+      toast.success("Event space selected. Let's continue with your event booking.");
+    } else {
+      toast.error("Please make a selection to continue.");
+      return;
     }
+    
     if (startDate) {
       queryParams.append('startDate', startDate.toISOString());
     }
     if (endDate) {
       queryParams.append('endDate', endDate.toISOString());
     }
+    
     navigate(`/booking?${queryParams.toString()}`);
   };
 
@@ -94,7 +111,7 @@ const BookingBar = ({
   const hasSelection = !!bookingType;
 
   // Determine if form is valid for submission
-  const isFormValid = hasSelection && startDate;
+  const isFormValid = hasSelection && (bookingType !== 'event' ? startDate : true);
 
   return <div className="py-0 my-0">
       <div className="flex flex-wrap md:flex-nowrap items-end gap-3 md:gap-4">
