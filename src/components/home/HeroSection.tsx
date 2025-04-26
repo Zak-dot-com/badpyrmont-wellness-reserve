@@ -8,7 +8,6 @@ import { events } from '@/data/eventsData';
 import EventRegistrationModal from './EventRegistrationModal';
 import MiniEventSlider from './MiniEventSlider';
 import AnimatedLotus from './AnimatedLotus';
-
 const HeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -170,18 +169,7 @@ const HeroSection = () => {
         </div>
         
         <div className="mt-12">
-          <motion.div className="w-16 h-16 rounded-full border border-white mx-auto flex items-center justify-center cursor-pointer" whileHover={{
-          scale: 1.1
-        }} animate={{
-          y: [0, -10, 0],
-          transition: {
-            duration: 2,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }
-        }}>
-            <ArrowRight className="h-6 w-6 text-white" />
-          </motion.div>
+          
         </div>
       </motion.div>
 
@@ -223,5 +211,4 @@ const HeroSection = () => {
       </div>
     </section>;
 };
-
 export default HeroSection;
