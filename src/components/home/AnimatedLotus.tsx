@@ -1,17 +1,17 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Flower2 } from 'lucide-react';
 
 const AnimatedLotus = () => {
-  const petalVariants = {
+  const petalVariants: Variants = {
     open: {
       scale: 1.2,
       rotate: 45,
       transition: {
         duration: 2,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: "reverse" as const,
         ease: "easeInOut"
       }
     },
