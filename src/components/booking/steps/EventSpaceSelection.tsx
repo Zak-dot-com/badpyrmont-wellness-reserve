@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { Button } from "@/components/ui/button";
@@ -54,6 +53,12 @@ const EventSpaceSelection = () => {
   const [selectedVenue, setSelectedVenue] = useState("");
   const [includeRooms, setIncludeRooms] = useState(false);
   const [showVenueDetails, setShowVenueDetails] = useState<string | null>(null);
+  const [roomBookingData, setRoomBookingData] = useState({
+    enabled: false,
+    numberOfRooms: 1,
+    roomType: "single-standard",
+    nights: 1,
+  });
 
   const {
     setEventSpace,
@@ -491,7 +496,12 @@ const EventSpaceSelection = () => {
             )}
           />
 
-          {roomRequired && <RoomBookingSection />}
+          {roomRequired && (
+            <RoomBookingSection 
+              attendees={attendeesValue} 
+              onRoomBookingChange={handleRoomBookingChange} 
+            />
+          )}
 
           <FormField
             control={form.control}

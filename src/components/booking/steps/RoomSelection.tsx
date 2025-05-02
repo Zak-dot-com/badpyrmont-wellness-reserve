@@ -1,6 +1,6 @@
 
+import React, { useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -338,58 +338,61 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {roomAddOns.map((addon) => {
-            const [showAddonDetails, setShowAddonDetails] = useState(false);
-            
-            return (
-              <React.Fragment key={addon.id}>
-                <div 
-                  className={`relative p-4 border rounded-lg cursor-pointer transition ${
-                    addon.selected 
-                      ? 'bg-amber-50 border-amber-500' 
-                      : 'hover:bg-gray-100'
-                  }`}
-                  onClick={() => toggleRoomAddOn(addon.id)}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className={`p-3 rounded-full ${
-                      addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
-                    }`}>
-                      {getIconForAddOn(addon.icon)}
+            const AddonDetails = () => {
+              const [showAddonDetails, setShowAddonDetails] = useState(false);
+              return (
+                <React.Fragment key={addon.id}>
+                  <div 
+                    className={`relative p-4 border rounded-lg cursor-pointer transition ${
+                      addon.selected 
+                        ? 'bg-amber-50 border-amber-500' 
+                        : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => toggleRoomAddOn(addon.id)}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className={`p-3 rounded-full ${
+                        addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
+                      }`}>
+                        {getIconForAddOn(addon.icon)}
+                      </div>
+                      <h4 className="font-medium mt-2">{addon.name}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{addon.price} €</p>
                     </div>
-                    <h4 className="font-medium mt-2">{addon.name}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{addon.price} €</p>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute top-1 right-1 h-6 w-6 rounded-full p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAddonDetails(true);
+                      }}
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                   
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-1 right-1 h-6 w-6 rounded-full p-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowAddonDetails(true);
-                    }}
-                  >
-                    <Info className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-                
-                <LearnMoreDialog
-                  open={showAddonDetails}
-                  onOpenChange={setShowAddonDetails}
-                  title={addon.name}
-                  description={addon.description}
-                  images={[
-                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
-                    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
-                  ]}
-                  details={[
-                    { label: 'Price', value: `€${addon.price}` },
-                    { label: 'Duration', value: 'Entire stay' }
-                  ]}
-                  type="addon"
-                />
-              </React.Fragment>
-            );
+                  <LearnMoreDialog
+                    open={showAddonDetails}
+                    onOpenChange={setShowAddonDetails}
+                    title={addon.name}
+                    description={addon.description}
+                    images={[
+                      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
+                      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
+                    ]}
+                    details={[
+                      { label: 'Price', value: `€${addon.price}` },
+                      { label: 'Duration', value: 'Entire stay' }
+                    ]}
+                    type="addon"
+                  />
+                </React.Fragment>
+              );
+            };
+            
+            return <AddonDetails key={addon.id} />;
           })}
         </div>
       </div>
