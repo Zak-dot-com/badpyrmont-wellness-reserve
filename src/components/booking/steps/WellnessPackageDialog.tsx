@@ -79,7 +79,12 @@ const CustomPackageContent = () => {
   // Use start date, duration for default
   const duration = parseInt(bookingData.duration) || 1;
   const checkIn = startDate;
-  
+  let minDays = 1;
+  let maxDays = 14;
+  // If we have a startDate, maybe endDate available via BookingContext, or add 14 day max
+  // For this example, let's display up to 14 days, but allow selection
+  // In a real case, use check-out date minus check-in date for range.
+
   // Selectable packages
   const packages = availablePackages;
 
@@ -125,7 +130,7 @@ const CustomPackageContent = () => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Number of Nights
+            Number of Nights <span className="text-xs text-gray-400">(1-{maxDays})</span>
           </label>
           <select
             value={days}

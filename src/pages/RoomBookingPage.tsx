@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -16,8 +15,6 @@ import RoomSelection from '@/components/booking/steps/RoomSelection';
 import BookingSummary from '@/components/booking/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
-import WellnessPackageDialog from '@/components/booking/steps/WellnessPackageDialog';
-
 const RoomBookingPage = () => {
   const {
     setBookingType,
@@ -30,7 +27,6 @@ const RoomBookingPage = () => {
   } = useBooking();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
-  const [showWellnessDialog, setShowWellnessDialog] = useState(false);
 
   // Initialize booking context for room-only booking
   useEffect(() => {
@@ -66,7 +62,6 @@ const RoomBookingPage = () => {
       }
     }
   }, [searchParams, setBookingType, setStartDate, setDuration]);
-  
   const handleContinue = () => {
     if (activeStep === 'dates') {
       if (!bookingData.startDate) {
@@ -83,7 +78,6 @@ const RoomBookingPage = () => {
       setCurrentStep(4); // Set to checkout step for consistency with main flow
     }
   };
-  
   const handleBack = () => {
     if (activeStep === 'room') {
       setActiveStep('dates');
@@ -92,7 +86,6 @@ const RoomBookingPage = () => {
       setCurrentStep(3); // Reset to room selection step
     }
   };
-  
   const handleStepClick = (step: 'dates' | 'room' | 'checkout') => {
     // Only allow going backward or staying on current step
     if (step === activeStep) return;
@@ -115,11 +108,6 @@ const RoomBookingPage = () => {
       setCurrentStep(4);
     }
   };
-  
-  const handleAddWellnessOptions = () => {
-    setShowWellnessDialog(true);
-  };
-
   return <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow bg-gray-100">
@@ -221,14 +209,14 @@ const RoomBookingPage = () => {
                 
                 {activeStep === 'checkout' && <CheckoutForm />}
                 
-                {activeStep === 'room' && <div className="flex justify-between mt-8">
+                {(activeStep === 'room' || activeStep === 'checkout') && <div className="flex justify-between mt-8">
                     <Button onClick={handleBack} variant="outline" size="lg">
                       Back
                     </Button>
                     
-                    <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
-                      Continue to Checkout
-                    </Button>
+                    {activeStep === 'room' && <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
+                        Continue to Checkout
+                      </Button>}
                   </div>}
               </div>
               
@@ -244,13 +232,11 @@ const RoomBookingPage = () => {
                       <p className="mt-2 text-sm text-gray-600">
                         Enhance your stay with our wellness packages and spa treatments.
                       </p>
-                      <Button 
-                        variant="outline" 
-                        className="w-full mt-3 border-amber-500 text-amber-700 hover:bg-amber-50"
-                        onClick={handleAddWellnessOptions}
-                      >
-                        Add Wellness Package
-                      </Button>
+                      <Link to="/booking?bookingType=package">
+                        <Button variant="outline" className="w-full mt-3 border-amber-500 text-amber-700 hover:bg-amber-50">
+                          Browse Wellness Packages
+                        </Button>
+                      </Link>
                     </div>}
                 </div>
               </div>
@@ -259,9 +245,6 @@ const RoomBookingPage = () => {
         </div>
       </main>
       <Footer />
-
-      {/* Wellness Package Dialog */}
-      <WellnessPackageDialog open={showWellnessDialog} onOpenChange={setShowWellnessDialog} />
     </div>;
 };
 export default RoomBookingPage;

@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -56,21 +55,9 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   };
 
   const roomImages = {
-    'single-standard': [
-      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800'
-    ],
-    'deluxe-room': [
-      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800',
-      'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800'
-    ],
-    'vip-suite': [
-      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=800',
-      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
-    ]
+    'single-standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
+    'deluxe-room': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
+    'vip-suite': 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop'
   };
 
   const handleContinue = () => {
@@ -160,7 +147,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
               <div className="relative">
                 <AspectRatio ratio={16/9}>
                   <img
-                    src={roomImages[room.id as keyof typeof roomImages]?.[0] || room.image}
+                    src={roomImages[room.id as keyof typeof roomImages] || room.image}
                     alt={room.name}
                     className="object-cover w-full h-full"
                   />
@@ -231,7 +218,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           <div className="flex items-center gap-4">
             <Slider
               defaultValue={[1]}
-              max={selectedRoom.type === 'single' ? 1 : 2}
+              max={4}
               min={1}
               step={1}
               value={[guestCount]}
@@ -253,7 +240,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           {roomAddOns.map((addon) => (
             <div 
               key={addon.id}
-              className={`relative p-4 border rounded-lg cursor-pointer transition ${
+              className={`p-4 border rounded-lg cursor-pointer transition ${
                 addon.selected 
                   ? 'bg-amber-50 border-amber-500' 
                   : 'hover:bg-gray-100'
