@@ -8,8 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Trash2, Plus, Minus, Check, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import LearnMoreDialog from '@/components/dialogs/LearnMoreDialog';
-import CancellationPolicy from '../CancellationPolicy';
+import AddonDetailDialog from '@/components/booking/steps/AddonDetailDialog';
 
 const containerVariants = {
   hidden: {
@@ -56,17 +55,12 @@ const AddOnSelection = ({ isEditMode = false, onEditComplete }: AddOnSelectionPr
 
   const { addOnCategories, selectedPackage, duration } = bookingData;
   const [addonDetails, setAddonDetails] = useState<{
-    category: string;
-    item: {
-      id: string;
-      name: string;
-      description: string;
-      price: number;
-      selected: boolean;
-      quantity: number;
-    };
-    isOpen: boolean;
+    id: string;
+    name: string;
+    description: string;
+    price: number;
   } | null>(null);
+  const [addonDialogOpen, setAddonDialogOpen] = useState(false);
 
   const handleToggleAddOn = (categoryId: string, itemId: string) => {
     toggleAddOn(categoryId, itemId);
@@ -112,114 +106,8 @@ const AddOnSelection = ({ isEditMode = false, onEditComplete }: AddOnSelectionPr
   const defaultQuantity = getDefaultAddOnQuantity();
   
   const handleViewDetails = (categoryId: string, item: any) => {
-    setAddonDetails({
-      category: categoryId,
-      item,
-      isOpen: true
-    });
-  };
-  
-  const addonImages = {
-    "massage": [
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800",
-      "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=800"
-    ],
-    "wellness": [
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800",
-      "https://images.unsplash.com/photo-1531685250784-7569952593d2?w=800"
-    ],
-    "fitness": [
-      "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800",
-      "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800"
-    ],
-    "nutrition": [
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800",
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800"
-    ]
-  };
-  
-  const getAddonDetails = (categoryId: string, item: any) => {
-    // Calculate addon details for the dialog
-    const categoryName = addOnCategories.find(cat => cat.id === categoryId)?.name || '';
-    
-    let durationHours = 0;
-    switch (categoryId) {
-      case 'massage':
-        durationHours = 1;
-        break;
-      case 'wellness':
-        durationHours = 1.5;
-        break;
-      case 'fitness':
-        durationHours = 2;
-        break;
-      case 'nutrition':
-        durationHours = 1;
-        break;
-      default:
-        durationHours = 1;
-    }
-    
-    const details = [
-      { label: 'Category', value: categoryName },
-      { label: 'Duration', value: `${durationHours} hour${durationHours > 1 ? 's' : ''}` },
-      { label: 'Price', value: `€${item.price}` },
-      { label: 'Per Session', value: `€${(item.price / item.quantity).toFixed(2)}` }
-    ];
-    
-    const benefits = [];
-    if (categoryId === 'massage') {
-      benefits.push('Relieves muscle tension');
-      benefits.push('Improves circulation');
-      benefits.push('Reduces stress and anxiety');
-    } else if (categoryId === 'wellness') {
-      benefits.push('Enhances mental clarity');
-      benefits.push('Promotes deep relaxation');
-      benefits.push('Balances energy levels');
-    } else if (categoryId === 'fitness') {
-      benefits.push('Improves physical strength');
-      benefits.push('Increases energy and vitality');
-      benefits.push('Personalizes workout routines');
-    } else if (categoryId === 'nutrition') {
-      benefits.push('Customized diet planning');
-      benefits.push('Improved digestion');
-      benefits.push('Weight management');
-    }
-    
-    const additionalContent = (
-      <>
-        <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
-          Key Benefits
-        </h3>
-        <ul className="list-disc pl-5 space-y-1 text-gray-700">
-          {benefits.map((benefit, idx) => (
-            <li key={idx}>{benefit}</li>
-          ))}
-        </ul>
-        
-        <div className="mt-4">
-          <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
-            What to Expect
-          </h3>
-          <p className="text-gray-700 mt-2">
-            {categoryId === 'massage' && 
-              'Professional therapists will use specialized techniques to relieve tension and promote healing.'}
-            {categoryId === 'wellness' && 
-              'Expert practitioners guide you through holistic treatments focused on mind-body balance.'}
-            {categoryId === 'fitness' && 
-              'Personal trainers work with you to create and implement fitness routines tailored to your needs.'}
-            {categoryId === 'nutrition' && 
-              'Nutritional experts help plan balanced, nourishing meals for your wellness journey.'}
-          </p>
-        </div>
-      </>
-    );
-    
-    return {
-      details,
-      additionalContent,
-      images: addonImages[categoryId as keyof typeof addonImages] || []
-    };
+    setAddonDetails(item);
+    setAddonDialogOpen(true);
   };
 
   return (
@@ -311,8 +199,6 @@ const AddOnSelection = ({ isEditMode = false, onEditComplete }: AddOnSelectionPr
         </motion.div>
       ))}
       
-      {!isEditMode && <CancellationPolicy showFull={true} />}
-      
       <motion.div variants={itemVariants} className="flex justify-between pt-6">
         <Button
           onClick={handleBack}
@@ -330,17 +216,12 @@ const AddOnSelection = ({ isEditMode = false, onEditComplete }: AddOnSelectionPr
         </Button>
       </motion.div>
       
-      {/* Add-on Details Dialog */}
-      {addonDetails && (
-        <LearnMoreDialog
-          open={addonDetails.isOpen}
-          onOpenChange={(isOpen) => setAddonDetails(prev => prev ? {...prev, isOpen} : null)}
-          title={addonDetails.item.name}
-          description={addonDetails.item.description}
-          {...getAddonDetails(addonDetails.category, addonDetails.item)}
-          type="addon"
-        />
-      )}
+      {/* Addon Details Dialog */}
+      <AddonDetailDialog 
+        open={addonDialogOpen} 
+        onOpenChange={setAddonDialogOpen} 
+        addon={addonDetails}
+      />
     </motion.div>
   );
 };
