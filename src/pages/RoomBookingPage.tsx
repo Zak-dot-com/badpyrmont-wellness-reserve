@@ -17,6 +17,7 @@ import BookingSummary from '@/components/booking/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import WellnessPackageDialog from '@/components/booking/steps/WellnessPackageDialog';
+import CancellationPolicy from '@/components/booking/CancellationPolicy';
 
 const RoomBookingPage = () => {
   const {
@@ -208,6 +209,8 @@ const RoomBookingPage = () => {
                           <strong>Selected Stay:</strong> {bookingData.startDate ? `${format(bookingData.startDate, 'MMM dd, yyyy')} to ${calculateEndDate() ? format(calculateEndDate()!, 'MMM dd, yyyy') : 'Not selected'} (${bookingData.duration} days)` : 'Please select your dates'}
                         </p>
                       </div>
+                      
+                      <CancellationPolicy showFull={true} />
 
                       <div className="flex justify-end">
                         <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
@@ -221,14 +224,14 @@ const RoomBookingPage = () => {
                 
                 {activeStep === 'checkout' && <CheckoutForm />}
                 
-                {(activeStep === 'room' || activeStep === 'checkout') && <div className="flex justify-between mt-8">
+                {activeStep === 'room' && <div className="flex justify-between mt-8">
                     <Button onClick={handleBack} variant="outline" size="lg">
                       Back
                     </Button>
                     
-                    {activeStep === 'room' && <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
-                        Continue to Checkout
-                      </Button>}
+                    <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
+                      Continue to Checkout
+                    </Button>
                   </div>}
               </div>
               

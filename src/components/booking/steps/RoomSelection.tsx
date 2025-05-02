@@ -1,3 +1,4 @@
+
 import { useBooking } from '@/contexts/BookingContext';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -21,12 +22,15 @@ import {
   ArrowUpCircle,
   Users,
   Sparkles,
-  Star
+  Star,
+  Info
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import WellnessPackageDialog from "./WellnessPackageDialog";
+import LearnMoreDialog from '@/components/dialogs/LearnMoreDialog';
+import CancellationPolicy from '../CancellationPolicy';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -49,15 +53,96 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
 
   const [guestCount, setGuestCount] = useState(1);
   const [wellnessDialogOpen, setWellnessDialogOpen] = useState(false);
+  const [selectedRoomForDetails, setSelectedRoomForDetails] = useState<string | null>(null);
 
   const handleGuestChange = (value: number[]) => {
     setGuestCount(value[0]);
   };
 
   const roomImages = {
-    'single-standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
-    'deluxe-room': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
-    'vip-suite': 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop'
+    'single-standard': [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800'
+    ],
+    'deluxe-room': [
+      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800',
+      'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800'
+    ],
+    'vip-suite': [
+      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=800',
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
+    ]
+  };
+
+  const getRoomDetails = (roomId: string) => {
+    const room = availableRooms.find(r => r.id === roomId);
+    if (!room) return null;
+
+    const amenities = [];
+    if (room.type === 'single') {
+      amenities.push('Single bed (90x200cm)');
+      amenities.push('20m² room size');
+      amenities.push('Mountain view');
+      amenities.push('En-suite bathroom');
+      amenities.push('Free WiFi');
+    } else if (room.type === 'deluxe') {
+      amenities.push('King-size bed (180x200cm)');
+      amenities.push('35m² room size');
+      amenities.push('Panoramic view');
+      amenities.push('Luxury bathroom with bathtub');
+      amenities.push('Free WiFi & minibar');
+      amenities.push('Work desk');
+    } else {
+      amenities.push('Super king-size bed (200x200cm)');
+      amenities.push('60m² room size');
+      amenities.push('Separate living area');
+      amenities.push('Premium bathroom with jacuzzi');
+      amenities.push('Private balcony');
+      amenities.push('Complimentary services');
+    }
+
+    const details = [
+      { label: 'Room Type', value: room.type.charAt(0).toUpperCase() + room.type.slice(1) },
+      { label: 'Maximum Occupancy', value: room.type === 'single' ? '1 Person' : '2 Persons' },
+      { label: 'Price per Night', value: `€${room.price}` },
+      { label: 'Room Size', value: room.type === 'single' ? '20m²' : room.type === 'deluxe' ? '35m²' : '60m²' },
+      { label: 'Bed Type', value: room.type === 'single' ? 'Single Bed' : room.type === 'deluxe' ? 'King Size Bed' : 'Super King Size Bed' }
+    ];
+    
+    const additionalContent = (
+      <>
+        <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
+          Room Amenities
+        </h3>
+        <ul className="list-disc pl-5 space-y-1 text-gray-700">
+          {amenities.map((amenity, index) => (
+            <li key={index}>{amenity}</li>
+          ))}
+        </ul>
+        
+        {selectedPackage && (
+          <div className="mt-4">
+            <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide mb-2">
+              Package Inclusions
+            </h3>
+            <div className="border rounded-md p-3 bg-amber-50">
+              <h4 className="font-medium">{selectedPackage.name}</h4>
+              <p className="text-sm text-gray-600">{selectedPackage.description}</p>
+              <div className="mt-2 text-amber-700 font-medium">€{selectedPackage.basePrice}/day</div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+
+    return {
+      details,
+      additionalContent,
+      images: roomImages[roomId as keyof typeof roomImages] || []
+    };
   };
 
   const handleContinue = () => {
@@ -98,6 +183,8 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   };
 
   const isRoomOnlyBooking = !selectedPackage;
+  
+  const selectedRoomDetails = selectedRoomForDetails ? getRoomDetails(selectedRoomForDetails) : null;
 
   return (
     <div className="space-y-8">
@@ -147,7 +234,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
               <div className="relative">
                 <AspectRatio ratio={16/9}>
                   <img
-                    src={roomImages[room.id as keyof typeof roomImages] || room.image}
+                    src={roomImages[room.id as keyof typeof roomImages]?.[0] || room.image}
                     alt={room.name}
                     className="object-cover w-full h-full"
                   />
@@ -202,6 +289,19 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
                     {room.price} € <span className="text-sm text-gray-500">/ night</span>
                   </p>
                 )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 text-xs border-amber-500 text-amber-700 hover:bg-amber-50 w-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedRoomForDetails(room.id);
+                  }}
+                >
+                  <Info className="mr-1 h-3 w-3" />
+                  Learn More
+                </Button>
               </CardContent>
             </Card>
           );
@@ -218,7 +318,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           <div className="flex items-center gap-4">
             <Slider
               defaultValue={[1]}
-              max={4}
+              max={selectedRoom.type === 'single' ? 1 : 2}
               min={1}
               step={1}
               value={[guestCount]}
@@ -237,29 +337,64 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
         <p className="text-gray-600 mb-6">Enhance your stay with these premium services</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {roomAddOns.map((addon) => (
-            <div 
-              key={addon.id}
-              className={`p-4 border rounded-lg cursor-pointer transition ${
-                addon.selected 
-                  ? 'bg-amber-50 border-amber-500' 
-                  : 'hover:bg-gray-100'
-              }`}
-              onClick={() => toggleRoomAddOn(addon.id)}
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className={`p-3 rounded-full ${
-                  addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
-                }`}>
-                  {getIconForAddOn(addon.icon)}
+          {roomAddOns.map((addon) => {
+            const [showAddonDetails, setShowAddonDetails] = useState(false);
+            
+            return (
+              <React.Fragment key={addon.id}>
+                <div 
+                  className={`relative p-4 border rounded-lg cursor-pointer transition ${
+                    addon.selected 
+                      ? 'bg-amber-50 border-amber-500' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  onClick={() => toggleRoomAddOn(addon.id)}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className={`p-3 rounded-full ${
+                      addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
+                    }`}>
+                      {getIconForAddOn(addon.icon)}
+                    </div>
+                    <h4 className="font-medium mt-2">{addon.name}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{addon.price} €</p>
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-1 right-1 h-6 w-6 rounded-full p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAddonDetails(true);
+                    }}
+                  >
+                    <Info className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
-                <h4 className="font-medium mt-2">{addon.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">{addon.price} €</p>
-              </div>
-            </div>
-          ))}
+                
+                <LearnMoreDialog
+                  open={showAddonDetails}
+                  onOpenChange={setShowAddonDetails}
+                  title={addon.name}
+                  description={addon.description}
+                  images={[
+                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
+                    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
+                  ]}
+                  details={[
+                    { label: 'Price', value: `€${addon.price}` },
+                    { label: 'Duration', value: 'Entire stay' }
+                  ]}
+                  type="addon"
+                />
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
+
+      {!isEditMode && <CancellationPolicy showFull={true} />}
 
       <div className="flex justify-between pt-6">
         <Button 
@@ -277,6 +412,21 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           {isEditMode ? "Save Changes" : "Continue to Checkout"}
         </Button>
       </div>
+
+      {/* Room Details Dialog */}
+      {selectedRoomDetails && (
+        <LearnMoreDialog
+          open={!!selectedRoomForDetails}
+          onOpenChange={() => setSelectedRoomForDetails(null)}
+          title={availableRooms.find(r => r.id === selectedRoomForDetails)?.name || ''}
+          description={availableRooms.find(r => r.id === selectedRoomForDetails)?.description || ''}
+          images={selectedRoomDetails.images}
+          details={selectedRoomDetails.details}
+          additionalContent={selectedRoomDetails.additionalContent}
+          type="room"
+          badge={selectedRoomForDetails === 'vip-suite' ? 'PREMIUM' : undefined}
+        />
+      )}
     </div>
   );
 };

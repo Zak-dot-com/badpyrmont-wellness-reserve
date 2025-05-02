@@ -1,395 +1,564 @@
 
-import { useState } from 'react';
-import { useBooking } from '@/contexts/BookingContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { CalendarClock, Users, Music, Utensils, Clock, Calendar } from 'lucide-react';
-import RoomBookingSection from './event-space/RoomBookingSection';
-import { availableRooms } from '@/data/roomsData';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useBooking } from "@/contexts/BookingContext";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, addHours } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CalendarIcon, Users2, Clock, BadgeDollarSign, CheckCircle2, LandPlot, Building2, MapPin, Info } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Slider } from "@/components/ui/slider";
+import { useNavigate } from "react-router-dom";
+import RoomBookingSection from "./event-space/RoomBookingSection";
+import LearnMoreDialog from "@/components/dialogs/LearnMoreDialog";
+import CancellationPolicy from "../CancellationPolicy";
+
+// Define form schema
+const formSchema = z.object({
+  eventName: z.string().min(2, {
+    message: "Event name must be at least 2 characters.",
+  }),
+  attendees: z.number().min(10, {
+    message: "Minimum 10 attendees required.",
+  }),
+  eventDate: z.date({
+    required_error: "An event date is required.",
+  }),
+  duration: z.number().min(1, {
+    message: "Minimum 1 hour required.",
+  }),
+  eventType: z.string().min(1, {
+    message: "Please select an event type.",
+  }),
+  notes: z.string().optional(),
+  catering: z.boolean().default(false),
+  audioVisual: z.boolean().default(false),
+  floralDecor: z.boolean().default(false),
+  roomRequired: z.boolean().default(false),
+});
 
 const EventSpaceSelection = () => {
   const navigate = useNavigate();
-  const { eventSpace, setEventSpace, eventDate, setEventDate, attendees, setAttendees, 
-          eventType, setEventType, eventDuration, setEventDuration, 
-          eventAddons, setEventAddons, calculateTotalPrice, goToNextStep, setBookingType, bookingData } = useBooking();
-  
-  const [selectedVenue, setSelectedVenue] = useState(eventSpace || '');
-  const [selectedDate, setSelectedDate] = useState<Date | null>(eventDate || null);
-  const [guestCount, setGuestCount] = useState<number>(attendees || 50);
-  const [selectedEventType, setSelectedEventType] = useState(eventType || '');
-  const [selectedDuration, setSelectedDuration] = useState<number>(eventDuration || 4);
-  const [selectedAddons, setSelectedAddons] = useState<string[]>(eventAddons || []);
-  const [specialRequests, setSpecialRequests] = useState<string>('');
-  const [gatheringMode, setGatheringMode] = useState<string>('parliamentary');
+  const [selectedVenue, setSelectedVenue] = useState("");
+  const [includeRooms, setIncludeRooms] = useState(false);
+  const [showVenueDetails, setShowVenueDetails] = useState<string | null>(null);
 
-  const [roomBooking, setRoomBooking] = useState<{
-    enabled: boolean;
-    numberOfRooms: number;
-    roomType: string;
-    nights: number;
-  }>({
-    enabled: false,
-    numberOfRooms: 0,
-    roomType: "",
-    nights: 1
+  const {
+    setEventSpace,
+    setEventDate,
+    setAttendees,
+    setEventType,
+    setEventDuration,
+    setEventAddons,
+    setCurrentStep,
+  } = useBooking();
+
+  // Set up the form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      eventName: "",
+      attendees: 50,
+      eventDate: new Date(),
+      duration: 4,
+      eventType: "",
+      notes: "",
+      catering: false,
+      audioVisual: false,
+      floralDecor: false,
+      roomRequired: false,
+    },
   });
-  
-  const venues = [
-    { 
-      id: 'garden-pavilion', 
-      name: 'Garden Pavilion', 
-      basePrice: 1200, 
-      isOutdoor: true, 
-      capacity: 150, 
-      description: 'An elegant outdoor venue surrounded by manicured gardens and water features.',
-      image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=400&h=250'
-    },
-    { 
-      id: 'grand-ballroom', 
-      name: 'Grand Ballroom', 
-      basePrice: 2000, 
-      isOutdoor: false, 
-      capacity: 300, 
-      description: 'A sophisticated indoor venue with crystal chandeliers and premium finishes.',
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&h=250'
-    },
-    { 
-      id: 'executive-hall', 
-      name: 'Executive Hall', 
-      basePrice: 1500, 
-      isOutdoor: false, 
-      capacity: 100, 
-      description: 'A modern corporate event space with state-of-the-art technology.',
-      image: 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=400&h=250'
-    },
-    { 
-      id: 'rooftop-terrace', 
-      name: 'Rooftop Terrace', 
-      basePrice: 1800, 
-      isOutdoor: true, 
-      capacity: 120, 
-      description: 'A stunning rooftop venue with panoramic views of the cityscape.',
-      image: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?auto=format&fit=crop&w=400&h=250'
-    },
-  ];
-  
-  const eventTypes = [
-    { id: 'wedding', name: 'Wedding', priceMultiplier: 1.2 },
-    { id: 'corporate', name: 'Corporate Event', priceMultiplier: 1.0 },
-    { id: 'birthday', name: 'Birthday Party', priceMultiplier: 0.9 },
-    { id: 'conference', name: 'Conference', priceMultiplier: 1.1 },
-    { id: 'social', name: 'Social Gathering', priceMultiplier: 0.8 }
-  ];
-  
-  const availableAddons = [
-    { id: 'catering', name: 'Premium Catering', pricePerPerson: 45, icon: Utensils },
-    { id: 'liveMusic', name: 'Live Music', flatPrice: 800, icon: Music },
-    { id: 'decoration', name: 'Deluxe Decoration', pricePerPerson: 15, icon: Users },
-    { id: 'extendedHours', name: 'Extended Hours', pricePerHour: 300, icon: Clock }
-  ];
-  
-  const toggleAddon = (addonId: string) => {
-    let newAddons;
-    if (selectedAddons.includes(addonId)) {
-      newAddons = selectedAddons.filter(id => id !== addonId);
-    } else {
-      newAddons = [...selectedAddons, addonId];
-    }
-    setSelectedAddons(newAddons);
-    
-    setEventAddons(newAddons);
-  };
-  
-  const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    setEventDate(date);
-  };
 
-  const handleGuestCountChange = (count: number) => {
-    setGuestCount(count);
-    setAttendees(count);
-  };
-  
-  const handleDurationChange = (hours: string) => {
-    const duration = Number(hours);
-    setSelectedDuration(duration);
-    setEventDuration(duration);
-  };
-  
-  const handleEventTypeChange = (type: string) => {
-    setSelectedEventType(type);
-    setEventType(type);
-  };
-  
-  const handleVenueSelect = (venueId: string) => {
-    setSelectedVenue(venueId);
-    setEventSpace(venueId);
-  };
-
-  const handleRoomBookingChange = (booking: {
-    enabled: boolean;
-    numberOfRooms: number;
-    roomType: string;
-    nights: number;
-  }) => {
-    setRoomBooking(booking);
-    
-    // Add the room cost to the total price by updating addons
-    const updatedAddons = [...selectedAddons];
-    const roomAddonId = 'room-booking';
-    
-    if (booking.enabled && booking.roomType) {
-      const selectedRoom = availableRooms.find(room => room.id === booking.roomType);
-      if (selectedRoom) {
-        if (!updatedAddons.includes(roomAddonId)) {
-          updatedAddons.push(roomAddonId);
-        }
-      }
-    } else {
-      const index = updatedAddons.indexOf(roomAddonId);
-      if (index > -1) {
-        updatedAddons.splice(index, 1);
-      }
-    }
-    
-    setEventAddons(updatedAddons);
-  };
-  
-  const handleSubmit = () => {
-    if (!selectedVenue || !selectedEventType || !selectedDate) {
-      toast.error("Please select venue, event type, and date to continue.");
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (!selectedVenue) {
+      toast.error("Please select a venue");
       return;
     }
-    
-    // Save all the selected data into the booking context
+
+    // Store the values in BookingContext
     setEventSpace(selectedVenue);
-    setEventDate(selectedDate);
-    setAttendees(guestCount);
-    setEventType(selectedEventType);
-    setEventDuration(selectedDuration);
-    setEventAddons(selectedAddons);
-    setBookingType('event');
-    
-    // Store room booking data if enabled
-    if (roomBooking.enabled && roomBooking.roomType && roomBooking.numberOfRooms > 0) {
-      // We're already handling this in the roomBooking change handler
-      console.log("Room booking enabled:", roomBooking);
-    }
-    
-    // Clear any existing event booking data from sessionStorage
-    // to prevent conflicts with our current booking flow
-    sessionStorage.removeItem('eventBooking');
-    
-    // Navigate directly to checkout instead of using goToNextStep
-    // This ensures we're triggering the right step in the booking flow
-    navigate('/booking?bookingType=event&step=checkout');
+    setEventDate(values.eventDate);
+    setAttendees(values.attendees);
+    setEventType(values.eventType);
+    setEventDuration(values.duration);
+
+    const addons = [];
+    if (values.catering) addons.push("catering");
+    if (values.audioVisual) addons.push("av");
+    if (values.floralDecor) addons.push("decor");
+    setEventAddons(addons);
+
+    // Store event booking data in SessionStorage for checkout
+    const eventData = {
+      ...values,
+      venue: selectedVenue,
+      addons,
+      includeRooms: values.roomRequired,
+    };
+    sessionStorage.setItem("eventBooking", JSON.stringify(eventData));
+
+    // Navigate to checkout
+    toast.success("Event details saved successfully!");
+    setCurrentStep(4);
   };
-  
-  const selectedVenueData = venues.find(venue => venue.id === selectedVenue);
-  
+
+  const venueOptions = [
+    {
+      id: "garden-pavilion",
+      name: "Garden Pavilion",
+      capacity: 80,
+      pricePerHour: 200,
+      description:
+        "An elegant open-air structure surrounded by lush gardens, perfect for intimate events and celebrations.",
+      features: ["Natural daylight", "Garden views", "Open-air structure", "Special lighting"],
+      images: [
+        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800",
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"
+      ]
+    },
+    {
+      id: "grand-ballroom",
+      name: "Grand Ballroom",
+      capacity: 200,
+      pricePerHour: 500,
+      description: "Our largest venue with high ceilings, chandeliers, and state-of-the-art sound system.",
+      features: ["High ceilings", "Chandeliers", "Sound system", "Stage area", "Dance floor"],
+      images: [
+        "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800",
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"
+      ]
+    },
+    {
+      id: "executive-hall",
+      name: "Executive Hall",
+      capacity: 50,
+      pricePerHour: 300,
+      description:
+        "A sophisticated space with modern amenities, perfect for corporate events and meetings.",
+      features: ["Boardroom setup", "Video conferencing", "Presentation equipment", "Executive chairs"],
+      images: [
+        "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800",
+        "https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?w=800"
+      ]
+    },
+  ];
+
+  const getVenueIcon = (venueId: string) => {
+    switch (venueId) {
+      case "garden-pavilion":
+        return <LandPlot className="h-5 w-5 text-green-600" />;
+      case "grand-ballroom":
+        return <Building2 className="h-5 w-5 text-purple-600" />;
+      case "executive-hall":
+        return <MapPin className="h-5 w-5 text-blue-600" />;
+      default:
+        return <MapPin className="h-5 w-5" />;
+    }
+  };
+
+  const attendeesValue = form.watch("attendees");
+  const durationValue = form.watch("duration");
+  const roomRequired = form.watch("roomRequired");
+
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-800 uppercase tracking-wide">Select Your Event Space</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {venues.map(venue => (
-          <Card 
-            key={venue.id} 
-            className={`cursor-pointer transition-all hover:shadow-md ${selectedVenue === venue.id ? 'ring-2 ring-amber-500' : ''}`}
-            onClick={() => handleVenueSelect(venue.id)}
-          >
-            <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-              <img 
-                src={venue.image} 
-                alt={venue.name}
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-              />
-              {venue.isOutdoor && (
-                <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  Outdoor
-                </span>
-              )}
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle>{venue.name}</CardTitle>
-              <CardDescription>{venue.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-2"><span className="font-medium">Type:</span> {venue.isOutdoor ? 'Outdoor' : 'Indoor'}</div>
-              <div className="mb-2"><span className="font-medium">Capacity:</span> Up to {venue.capacity} guests</div>
-              <div className="font-medium text-lg text-amber-700">€{venue.basePrice} base price</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      
-      {selectedVenue && (
-        <>
-          <div className="bg-gray-50 p-6 rounded-lg space-y-6">
-            <h3 className="text-xl font-bold">Event Details</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="eventType">Event Type</Label>
-                <Select value={selectedEventType} onValueChange={handleEventTypeChange}>
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <SelectValue placeholder="Select event type" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {eventTypes.map(type => (
-                      <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="eventDate">Event Date</Label>
-                <div className="relative">
-                  <Input
-                    id="eventDate"
-                    type="date"
-                    value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
-                    min={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => handleDateChange(new Date(e.target.value))}
-                    className="pl-10"
-                  />
-                  <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="guestCount">Number of Attendees</Label>
-                <div className="relative">
-                  <Input
-                    id="guestCount"
-                    type="number"
-                    min="10"
-                    max={selectedVenueData?.capacity || 300}
-                    value={guestCount}
-                    onChange={(e) => handleGuestCountChange(Number(e.target.value))}
-                    className="pl-10"
-                  />
-                  <Users className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                </div>
-                {selectedVenueData && (
-                  <p className="text-xs text-gray-500">Maximum capacity: {selectedVenueData.capacity}</p>
+      <h2 className="text-2xl font-bold">Book Your Event Space</h2>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <FormField
+                control={form.control}
+                name="eventName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter event name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="duration">Duration (hours)</Label>
-                <div className="relative">
-                  <Select 
-                    value={selectedDuration.toString()} 
-                    onValueChange={handleDurationChange}
-                  >
-                    <SelectTrigger className="w-full pl-10">
-                      <SelectValue placeholder="Select duration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[4, 5, 6, 7, 8, 9, 10].map(hours => (
-                        <SelectItem key={hours} value={hours.toString()}>{hours} hours</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <CalendarClock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 z-10" />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="gatheringMode">Gathering Mode</Label>
-                <Select value={gatheringMode} onValueChange={setGatheringMode}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select gathering mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="parliamentary">Parliamentary</SelectItem>
-                    <SelectItem value="banquet">Banquet</SelectItem>
-                    <SelectItem value="standing">Standing</SelectItem>
-                    <SelectItem value="lounge">Lounge</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              />
             </div>
-            
-            <div className="space-y-4">
-              <h4 className="font-semibold">Add-ons & Services</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {availableAddons.map(addon => {
-                  const isSelected = selectedAddons.includes(addon.id);
-                  const AddonIcon = addon.icon;
-                  
-                  return (
-                    <div 
-                      key={addon.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                        isSelected ? 'bg-amber-50 border-amber-500' : 'hover:bg-gray-50'
-                      }`}
-                      onClick={() => toggleAddon(addon.id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${isSelected ? 'bg-amber-100' : 'bg-gray-100'}`}>
-                          <AddonIcon className={`h-5 w-5 ${isSelected ? 'text-amber-600' : 'text-gray-500'}`} />
+
+            <div>
+              <FormField
+                control={form.control}
+                name="eventType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Type</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-wrap gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="corporate" />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">Corporate</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="wedding" />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">Wedding</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="celebration" />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">Celebration</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="other" />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">Other</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Venue Selection</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {venueOptions.map((venue) => (
+                <Card
+                  key={venue.id}
+                  className={cn(
+                    "cursor-pointer transition-all",
+                    selectedVenue === venue.id
+                      ? "ring-2 ring-amber-500"
+                      : "border hover:border-amber-300"
+                  )}
+                  onClick={() => setSelectedVenue(venue.id)}
+                >
+                  <CardContent className="p-4 relative">
+                    {selectedVenue === venue.id && (
+                      <CheckCircle2 className="absolute top-2 right-2 h-5 w-5 text-green-500" />
+                    )}
+                    <div className="flex items-start gap-3">
+                      {getVenueIcon(venue.id)}
+                      <div>
+                        <CardTitle className="text-lg">{venue.name}</CardTitle>
+                        <p className="text-sm text-gray-500 line-clamp-2 mt-1">
+                          {venue.description}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Users2 className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm">Up to {venue.capacity} guests</span>
                         </div>
-                        <div>
-                          <div className="font-medium">{addon.name}</div>
-                          <div className="text-sm text-gray-500">
-                            Add this option and the Event Manager will contact you for details
-                          </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <BadgeDollarSign className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm">€{venue.pricePerHour}/hour</span>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-3 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowVenueDetails(venue.id);
+                      }}
+                    >
+                      <Info className="h-3 w-3 mr-1" /> View Details
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            
-            <div className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h4 className="font-semibold text-amber-800 mb-2">Room Booking Required</h4>
-                <p className="text-sm text-amber-700 mb-4">
-                  For events, we require booking rooms to ensure the best experience for your guests
-                </p>
-                <RoomBookingSection 
-                  attendees={guestCount} 
-                  onRoomBookingChange={handleRoomBookingChange}
-                  required={true}
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="specialRequests">Special Requests</Label>
-              <Textarea
-                id="specialRequests"
-                placeholder="Any special requirements or requests for your event..."
-                value={specialRequests}
-                onChange={(e) => setSpecialRequests(e.target.value)}
-                className="min-h-[100px]"
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="eventDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Event Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <FormField
+                control={form.control}
+                name="attendees"
+                render={({ field: { value, onChange } }) => (
+                  <FormItem>
+                    <FormLabel>Number of Attendees</FormLabel>
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">10</span>
+                        <span className="text-sm font-medium">{attendeesValue}</span>
+                        <span className="text-sm">200</span>
+                      </div>
+                      <FormControl>
+                        <Slider
+                          min={10}
+                          max={200}
+                          step={1}
+                          defaultValue={[value]}
+                          onValueChange={(vals) => onChange(vals[0])}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
           </div>
-          
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleSubmit}
-              className="bg-amber-600 hover:bg-amber-700 text-white px-8"
-            >
+
+          <div>
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field: { value, onChange } }) => (
+                <FormItem>
+                  <FormLabel>Event Duration (hours)</FormLabel>
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">1 hour</span>
+                      <span className="text-sm font-medium">
+                        {durationValue} hour{durationValue > 1 ? "s" : ""}
+                      </span>
+                      <span className="text-sm">12 hours</span>
+                    </div>
+                    <FormControl>
+                      <Slider
+                        min={1}
+                        max={12}
+                        step={1}
+                        defaultValue={[value]}
+                        onValueChange={(vals) => onChange(vals[0])}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium mb-3">Additional Services</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="catering"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:bg-amber-500"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-medium">Catering Services</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        Full-service catering options (€50 per person)
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="audioVisual"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:bg-amber-500"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-medium">Audio/Visual Equipment</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        Premium AV setup with technician (€300)
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="floralDecor"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:bg-amber-500"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-medium">Floral Decorations</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        Custom floral arrangements (€200)
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="roomRequired"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md bg-gray-50">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      setIncludeRooms(!!checked);
+                    }}
+                    className="data-[state=checked]:bg-amber-500"
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-medium">Include Accommodation</FormLabel>
+                  <p className="text-sm text-gray-500">
+                    Add rooms for event attendees at special group rates
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {roomRequired && <RoomBookingSection />}
+
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Special Requests</FormLabel>
+                <FormControl>
+                  <textarea
+                    className="w-full min-h-[100px] p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="Any special requirements or requests for your event..."
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <CancellationPolicy showFull={true} />
+
+          <div className="pt-4">
+            <Button type="submit" size="lg" className="bg-amber-800 hover:bg-amber-900">
               Continue to Checkout
             </Button>
           </div>
-        </>
-      )}
+        </form>
+      </Form>
+      
+      {/* Venue Details Dialogs */}
+      {venueOptions.map((venue) => (
+        <LearnMoreDialog
+          key={venue.id}
+          open={showVenueDetails === venue.id}
+          onOpenChange={(isOpen) => setShowVenueDetails(isOpen ? venue.id : null)}
+          title={venue.name}
+          description={venue.description}
+          images={venue.images}
+          details={[
+            { label: 'Capacity', value: `${venue.capacity} guests` },
+            { label: 'Price', value: `€${venue.pricePerHour}/hour` },
+            { label: 'Availability', value: 'Check with venue' }
+          ]}
+          additionalContent={
+            <>
+              <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
+                Venue Features
+              </h3>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                {venue.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
+              
+              <div className="mt-4">
+                <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
+                  Venue Policy
+                </h3>
+                <p className="text-gray-700 mt-2">
+                  The venue must be booked at least 2 weeks in advance. A 25% deposit is required to confirm your booking.
+                </p>
+              </div>
+            </>
+          }
+          type="room"
+        />
+      ))}
     </div>
   );
 };
