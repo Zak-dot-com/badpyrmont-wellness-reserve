@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import ContactInfoForm from './checkout/ContactInfoForm';
 import PaymentForm from './checkout/PaymentForm';
 import PoliciesSection from './checkout/PoliciesSection';
-import CancellationPolicy from '../CancellationPolicy';
 
 const CheckoutForm = () => {
   const {
@@ -62,8 +61,6 @@ const CheckoutForm = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <ContactInfoForm />
         <PaymentForm />
-        
-        <CancellationPolicy showFull={true} />
         
         <PoliciesSection 
           termsAccepted={termsAccepted} 

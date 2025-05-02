@@ -10,7 +10,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonDetailDialog from "./AddonDetailDialog";
 import { availablePackages } from "@/data/packagesData";
 import { DurationType } from "@/types/bookingTypes";
-import CancellationPolicy from "../CancellationPolicy";
 
 const AddOnTreatmentsContent = () => {
   const { bookingData, toggleAddOn } = useBooking();
@@ -152,10 +151,6 @@ const CustomPackageContent = () => {
             </div>
           </div>
         )}
-        
-        <div className="pt-4">
-          <CancellationPolicy showTooltip={true} showFull={false} />
-        </div>
       </div>
     </ScrollArea>
   );

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, addHours } from "date-fns";
+import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,15 +15,13 @@ import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Users2, Clock, BadgeDollarSign, CheckCircle2, LandPlot, Building2, MapPin, Info } from "lucide-react";
+import { CalendarIcon, Users2, CheckCircle2, LandPlot, Building2, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
 import { useNavigate } from "react-router-dom";
 import RoomBookingSection from "./event-space/RoomBookingSection";
-import LearnMoreDialog from "@/components/dialogs/LearnMoreDialog";
-import CancellationPolicy from "../CancellationPolicy";
 
 // Define form schema
 const formSchema = z.object({
@@ -52,7 +51,6 @@ const EventSpaceSelection = () => {
   const navigate = useNavigate();
   const [selectedVenue, setSelectedVenue] = useState("");
   const [includeRooms, setIncludeRooms] = useState(false);
-  const [showVenueDetails, setShowVenueDetails] = useState<string | null>(null);
   const [roomBookingData, setRoomBookingData] = useState({
     enabled: false,
     numberOfRooms: 1,
@@ -86,6 +84,16 @@ const EventSpaceSelection = () => {
       roomRequired: false,
     },
   });
+  
+  const handleRoomBookingChange = (booking: {
+    enabled: boolean;
+    numberOfRooms: number;
+    roomType: string;
+    nights: number;
+    dates?: any;
+  }) => {
+    setRoomBookingData(booking);
+  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (!selectedVenue) {
@@ -128,11 +136,7 @@ const EventSpaceSelection = () => {
       pricePerHour: 200,
       description:
         "An elegant open-air structure surrounded by lush gardens, perfect for intimate events and celebrations.",
-      features: ["Natural daylight", "Garden views", "Open-air structure", "Special lighting"],
-      images: [
-        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800",
-        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"
-      ]
+      features: ["Natural daylight", "Garden views", "Open-air structure", "Special lighting"]
     },
     {
       id: "grand-ballroom",
@@ -140,11 +144,7 @@ const EventSpaceSelection = () => {
       capacity: 200,
       pricePerHour: 500,
       description: "Our largest venue with high ceilings, chandeliers, and state-of-the-art sound system.",
-      features: ["High ceilings", "Chandeliers", "Sound system", "Stage area", "Dance floor"],
-      images: [
-        "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800",
-        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"
-      ]
+      features: ["High ceilings", "Chandeliers", "Sound system", "Stage area", "Dance floor"]
     },
     {
       id: "executive-hall",
@@ -153,11 +153,7 @@ const EventSpaceSelection = () => {
       pricePerHour: 300,
       description:
         "A sophisticated space with modern amenities, perfect for corporate events and meetings.",
-      features: ["Boardroom setup", "Video conferencing", "Presentation equipment", "Executive chairs"],
-      images: [
-        "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800",
-        "https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?w=800"
-      ]
+      features: ["Boardroom setup", "Video conferencing", "Presentation equipment", "Executive chairs"]
     },
   ];
 
@@ -275,25 +271,8 @@ const EventSpaceSelection = () => {
                           <Users2 className="h-4 w-4 text-gray-400" />
                           <span className="text-sm">Up to {venue.capacity} guests</span>
                         </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <BadgeDollarSign className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm">€{venue.pricePerHour}/hour</span>
-                        </div>
                       </div>
                     </div>
-
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="w-full mt-3 text-xs"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowVenueDetails(venue.id);
-                      }}
-                    >
-                      <Info className="h-3 w-3 mr-1" /> View Details
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -521,8 +500,6 @@ const EventSpaceSelection = () => {
             )}
           />
 
-          <CancellationPolicy showFull={true} />
-
           <div className="pt-4">
             <Button type="submit" size="lg" className="bg-amber-800 hover:bg-amber-900">
               Continue to Checkout
@@ -530,45 +507,6 @@ const EventSpaceSelection = () => {
           </div>
         </form>
       </Form>
-      
-      {/* Venue Details Dialogs */}
-      {venueOptions.map((venue) => (
-        <LearnMoreDialog
-          key={venue.id}
-          open={showVenueDetails === venue.id}
-          onOpenChange={(isOpen) => setShowVenueDetails(isOpen ? venue.id : null)}
-          title={venue.name}
-          description={venue.description}
-          images={venue.images}
-          details={[
-            { label: 'Capacity', value: `${venue.capacity} guests` },
-            { label: 'Price', value: `€${venue.pricePerHour}/hour` },
-            { label: 'Availability', value: 'Check with venue' }
-          ]}
-          additionalContent={
-            <>
-              <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
-                Venue Features
-              </h3>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                {venue.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
-              
-              <div className="mt-4">
-                <h3 className="font-medium text-sm text-gray-500 uppercase tracking-wide">
-                  Venue Policy
-                </h3>
-                <p className="text-gray-700 mt-2">
-                  The venue must be booked at least 2 weeks in advance. A 25% deposit is required to confirm your booking.
-                </p>
-              </div>
-            </>
-          }
-          type="room"
-        />
-      ))}
     </div>
   );
 };

@@ -17,7 +17,6 @@ import BookingSummary from '@/components/booking/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 import WellnessPackageDialog from '@/components/booking/steps/WellnessPackageDialog';
-import CancellationPolicy from '@/components/booking/CancellationPolicy';
 
 const RoomBookingPage = () => {
   const {
@@ -209,8 +208,6 @@ const RoomBookingPage = () => {
                           <strong>Selected Stay:</strong> {bookingData.startDate ? `${format(bookingData.startDate, 'MMM dd, yyyy')} to ${calculateEndDate() ? format(calculateEndDate()!, 'MMM dd, yyyy') : 'Not selected'} (${bookingData.duration} days)` : 'Please select your dates'}
                         </p>
                       </div>
-                      
-                      <CancellationPolicy showFull={true} />
 
                       <div className="flex justify-end">
                         <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
