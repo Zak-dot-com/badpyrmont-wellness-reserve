@@ -2,6 +2,7 @@
 import React from 'react';
 import { PackageType, RoomType } from '@/types/bookingTypes';
 import { SummaryItemDetail, SummaryAddOnList } from './SummaryItemDetail';
+import { format } from 'date-fns';
 
 type PackageSummaryProps = {
   selectedPackage: PackageType | null;
@@ -67,6 +68,12 @@ export const PackageBookingSummary = ({
 }: PackageSummaryProps) => {
   // If no package or room selected, show nothing
   if (!selectedPackage && !selectedRoom) return null;
+  
+  // Calculate end date based on start date and booked days
+  const endDate = startDate ? new Date(startDate) : null;
+  if (endDate) {
+    endDate.setDate(endDate.getDate() + bookedDays);
+  }
 
   return (
     <div className="space-y-4">
@@ -80,17 +87,39 @@ export const PackageBookingSummary = ({
       {selectedDuration && (
         <SummaryItemDetail label="Duration" value={`${selectedDuration} days`} />
       )}
-
-      {startDate && (
-        <SummaryItemDetail label="Start Date" value={formatDate(startDate)} />
+      
+      {/* Highlighted Stay Duration Section */}
+      {bookedDays > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h4 className="font-medium text-amber-800 mb-2">Stay Details</h4>
+          
+          <div className="space-y-2">
+            <div>
+              <p className="text-sm text-gray-600">Number of Nights</p>
+              <p className="font-bold text-lg">{bookedDays} nights</p>
+            </div>
+            
+            {startDate && (
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div>
+                  <p className="text-sm text-gray-600">Check-in</p>
+                  <p className="font-medium">{formatDate(startDate)}</p>
+                </div>
+                
+                {endDate && (
+                  <div>
+                    <p className="text-sm text-gray-600">Check-out</p>
+                    <p className="font-medium">{formatDate(endDate)}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {selectedRoom && (
         <SummaryItemDetail label="Room" value={getRoomName(selectedRoom.id)} />
-      )}
-
-      {bookedDays > 0 && (
-        <SummaryItemDetail label="Stay Length" value={`${bookedDays} nights`} />
       )}
 
       {selectedAddOns && selectedAddOns.length > 0 && (
