@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PackageType, RoomType } from '@/types/bookingTypes';
 import { SummaryItemDetail, SummaryAddOnList } from './SummaryItemDetail';

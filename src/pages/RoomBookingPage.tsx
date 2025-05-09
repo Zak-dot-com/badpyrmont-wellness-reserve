@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from 'react';
-import { useBooking } from '@/contexts/BookingContext';
+import { useBooking } from '@/contexts/booking';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
