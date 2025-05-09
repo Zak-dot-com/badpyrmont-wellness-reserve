@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -26,27 +26,42 @@ const RoomDetailDialog = ({
   onSelectRoom,
   isSelected = false
 }: RoomDetailDialogProps) => {
-  const [activeImage, setActiveImage] = useState<'balcony' | 'bed' | 'livingArea'>('balcony');
+  const [activeImage, setActiveImage] = useState<string>('balcony');
   
   if (!room) return null;
   
-  const roomDetails = roomDetailsData[room.id as keyof typeof roomDetailsData];
+  // Make sure we're using the correct ID to look up room details
+  const roomId = room.id.replace('room', ''); // Handle any inconsistencies in IDs
+  const roomDetails = roomDetailsData[roomId as keyof typeof roomDetailsData] || 
+                     roomDetailsData[room.id as keyof typeof roomDetailsData];
   
-  if (!roomDetails) return null;
+  if (!roomDetails) {
+    console.error(`No room details found for room ID: ${room.id}`);
+    return null;
+  }
+
+  const imageKeys = Object.keys(roomDetails.images);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl p-0 overflow-hidden max-h-[90vh]">
+        <DialogHeader className="sr-only">
+          <DialogTitle>{room.name} Details</DialogTitle>
+          <DialogDescription>View details and amenities for {room.name}</DialogDescription>
+        </DialogHeader>
+        
         <DialogClose className="absolute right-4 top-4 z-50 rounded-full bg-white/80 p-1 opacity-70 shadow-sm transition-opacity hover:opacity-100" />
         
-        <ScrollArea className="max-h-[90vh]">
+        <ScrollArea className="max-h-[90vh] overflow-auto">
           <div className="relative">
-            <AspectRatio ratio={16/9} className="bg-muted max-h-[300px]">
-              <img
-                src={roomDetails.images[activeImage]}
-                alt={`${room.name} - ${activeImage}`}
-                className="w-full h-full object-cover transition-opacity duration-300"
-              />
+            <AspectRatio ratio={16/9} className="bg-muted max-h-[250px]">
+              {roomDetails.images[activeImage] && (
+                <img
+                  src={roomDetails.images[activeImage]}
+                  alt={`${room.name} - ${activeImage}`}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                />
+              )}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent h-24">
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Badge className="bg-amber-500 text-white font-medium px-2 py-1">
@@ -58,19 +73,19 @@ const RoomDetailDialog = ({
             </AspectRatio>
 
             <div className="absolute bottom-4 right-4 flex gap-2">
-              {['balcony', 'bed', 'livingArea'].map((imgType) => (
+              {imageKeys.map((imgKey) => (
                 <motion.button
-                  key={imgType}
+                  key={imgKey}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`w-10 h-10 rounded-md overflow-hidden border-2 ${
-                    activeImage === imgType ? 'border-amber-500 shadow-lg' : 'border-white/40'
+                    activeImage === imgKey ? 'border-amber-500 shadow-lg' : 'border-white/40'
                   }`}
-                  onClick={() => setActiveImage(imgType as 'balcony' | 'bed' | 'livingArea')}
+                  onClick={() => setActiveImage(imgKey)}
                 >
                   <img 
-                    src={roomDetails.images[imgType as 'balcony' | 'bed' | 'livingArea']} 
-                    alt={imgType} 
+                    src={roomDetails.images[imgKey]} 
+                    alt={imgKey} 
                     className="w-full h-full object-cover"
                   />
                 </motion.button>
