@@ -1,5 +1,6 @@
+
 import React, { useEffect } from 'react';
-import { useBooking } from '@/contexts/booking';
+import { useBooking } from '@/contexts/BookingContext';
 import { RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';

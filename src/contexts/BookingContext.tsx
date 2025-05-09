@@ -1,19 +1,75 @@
 
 import React, { createContext, useContext, useState } from "react";
-import { BookingContextType } from "./types";
-import { BookingType, BookingData, DurationType, CustomerInfo } from "@/types/bookingTypes";
-import { initialBookingData } from "@/data/initialData";
-import { availablePackages } from "@/data/packagesData";
-import { availableRooms } from "@/data/roomsData";
-import { usePackages } from "@/hooks/usePackages";
-import { useRooms } from "@/hooks/useRooms";
-import { useAddOns } from "@/hooks/useAddOns";
-import { usePricing } from "@/hooks/usePricing";
-import { useEventBooking } from "@/hooks/useEventBooking";
-import { calculateEndDate, getResetBookingData } from "./utils";
-import { toggleAddOn, removeAddOn, updateAddOnQuantity, getSelectedAddOns } from "./addonOperations";
-import { toggleRoomAddOn, removeRoomAddOn } from "./roomOperations";
-import { handleSelectPackage } from "./packageOperations";
+import { addDays } from "date-fns";
+
+// Import types
+import { 
+  BookingType, 
+  BookingData, 
+  DurationType, 
+  PackageType,
+  RoomType,
+  CustomerInfo
+} from "../types/bookingTypes";
+
+// Import data
+import { initialBookingData } from "../data/initialData";
+import { availablePackages } from "../data/packagesData";
+import { availableRooms } from "../data/roomsData";
+
+// Import custom hooks
+import { usePackages } from "../hooks/usePackages";
+import { useRooms } from "../hooks/useRooms";
+import { useAddOns } from "../hooks/useAddOns";
+import { usePricing } from "../hooks/usePricing";
+import { useEventBooking } from "../hooks/useEventBooking";
+
+export type BookingContextType = {
+  currentStep: number;
+  bookingData: BookingData;
+  availablePackages: PackageType[];
+  availableRooms: RoomType[];
+  setCurrentStep: (step: number) => void;
+  goToNextStep: () => void;
+  selectPackage: (packageId: string) => void;
+  resetPackage: () => void;
+  setDuration: (duration: DurationType) => void;
+  setStartDate: (date: Date | null) => void;
+  toggleAddOn: (categoryId: string, itemId: string) => void;
+  removeAddOn: (categoryId: string, itemId: string) => void;
+  updateAddOnQuantity: (categoryId: string, itemId: string, quantity: number) => void;
+  selectRoom: (roomId: string) => void;
+  resetRoom: () => void;
+  toggleRoomAddOn: (addOnId: string) => void;
+  removeRoomAddOn: (addOnId: string) => void;
+  setCustomerInfo: (info: Partial<CustomerInfo>) => void;
+  calculateEndDate: () => Date | null;
+  calculateTotalPrice: () => number;
+  getDefaultAddOnQuantity: () => number;
+  getStandardRoom: () => RoomType | null;
+  getRoomUpgradePrice: (roomId: string) => number;
+  eventSpace: string | null;
+  eventDate: Date | null;
+  attendees: number | null;
+  eventType: string | null;
+  eventDuration: number | null;
+  eventAddons: string[];
+  setEventSpace: (eventSpace: string) => void;
+  setEventDate: (date: Date) => void;
+  setAttendees: (count: number) => void;
+  setEventType: (type: string) => void;
+  setEventDuration: (hours: number) => void;
+  setEventAddons: (addons: string[]) => void;
+  bookingType: BookingType;
+  setBookingType: (type: BookingType) => void;
+  selectedPackage: PackageType | null;
+  selectedDuration: string;
+  selectedAddOns: string[];
+  selectedRoom: RoomType | null;
+  bookedDays: number;
+  startDate: Date | null;
+  resetAllSelections: () => void; // New function to reset everything
+};
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
@@ -29,8 +85,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [bookingType, setBookingType] = useState<BookingType>(null);
 
   // Custom hooks
-  const { getStandardRoom, getRoomUpgradePrice, selectRoom: roomSelector } = useRooms();
+  const { getStandardRoom, getRoomUpgradePrice, selectRoom: roomSelector, toggleRoomAddOn, removeRoomAddOn } = useRooms();
   const { selectPackage: packageSelector } = usePackages(bookingData.selectedPackage);
+  const { toggleAddOn, removeAddOn, updateAddOnQuantity, getSelectedAddOns } = useAddOns();
   const { getDefaultAddOnQuantity, calculateTotalPrice } = usePricing({
     getStandardRoom, 
     getRoomUpgradePrice,
@@ -111,8 +168,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
-  const calculateEndDateFromState = (): Date | null => {
-    return calculateEndDate(bookingData.startDate, bookingData.duration);
+  const calculateEndDate = (): Date | null => {
+    if (!bookingData.startDate) return null;
+    return addDays(bookingData.startDate, parseInt(bookingData.duration));
   };
 
   // Add-on operations
@@ -194,7 +252,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setBookingType('event');
   }
 
-  // Reset all selections
+  // New function to reset ALL selections
   const resetAllSelections = () => {
     // Reset booking data to initial state
     setBookingData({
@@ -243,7 +301,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       toggleRoomAddOn: handleToggleRoomAddOn,
       removeRoomAddOn: handleRemoveRoomAddOn,
       setCustomerInfo,
-      calculateEndDate: calculateEndDateFromState,
+      calculateEndDate,
       calculateTotalPrice: () => calculateTotalPrice(bookingData),
       getDefaultAddOnQuantity: () => getDefaultAddOnQuantity(bookingData.duration),
       getStandardRoom,
@@ -259,7 +317,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       selectedRoom: bookingData.selectedRoom,
       bookedDays,
       startDate: bookingData.startDate,
-      resetAllSelections
+      resetAllSelections // Add the new function to context
     }}>
       {children}
     </BookingContext.Provider>

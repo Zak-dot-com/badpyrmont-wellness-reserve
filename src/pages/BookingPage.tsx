@@ -1,4 +1,5 @@
-import { useBooking } from '@/contexts/booking';
+
+import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import Header from '@/components/layout/Header';
