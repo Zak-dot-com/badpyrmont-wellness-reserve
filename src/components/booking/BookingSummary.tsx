@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Check, RefreshCcw } from 'lucide-react';
@@ -15,23 +14,14 @@ const BookingSummary = () => {
     startDate,
     calculateTotalPrice,
     bookingType,
-    setBookingType,
-    resetPackage,
-    resetRoom,
-    setCurrentStep,
+    resetAllSelections, // Use the comprehensive reset function
     // Event space properties
     eventSpace,
     eventDate,
     attendees,
     eventType,
     eventDuration,
-    eventAddons,
-    setEventSpace,
-    setEventDate,
-    setEventType,
-    setAttendees,
-    setEventDuration,
-    setEventAddons
+    eventAddons
   } = useBooking();
 
   const sessionEventBooking = sessionStorage.getItem('eventBooking');
@@ -73,28 +63,11 @@ const BookingSummary = () => {
   const totalPrice = calculateTotalPrice();
 
   const handleReset = () => {
-    if (selectedPackage) {
-      resetPackage();
-    }
+    // Use the consolidated reset function to clear everything
+    resetAllSelections();
     
-    if (selectedRoom) {
-      resetRoom();
-    }
-    
-    if (eventSpace) {
-      setEventSpace('');
-      setEventDate(null);
-      setEventType(null);
-      setAttendees(null);
-      setEventDuration(null);
-      setEventAddons([]);
-    }
-    
-    setBookingType(null);
-    
-    setCurrentStep(1);
-    
-    toast.success("Booking reset successfully. You can start a new selection.");
+    // Display success message
+    toast.success("All selections have been cleared. You can start a new booking.");
   };
 
   const getEventSpaceDetail = (id: string | null) => {

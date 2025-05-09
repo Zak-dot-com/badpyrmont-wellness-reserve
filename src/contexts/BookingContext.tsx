@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from "react";
 import { addDays } from "date-fns";
 
@@ -67,6 +68,7 @@ export type BookingContextType = {
   selectedRoom: RoomType | null;
   bookedDays: number;
   startDate: Date | null;
+  resetAllSelections: () => void; // New function to reset everything
 };
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
@@ -250,6 +252,32 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setBookingType('event');
   }
 
+  // New function to reset ALL selections
+  const resetAllSelections = () => {
+    // Reset booking data to initial state
+    setBookingData({
+      ...initialBookingData,
+      customerInfo: bookingData.customerInfo // Preserve customer information
+    });
+    
+    // Reset event booking data
+    setEventSpace(null);
+    setEventDate(null);
+    setEventType(null);
+    setAttendees(50);
+    setEventDuration(4);
+    setEventAddons([]);
+    
+    // Reset booking type
+    setBookingType(null);
+    
+    // Reset to first step
+    setCurrentStep(1);
+    
+    // Clear any event booking data in session storage
+    sessionStorage.removeItem('eventBooking');
+  };
+
   const selectedAddOns = getSelectedAddOns(bookingData.addOnCategories, bookingData.roomAddOns);
   const bookedDays = bookingData.duration ? parseInt(bookingData.duration) : 0;
 
@@ -288,7 +316,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       selectedAddOns,
       selectedRoom: bookingData.selectedRoom,
       bookedDays,
-      startDate: bookingData.startDate
+      startDate: bookingData.startDate,
+      resetAllSelections // Add the new function to context
     }}>
       {children}
     </BookingContext.Provider>
