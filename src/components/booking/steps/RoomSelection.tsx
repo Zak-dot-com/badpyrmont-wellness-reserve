@@ -1,5 +1,6 @@
+
 import { useBooking } from '@/contexts/BookingContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -27,6 +28,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import WellnessPackageDialog from "./WellnessPackageDialog";
+import { useSearchParams } from 'react-router-dom';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -46,9 +48,21 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   
   const { selectedPackage, selectedRoom, roomAddOns } = bookingData;
   const standardRoom = getStandardRoom();
+  const [searchParams] = useSearchParams();
 
   const [guestCount, setGuestCount] = useState(1);
   const [wellnessDialogOpen, setWellnessDialogOpen] = useState(false);
+
+  // Effect to highlight the selected room when component mounts
+  useEffect(() => {
+    if (selectedRoom) {
+      // If we have a selected room, scroll it into view if possible
+      const roomElement = document.getElementById(`room-card-${selectedRoom.id}`);
+      if (roomElement) {
+        roomElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [selectedRoom]);
 
   const handleGuestChange = (value: number[]) => {
     setGuestCount(value[0]);
@@ -137,6 +151,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           return (
             <Card 
               key={room.id}
+              id={`room-card-${room.id}`}
               className={`overflow-hidden cursor-pointer transition-all room-option ${
                 selectedRoom?.id === room.id 
                   ? 'ring-2 ring-amber-500' 

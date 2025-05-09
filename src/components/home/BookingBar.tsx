@@ -53,7 +53,9 @@ const BookingBar = ({
       queryParams.append('package', selectedPackage);
       queryParams.append('bookingType', 'package');
     } else if (bookingType === 'room' && selectedRoom) {
-      queryParams.append('room', selectedRoom);
+      // Map the room selection value to the correct room ID used in the room booking page
+      const roomId = mapRoomValueToId(selectedRoom);
+      queryParams.append('room', roomId);
       queryParams.append('bookingType', 'room');
       navigate(`/book-room?${queryParams.toString()}`);
       return;
@@ -77,6 +79,20 @@ const BookingBar = ({
     }
     
     navigate(`/booking?${queryParams.toString()}`);
+  };
+
+  // Map the room selection value to the correct room ID used in the room booking page
+  const mapRoomValueToId = (roomValue: string): string => {
+    switch (roomValue) {
+      case 'standard':
+        return 'single-standard';
+      case 'deluxe':
+        return 'deluxe-room';
+      case 'suite':
+        return 'vip-suite';
+      default:
+        return roomValue;
+    }
   };
 
   const handleReset = () => {

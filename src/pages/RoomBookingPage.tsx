@@ -15,6 +15,7 @@ import RoomSelection from '@/components/booking/steps/RoomSelection';
 import BookingSummary from '@/components/booking/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
+
 const RoomBookingPage = () => {
   const {
     setBookingType,
@@ -23,8 +24,10 @@ const RoomBookingPage = () => {
     calculateEndDate,
     currentStep,
     setCurrentStep,
-    bookingData
+    bookingData,
+    selectRoom
   } = useBooking();
+
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
 
@@ -35,8 +38,10 @@ const RoomBookingPage = () => {
     // Get room type from URL if present
     const roomParam = searchParams.get('room');
     if (roomParam) {
-      setActiveStep('room');
-      toast.info("Room type pre-selected. Please select your dates.");
+      // Pre-select the room by ID
+      selectRoom(roomParam);
+      setActiveStep('room'); // Move to the room selection step
+      toast.info("Room type pre-selected. Please confirm your selection or choose dates.");
     }
 
     // Get dates from URL if present
@@ -61,7 +66,8 @@ const RoomBookingPage = () => {
         }
       }
     }
-  }, [searchParams, setBookingType, setStartDate, setDuration]);
+  }, [searchParams, setBookingType, setStartDate, setDuration, selectRoom]);
+
   const handleContinue = () => {
     if (activeStep === 'dates') {
       if (!bookingData.startDate) {
@@ -78,6 +84,7 @@ const RoomBookingPage = () => {
       setCurrentStep(4); // Set to checkout step for consistency with main flow
     }
   };
+
   const handleBack = () => {
     if (activeStep === 'room') {
       setActiveStep('dates');
@@ -86,6 +93,7 @@ const RoomBookingPage = () => {
       setCurrentStep(3); // Reset to room selection step
     }
   };
+
   const handleStepClick = (step: 'dates' | 'room' | 'checkout') => {
     // Only allow going backward or staying on current step
     if (step === activeStep) return;
@@ -108,6 +116,7 @@ const RoomBookingPage = () => {
       setCurrentStep(4);
     }
   };
+
   return <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow bg-gray-100">
@@ -247,4 +256,5 @@ const RoomBookingPage = () => {
       <Footer />
     </div>;
 };
+
 export default RoomBookingPage;
