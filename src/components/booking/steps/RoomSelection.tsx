@@ -1,4 +1,3 @@
-
 import { useBooking } from '@/contexts/BookingContext';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -22,13 +21,17 @@ import {
   ArrowUpCircle,
   Users,
   Sparkles,
-  Star
+  Star,
+  Info,
+  Image
 } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import WellnessPackageDialog from "./WellnessPackageDialog";
 import { useSearchParams } from 'react-router-dom';
+import RoomDetailDialog from './RoomDetailDialog';
+import { motion } from 'framer-motion';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -52,6 +55,8 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
 
   const [guestCount, setGuestCount] = useState(1);
   const [wellnessDialogOpen, setWellnessDialogOpen] = useState(false);
+  const [roomDetailDialogOpen, setRoomDetailDialogOpen] = useState(false);
+  const [selectedRoomForDialog, setSelectedRoomForDialog] = useState<typeof availableRooms[0] | null>(null);
 
   // Effect to highlight the selected room when component mounts
   useEffect(() => {
@@ -72,6 +77,17 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     'single-standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop',
     'deluxe-room': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop',
     'vip-suite': 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop'
+  };
+
+  const openRoomDetails = (room: typeof availableRooms[0]) => {
+    setSelectedRoomForDialog(room);
+    setRoomDetailDialogOpen(true);
+  };
+
+  const handleRoomSelect = () => {
+    if (selectedRoomForDialog) {
+      selectRoom(selectedRoomForDialog.id);
+    }
   };
 
   const handleContinue = () => {
@@ -217,6 +233,22 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
                     {room.price} € <span className="text-sm text-gray-500">/ night</span>
                   </p>
                 )}
+
+                {/* New "Learn More" button */}
+                <div className="mt-4">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white py-2 px-4 rounded-md shadow transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openRoomDetails(room);
+                    }}
+                  >
+                    <Image className="h-4 w-4" />
+                    See Room Details
+                  </motion.button>
+                </div>
               </CardContent>
             </Card>
           );
@@ -292,6 +324,15 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           {isEditMode ? "Save Changes" : "Continue to Checkout"}
         </Button>
       </div>
+
+      {/* Room Detail Dialog */}
+      <RoomDetailDialog
+        open={roomDetailDialogOpen}
+        onOpenChange={setRoomDetailDialogOpen}
+        room={selectedRoomForDialog}
+        onSelectRoom={handleRoomSelect}
+        isSelected={selectedRoom?.id === selectedRoomForDialog?.id}
+      />
     </div>
   );
 };

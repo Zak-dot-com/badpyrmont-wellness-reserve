@@ -18,6 +18,8 @@ const AddOnTreatmentsContent = () => {
     name: string;
     description: string;
     price: number;
+    selected: boolean; // Added missing property
+    quantity: number;  // Added missing property
   }>(null);
   const [showDialog, setShowDialog] = useState(false);
 
