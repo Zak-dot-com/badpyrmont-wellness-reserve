@@ -39,45 +39,45 @@ const RoomDetailDialog = ({
       <DialogContent className="max-w-3xl p-0 overflow-hidden max-h-[90vh]">
         <DialogClose className="absolute right-4 top-4 z-50 rounded-full bg-white/80 p-1 opacity-70 shadow-sm transition-opacity hover:opacity-100" />
         
-        <div className="relative">
-          <AspectRatio ratio={16/9} className="bg-muted">
-            <img
-              src={roomDetails.images[activeImage]}
-              alt={`${room.name} - ${activeImage}`}
-              className="w-full h-full object-cover transition-opacity duration-300"
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent h-24">
-              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                <Badge className="bg-amber-500 text-white font-medium px-2 py-1">
-                  {room.type === 'single' ? 'Standard' : room.type === 'deluxe' ? 'Deluxe' : 'Premium'}
-                </Badge>
-                <span className="text-white font-bold drop-shadow-md">{room.name}</span>
+        <ScrollArea className="max-h-[90vh]">
+          <div className="relative">
+            <AspectRatio ratio={16/9} className="bg-muted max-h-[300px]">
+              <img
+                src={roomDetails.images[activeImage]}
+                alt={`${room.name} - ${activeImage}`}
+                className="w-full h-full object-cover transition-opacity duration-300"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent h-24">
+                <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                  <Badge className="bg-amber-500 text-white font-medium px-2 py-1">
+                    {room.type === 'single' ? 'Standard' : room.type === 'deluxe' ? 'Deluxe' : 'Premium'}
+                  </Badge>
+                  <span className="text-white font-bold drop-shadow-md">{room.name}</span>
+                </div>
               </div>
+            </AspectRatio>
+
+            <div className="absolute bottom-4 right-4 flex gap-2">
+              {['balcony', 'bed', 'livingArea'].map((imgType) => (
+                <motion.button
+                  key={imgType}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-10 h-10 rounded-md overflow-hidden border-2 ${
+                    activeImage === imgType ? 'border-amber-500 shadow-lg' : 'border-white/40'
+                  }`}
+                  onClick={() => setActiveImage(imgType as 'balcony' | 'bed' | 'livingArea')}
+                >
+                  <img 
+                    src={roomDetails.images[imgType as 'balcony' | 'bed' | 'livingArea']} 
+                    alt={imgType} 
+                    className="w-full h-full object-cover"
+                  />
+                </motion.button>
+              ))}
             </div>
-          </AspectRatio>
-
-          <div className="absolute bottom-4 right-4 flex gap-2">
-            {['balcony', 'bed', 'livingArea'].map((imgType) => (
-              <motion.button
-                key={imgType}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-12 h-12 rounded-md overflow-hidden border-2 ${
-                  activeImage === imgType ? 'border-amber-500 shadow-lg' : 'border-white/40'
-                }`}
-                onClick={() => setActiveImage(imgType as 'balcony' | 'bed' | 'livingArea')}
-              >
-                <img 
-                  src={roomDetails.images[imgType as 'balcony' | 'bed' | 'livingArea']} 
-                  alt={imgType} 
-                  className="w-full h-full object-cover"
-                />
-              </motion.button>
-            ))}
           </div>
-        </div>
 
-        <ScrollArea className="h-[50vh]">
           <div className="p-6">
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="grid grid-cols-2 mb-4">

@@ -82,6 +82,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
   const openRoomDetails = (room: typeof availableRooms[0]) => {
     setSelectedRoomForDialog(room);
     setRoomDetailDialogOpen(true);
+    // Remove any toast/notification here related to room details
   };
 
   const handleRoomSelect = () => {
@@ -325,10 +326,13 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
         </Button>
       </div>
 
-      {/* Room Detail Dialog */}
+      {/* Room Detail Dialog - Update to prevent notification issues */}
       <RoomDetailDialog
         open={roomDetailDialogOpen}
-        onOpenChange={setRoomDetailDialogOpen}
+        onOpenChange={(isOpen) => {
+          // Only update the state, don't add notifications
+          setRoomDetailDialogOpen(isOpen);
+        }}
         room={selectedRoomForDialog}
         onSelectRoom={handleRoomSelect}
         isSelected={selectedRoom?.id === selectedRoomForDialog?.id}
