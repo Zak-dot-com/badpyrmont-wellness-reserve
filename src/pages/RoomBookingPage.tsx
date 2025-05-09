@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -12,7 +13,7 @@ import { cn } from '@/lib/utils';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import RoomSelection from '@/components/booking/steps/RoomSelection';
-import BookingSummary from '@/components/booking/BookingSummary';
+import BookingSummary from '@/components/booking/summary/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
 

@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BookingStepper from '@/components/booking/BookingStepper';
-import BookingSummary from '@/components/booking/BookingSummary';
+import BookingSummary from '@/components/booking/summary/BookingSummary';
 import PackageSelection from '@/components/booking/steps/PackageSelection';
 import AddOnSelection from '@/components/booking/steps/AddOnSelection';
 import RoomSelection from '@/components/booking/steps/RoomSelection';
