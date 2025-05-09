@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -63,7 +62,18 @@ const AddOnTreatmentsContent = () => {
           ))}
         </div>
       </ScrollArea>
-      <AddonDetailDialog open={showDialog} onOpenChange={setShowDialog} addon={selectedAddon} />
+      <AddonDetailDialog 
+        open={showDialog} 
+        onOpenChange={setShowDialog} 
+        addon={selectedAddon} 
+        onToggleAddon={() => {
+          if (selectedAddon) {
+            toggleAddOn(selectedAddon.id.split("-")[0] ?? "", selectedAddon.id);
+          }
+        }}
+        onIncreaseQuantity={() => {}}
+        onDecreaseQuantity={() => {}}
+      />
     </>
   );
 };
