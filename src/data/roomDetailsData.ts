@@ -2,7 +2,7 @@
 // Room details data with additional information and images
 export const roomDetailsData = {
   "single-standard": {
-    description: "Our comfortable Single Room offers a tranquil retreat for individual travelers seeking a peaceful escape. The room features a modern design with a warm, inviting atmosphere and all essential amenities for a relaxing stay.",
+    description: "Our comfortable Superior Room offers a tranquil retreat for individual travelers seeking a peaceful escape. The room features a modern design with a warm, inviting atmosphere and all essential amenities for a relaxing stay.",
     dimensions: "25 sq.m. / 269 sq.ft.",
     bedSize: "Single bed (100 x 200 cm)",
     amenities: [
@@ -43,7 +43,7 @@ export const roomDetailsData = {
     }
   },
   "vip-suite": {
-    description: "Our exclusive VIP Suite represents the pinnacle of luxury, offering a sophisticated residential feel with a separate living area and panoramic views of the surrounding landscape. Designed for discerning travelers who seek the ultimate in comfort and personalized service.",
+    description: "Our exclusive Junior Suite represents the pinnacle of luxury, offering a sophisticated residential feel with a separate living area and panoramic views of the surrounding landscape. Designed for discerning travelers who seek the ultimate in comfort and personalized service.",
     dimensions: "75 sq.m. / 807 sq.ft.",
     bedSize: "Super King size bed (200 x 200 cm)",
     amenities: [

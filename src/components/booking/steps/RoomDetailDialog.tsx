@@ -54,7 +54,7 @@ const RoomDetailDialog = ({
         
         <ScrollArea className="max-h-[90vh] overflow-auto">
           <div className="relative">
-            <AspectRatio ratio={16/9} className="bg-muted max-h-[250px]">
+            <AspectRatio ratio={16/9} className="bg-muted max-h-[200px]">
               {roomDetails.images[activeImage] && (
                 <img
                   src={roomDetails.images[activeImage]}
@@ -65,7 +65,7 @@ const RoomDetailDialog = ({
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent h-24">
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Badge className="bg-amber-500 text-white font-medium px-2 py-1">
-                    {room.type === 'single' ? 'Standard' : room.type === 'deluxe' ? 'Deluxe' : 'Premium'}
+                    {room.type === 'single' ? 'Superior' : room.type === 'deluxe' ? 'Deluxe' : 'Junior Suite'}
                   </Badge>
                   <span className="text-white font-bold drop-shadow-md">{room.name}</span>
                 </div>
@@ -78,7 +78,7 @@ const RoomDetailDialog = ({
                   key={imgKey}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`w-10 h-10 rounded-md overflow-hidden border-2 ${
+                  className={`w-8 h-8 rounded-md overflow-hidden border-2 ${
                     activeImage === imgKey ? 'border-amber-500 shadow-lg' : 'border-white/40'
                   }`}
                   onClick={() => setActiveImage(imgKey)}

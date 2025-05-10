@@ -1,10 +1,11 @@
+
 import { RoomType, RoomAddOn } from "../types/bookingTypes";
 
 export const availableRooms: RoomType[] = [
   {
     id: "single-standard",
     type: "single",
-    name: "Single Room",
+    name: "Superior Room",
     description: "Comfortable single room with all essential amenities",
     price: 80,
     image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1470&auto=format&fit=crop",
@@ -22,7 +23,7 @@ export const availableRooms: RoomType[] = [
   {
     id: "vip-suite",
     type: "suite",
-    name: "VIP Suite",
+    name: "Junior Suite",
     description: "Luxurious suite with separate living area and panoramic views",
     price: 280,
     image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1470&auto=format&fit=crop",
