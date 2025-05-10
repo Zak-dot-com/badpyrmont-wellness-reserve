@@ -16,9 +16,7 @@ export function useBookingEvents() {
     setCurrentStep: (step: number) => void,
     step: 'dates' | 'room' | 'checkout'
   ) => {
-    console.log("navigateToStep called with step:", step);
     setActiveStep(step);
-    
     if (step === 'checkout') {
       setCurrentStep(4); // Set to checkout step for consistency with main flow
     } else if (step === 'room') {

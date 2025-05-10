@@ -49,11 +49,6 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     }
   }, [selectedRoom]);
 
-  // Debug log to track room selection
-  useEffect(() => {
-    console.log("RoomSelection: selectedRoom =", selectedRoom?.id);
-  }, [selectedRoom]);
-
   const handleGuestChange = (value: number[]) => {
     setGuestCount(value[0]);
   };
@@ -71,15 +66,8 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
 
   const handleRoomSelect = () => {
     if (selectedRoomForDialog) {
-      console.log("Selecting room from dialog:", selectedRoomForDialog.id);
       selectRoom(selectedRoomForDialog.id);
-      setRoomDetailDialogOpen(false);
     }
-  };
-
-  const handleSelectRoom = (roomId: string) => {
-    console.log("Selecting room from card:", roomId);
-    selectRoom(roomId);
   };
 
   // Navigation methods are moved to parent component
@@ -151,7 +139,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
               isUpgrade={isUpgrade}
               upgradePrice={upgradePrice}
               roomImages={roomImages}
-              onRoomSelect={handleSelectRoom}
+              onRoomSelect={selectRoom}
               onViewDetails={openRoomDetails}
             />
           );

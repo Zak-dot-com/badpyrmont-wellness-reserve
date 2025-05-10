@@ -67,8 +67,6 @@ const RoomBookingPage = () => {
   }, [searchParams, setBookingType, setStartDate, setDuration, selectRoom]);
 
   const handleContinue = () => {
-    console.log("handleContinue called with activeStep:", activeStep);
-    
     if (activeStep === 'dates') {
       if (!bookingData.startDate) {
         toast.error("Please select check-in and check-out dates");
@@ -80,14 +78,12 @@ const RoomBookingPage = () => {
         toast.error("Please select a room");
         return;
       }
-      setCurrentStep(4); // Set to checkout step
+      navigateToStep('checkout');
       setActiveStep('checkout');
     }
   };
 
   const handleBack = () => {
-    console.log("handleBack called with activeStep:", activeStep);
-    
     if (activeStep === 'room') {
       setActiveStep('dates');
     } else if (activeStep === 'checkout') {
@@ -113,7 +109,7 @@ const RoomBookingPage = () => {
         toast.error("Please select a room first");
         return;
       }
-      setCurrentStep(4); // Set to checkout step
+      navigateToStep('checkout');
       setActiveStep('checkout');
     }
   };
