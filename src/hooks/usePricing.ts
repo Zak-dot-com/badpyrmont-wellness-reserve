@@ -2,6 +2,7 @@
 import { useCallback } from "react";
 import { BookingData } from "../types/bookingTypes";
 import { availableRooms } from "../data/roomsData";
+import { differenceInDays } from "date-fns";
 
 type PricingProps = {
   getStandardRoom: () => any;
