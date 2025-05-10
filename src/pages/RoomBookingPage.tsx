@@ -16,10 +16,10 @@ const RoomBookingPage = () => {
     currentStep,
     setCurrentStep,
     bookingData,
-    selectRoom
+    selectRoom,
+    navigateToStep
   } = useBooking();
 
-  const { navigateToStep } = useBooking();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
   const notificationsShown = useRef(false);
@@ -78,7 +78,8 @@ const RoomBookingPage = () => {
         toast.error("Please select a room");
         return;
       }
-      navigateToStep(setActiveStep, setCurrentStep, 'checkout');
+      navigateToStep('checkout');
+      setActiveStep('checkout');
     }
   };
 
@@ -86,7 +87,7 @@ const RoomBookingPage = () => {
     if (activeStep === 'room') {
       setActiveStep('dates');
     } else if (activeStep === 'checkout') {
-      navigateToStep(setActiveStep, setCurrentStep, 'room');
+      setActiveStep('room');
     }
   };
 
@@ -108,7 +109,8 @@ const RoomBookingPage = () => {
         toast.error("Please select a room first");
         return;
       }
-      navigateToStep(setActiveStep, setCurrentStep, 'checkout');
+      navigateToStep('checkout');
+      setActiveStep('checkout');
     }
   };
 

@@ -60,4 +60,5 @@ export type BookingContextType = {
   bookedDays: number;
   startDate: Date | null;
   resetAllSelections: () => void;
+  navigateToStep: (step: 'dates' | 'room' | 'checkout') => void;
 };

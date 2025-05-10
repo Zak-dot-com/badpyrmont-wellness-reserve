@@ -21,6 +21,8 @@ export function useBookingEvents() {
       setCurrentStep(4); // Set to checkout step for consistency with main flow
     } else if (step === 'room') {
       setCurrentStep(3); // Room selection step
+    } else {
+      setCurrentStep(1); // Dates selection step
     }
   };
 

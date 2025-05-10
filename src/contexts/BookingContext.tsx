@@ -85,7 +85,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     handleRemoveAddOn, 
     handleUpdateAddOnQuantity 
   } = useBookingAddOns();
-  const { handleSetEventSpace } = useBookingEvents();
+  const { handleSetEventSpace, navigateToStep: bookingEventsNavigate } = useBookingEvents();
 
   // Navigation
   const goToNextStep = () => {
@@ -95,6 +95,17 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       return prevStep + 1;
     });
+  };
+
+  // Implement navigateToStep function
+  const navigateToStep = (step: 'dates' | 'room' | 'checkout') => {
+    if (step === 'checkout') {
+      setCurrentStep(4); // Set to checkout step
+    } else if (step === 'room') {
+      setCurrentStep(3); // Room selection step
+    } else {
+      setCurrentStep(1); // Dates selection step
+    }
   };
 
   // Use refactored package operations
@@ -242,7 +253,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       selectedRoom: bookingData.selectedRoom,
       bookedDays,
       startDate: bookingData.startDate,
-      resetAllSelections
+      resetAllSelections,
+      navigateToStep
     }}>
       {children}
     </BookingContext.Provider>
