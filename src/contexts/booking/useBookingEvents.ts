@@ -11,23 +11,7 @@ export function useBookingEvents() {
     setBookingType('event');
   };
 
-  const navigateToStep = (
-    setActiveStep: (step: 'dates' | 'room' | 'checkout') => void,
-    setCurrentStep: (step: number) => void,
-    step: 'dates' | 'room' | 'checkout'
-  ) => {
-    setActiveStep(step);
-    if (step === 'checkout') {
-      setCurrentStep(4); // Set to checkout step for consistency with main flow
-    } else if (step === 'room') {
-      setCurrentStep(3); // Room selection step
-    } else {
-      setCurrentStep(1); // Dates selection step
-    }
-  };
-
   return {
-    handleSetEventSpace,
-    navigateToStep
+    handleSetEventSpace
   };
 }

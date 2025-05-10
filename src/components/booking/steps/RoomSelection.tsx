@@ -11,6 +11,7 @@ import WellnessPackageDialog from "./WellnessPackageDialog";
 import RoomCard from './room-selection/RoomCard';
 import GuestCounter from './room-selection/GuestCounter';
 import RoomAddOns from './room-selection/RoomAddOns';
+import NavigationButtons from './room-selection/NavigationButtons';
 import RoomDetailDialog from './RoomDetailDialog';
 
 type RoomSelectionProps = {
@@ -70,7 +71,6 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     }
   };
 
-  // Navigation methods are moved to parent component
   const handleContinue = () => {
     if (!selectedRoom) {
       toast.error("Please select a room type");
@@ -158,7 +158,11 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
         onToggleAddOn={toggleRoomAddOn}
       />
 
-      {/* We've removed the NavigationButtons from here as they'll be handled by RoomBookingContainer */}
+      <NavigationButtons 
+        isEditMode={isEditMode}
+        onBack={handleBack}
+        onContinue={handleContinue}
+      />
 
       {/* Room Detail Dialog - Fixed to properly handle notifications */}
       <RoomDetailDialog
