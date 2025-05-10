@@ -62,10 +62,10 @@ const CancellationPolicySection = () => {
   };
   
   return (
-    <div className="bg-purple-50 p-6 rounded-lg border border-purple-200 space-y-4 my-8 shadow-sm">
+    <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-lg border border-amber-200 space-y-4 my-8 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <CalendarClock className="h-5 w-5 text-purple-700" />
-        <h3 className="text-xl font-semibold text-purple-800">Payment Schedule & Cancellation Policy</h3>
+        <CalendarClock className="h-5 w-5 text-amber-700" />
+        <h3 className="text-xl font-semibold text-amber-800">Payment Schedule & Cancellation Policy</h3>
       </div>
       
       {!startDate ? (
@@ -76,29 +76,33 @@ const CancellationPolicySection = () => {
       ) : (
         <>
           {/* Progress indicator for payment */}
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2 mb-4 bg-amber-50/70 p-3 rounded-lg">
             <div className="flex justify-between items-center text-sm">
-              <span>Initial Payment</span>
-              {showThirtyDayPayment && <span>30 Days Prior</span>}
-              {showFourteenDayPayment && <span>14 Days Prior</span>}
+              <span className="font-medium text-amber-800">Initial Payment</span>
+              {showThirtyDayPayment && <span className="font-medium text-amber-700">30 Days Prior</span>}
+              {showFourteenDayPayment && <span className="font-medium text-amber-700">14 Days Prior</span>}
             </div>
-            <Progress value={getProgressPercentage()} className="h-2 bg-purple-100" />
-            <p className="text-xs text-gray-500 italic">
+            <Progress value={getProgressPercentage()} className="h-2.5 bg-amber-200" 
+              style={{ 
+                backgroundImage: 'linear-gradient(to right, #f59e0b, #d97706)',
+                backgroundColor: '#fef3c7' 
+              }} />
+            <p className="text-sm text-amber-700 font-medium">
               {getProgressPercentage()}% of payment due now
             </p>
           </div>
 
           {bookingType === 'event' ? (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-purple-500">
-                <div className="bg-purple-100 p-2 rounded-full">
-                  <Receipt className="h-5 w-5 text-purple-600" />
+              <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-amber-500 shadow-sm">
+                <div className="bg-amber-100 p-2 rounded-full">
+                  <Receipt className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
                   <p className="font-medium">Full Payment Required</p>
-                  <div className="flex items-center gap-1 mt-1 text-purple-700 font-semibold">
+                  <div className="flex items-center gap-1 mt-1 text-amber-700 font-semibold">
                     <span className="text-lg">€{totalPrice.toFixed(2)}</span>
-                    <span className="text-sm bg-purple-100 px-2 py-0.5 rounded">Due today</span>
+                    <span className="text-sm bg-amber-100 px-2 py-0.5 rounded">Due today</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     Event tickets require 100% payment at the time of booking.
@@ -113,11 +117,11 @@ const CancellationPolicySection = () => {
             <div className="space-y-4">
               {/* Initial Payment */}
               <div className={cn(
-                "flex items-start gap-3 p-4 rounded-md border-l-4", 
-                immediatePaymentPercentage === 100 ? "bg-purple-100 border-purple-600" : "bg-white border-purple-400"
+                "flex items-start gap-3 p-4 rounded-md border-l-4 shadow-sm", 
+                immediatePaymentPercentage === 100 ? "bg-gradient-to-r from-amber-50 to-amber-100 border-amber-600" : "bg-white border-amber-400"
               )}>
-                <div className="bg-purple-100 p-2 rounded-full">
-                  <CheckCircle className="h-5 w-5 text-purple-600" />
+                <div className="bg-amber-100 p-2 rounded-full">
+                  <CheckCircle className="h-5 w-5 text-amber-600" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">
@@ -126,8 +130,8 @@ const CancellationPolicySection = () => {
                      "Full Payment (100%)"}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-lg font-semibold text-purple-700">€{initialPayment.toFixed(2)}</span>
-                    <span className="text-sm bg-purple-100 px-2 py-0.5 rounded text-purple-700">Due today</span>
+                    <span className="text-lg font-semibold text-amber-700">€{initialPayment.toFixed(2)}</span>
+                    <span className="text-sm bg-amber-100 px-2 py-0.5 rounded text-amber-700">Due today</span>
                   </div>
                   
                   {isLessThanThreeMonthsAway && immediatePaymentPercentage === 50 && (
@@ -153,15 +157,15 @@ const CancellationPolicySection = () => {
               
               {/* Second Payment - 30 days prior */}
               {showThirtyDayPayment && (
-                <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-purple-300">
-                  <div className="bg-purple-50 p-2 rounded-full">
-                    <Clock className="h-5 w-5 text-purple-500" />
+                <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-amber-300 shadow-sm">
+                  <div className="bg-amber-50 p-2 rounded-full">
+                    <Clock className="h-5 w-5 text-amber-500" />
                   </div>
                   <div className="flex-1">
                     <p className="font-medium">Second Payment (20%)</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-lg font-semibold text-purple-700">€{secondPayment.toFixed(2)}</span>
-                      <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">
+                      <span className="text-lg font-semibold text-amber-700">€{secondPayment.toFixed(2)}</span>
+                      <span className="text-sm bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
                         {thirtyDaysBefore ? format(thirtyDaysBefore, 'MMMM d, yyyy') : '30 days before your stay'}
                       </span>
                     </div>
@@ -171,15 +175,15 @@ const CancellationPolicySection = () => {
               
               {/* Final Payment - 14 days prior */}
               {showFourteenDayPayment && (
-                <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-purple-300">
-                  <div className="bg-purple-50 p-2 rounded-full">
-                    <Clock className="h-5 w-5 text-purple-500" />
+                <div className="flex items-start gap-3 bg-white p-4 rounded-md border-l-4 border-amber-300 shadow-sm">
+                  <div className="bg-amber-50 p-2 rounded-full">
+                    <Clock className="h-5 w-5 text-amber-500" />
                   </div>
                   <div className="flex-1">
                     <p className="font-medium">Final Payment ({fourteenDaysPaymentPercentage}%)</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-lg font-semibold text-purple-700">€{finalPayment.toFixed(2)}</span>
-                      <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">
+                      <span className="text-lg font-semibold text-amber-700">€{finalPayment.toFixed(2)}</span>
+                      <span className="text-sm bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
                         {fourteenDaysBefore ? format(fourteenDaysBefore, 'MMMM d, yyyy') : '14 days before your stay'}
                       </span>
                     </div>
@@ -188,13 +192,13 @@ const CancellationPolicySection = () => {
               )}
               
               {/* Cancellation Policy */}
-              <div className="flex items-start gap-3 pt-4 mt-2 border-t border-purple-200">
-                <div className="bg-purple-100 p-2 rounded-full">
-                  <Ban className="h-5 w-5 text-purple-600" />
+              <div className="flex items-start gap-3 pt-4 mt-2 border-t border-amber-200">
+                <div className="bg-amber-100 p-2 rounded-full">
+                  <Ban className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800">Cancellation Policy</p>
-                  <ul className="text-sm text-gray-600 list-disc pl-5 space-y-1 mt-2">
+                  <p className="font-medium text-amber-800">Cancellation Policy</p>
+                  <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1 mt-2">
                     <li>You may cancel your reservation at any time, but no refunds will be issued for payments already processed.</li>
                     <li>Cancellations must be made in writing by contacting our customer service.</li>
                     <li className="font-medium text-amber-700">No cancellations are possible within 14 days of your reservation date.</li>
