@@ -162,9 +162,9 @@ const BookingBar = ({
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="standard">Standard Room</SelectItem>
+              <SelectItem value="standard">Superior Room</SelectItem>
               <SelectItem value="deluxe">Deluxe Room</SelectItem>
-              <SelectItem value="suite">Executive Suite</SelectItem>
+              <SelectItem value="suite">Junior Suite</SelectItem>
             </SelectContent>
           </Select>
         </div>

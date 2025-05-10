@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -31,6 +30,7 @@ const RoomBookingPage = () => {
 
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
+  const notificationsShown = useRef(false);
 
   // Initialize booking context for room-only booking
   useEffect(() => {
@@ -42,7 +42,12 @@ const RoomBookingPage = () => {
       // Pre-select the room by ID
       selectRoom(roomParam);
       setActiveStep('room'); // Move to the room selection step
-      toast.info("Room type pre-selected. Please confirm your selection or choose dates.");
+      
+      // Only show notification once
+      if (!notificationsShown.current) {
+        toast.info("Room type pre-selected. Please confirm your selection or choose dates.");
+        notificationsShown.current = true;
+      }
     }
 
     // Get dates from URL if present
