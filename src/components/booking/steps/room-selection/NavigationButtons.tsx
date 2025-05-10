@@ -6,9 +6,10 @@ type NavigationButtonsProps = {
   isEditMode: boolean;
   onBack: () => void;
   onContinue: () => void;
+  disabled?: boolean;
 };
 
-const NavigationButtons = ({ isEditMode, onBack, onContinue }: NavigationButtonsProps) => {
+const NavigationButtons = ({ isEditMode, onBack, onContinue, disabled = false }: NavigationButtonsProps) => {
   return (
     <div className="flex justify-between pt-6">
       <Button 
@@ -22,6 +23,7 @@ const NavigationButtons = ({ isEditMode, onBack, onContinue }: NavigationButtons
         onClick={onContinue}
         className="bg-amber-800 hover:bg-amber-900"
         size="lg"
+        disabled={disabled}
       >
         {isEditMode ? "Save Changes" : "Continue to Checkout"}
       </Button>

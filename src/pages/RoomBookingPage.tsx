@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -15,6 +16,7 @@ import RoomSelection from '@/components/booking/steps/RoomSelection';
 import BookingSummary from '@/components/booking/summary/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
+import NavigationButtons from '@/components/booking/steps/room-selection/NavigationButtons';
 
 const RoomBookingPage = () => {
   const {
@@ -220,19 +222,31 @@ const RoomBookingPage = () => {
                     </div>
                   </motion.div>}
                 
-                {activeStep === 'room' && <RoomSelection />}
+                {activeStep === 'room' && 
+                  <RoomSelection 
+                    isEditMode={false} 
+                    onEditComplete={() => {}}
+                  />
+                }
                 
                 {activeStep === 'checkout' && <CheckoutForm />}
                 
-                {(activeStep === 'room' || activeStep === 'checkout') && <div className="flex justify-between mt-8">
+                {activeStep === 'room' && 
+                  <NavigationButtons 
+                    isEditMode={false}
+                    onBack={handleBack}
+                    onContinue={handleContinue}
+                    disabled={!bookingData.selectedRoom}
+                  />
+                }
+                
+                {activeStep === 'checkout' && 
+                  <div className="flex justify-between mt-8">
                     <Button onClick={handleBack} variant="outline" size="lg">
                       Back
                     </Button>
-                    
-                    {activeStep === 'room' && <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
-                        Continue to Checkout
-                      </Button>}
-                  </div>}
+                  </div>
+                }
               </div>
               
               <div className="lg:col-span-1">
