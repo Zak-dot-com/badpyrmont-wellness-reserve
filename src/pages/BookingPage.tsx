@@ -49,7 +49,8 @@ const BookingPage = () => {
     bookingType,
     setEventSpace,
     resetPackage,
-    resetRoom
+    resetRoom,
+    setEventDate
   } = useBooking();
   
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -84,13 +85,30 @@ const BookingPage = () => {
     if (eventBookingStr) {
       setBookingType('event');
       setCurrentStep(4);
+      
+      // Parse event booking data to extract event date if available
+      try {
+        const eventBooking = JSON.parse(eventBookingStr);
+        if (eventBooking?.event?.date) {
+          setEventDate(new Date(eventBooking.event.date));
+        }
+      } catch (err) {
+        console.error('Error parsing event booking data', err);
+      }
+      
       if (!notificationsShown.current) {
         toast.info("Event booking details loaded. Please complete your checkout.");
         notificationsShown.current = true;
       }
     } else {
       if (startDateParam) {
-        setStartDate(new Date(startDateParam));
+        const startDate = new Date(startDateParam);
+        setStartDate(startDate);
+        
+        // If this is an event booking, also set the event date
+        if (type === 'event' || event) {
+          setEventDate(startDate);
+        }
       }
 
       if (type === 'room' || room) {
@@ -168,7 +186,7 @@ const BookingPage = () => {
     }
     
     initialSetupComplete.current = true;
-  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace]);
+  }, [searchParams, selectRoom, selectPackage, setCurrentStep, setStartDate, setDuration, setBookingType, setEventSpace, setEventDate]);
 
   const resetExistingSelections = () => {
     const type = searchParams.get('type') || searchParams.get('bookingType');

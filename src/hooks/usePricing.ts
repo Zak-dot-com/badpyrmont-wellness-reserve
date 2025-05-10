@@ -12,6 +12,7 @@ type PricingProps = {
   attendees: number | null;
   eventDuration: number | null;
   eventAddons: string[];
+  eventDate?: Date | null; // Added eventDate prop
 }
 
 export function usePricing({
@@ -21,7 +22,8 @@ export function usePricing({
   eventType, 
   attendees, 
   eventDuration, 
-  eventAddons
+  eventAddons,
+  eventDate // Add eventDate parameter
 }: PricingProps) {
   
   const getDefaultAddOnQuantity = useCallback((duration: string): number => {

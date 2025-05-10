@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { CalendarClock, AlertCircle, Receipt, Ban, Clock, Info, CheckCircle } from 'lucide-react';
 import { addDays, format, differenceInDays, differenceInMonths } from 'date-fns';
@@ -7,22 +7,24 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 const CancellationPolicySection = () => {
-  const { bookingData, calculateTotalPrice, bookingType } = useBooking();
+  const { bookingData, calculateTotalPrice, bookingType, startDate, eventDate } = useBooking();
   const totalPrice = calculateTotalPrice();
   
-  // Get the reservation date and today's date
-  const startDate = bookingData.startDate;
-  const today = new Date();
+  // Get the reservation date based on booking type
+  // For regular bookings, use startDate from bookingData
+  // For event bookings, use eventDate
+  const reservationDate = bookingType === 'event' ? eventDate : bookingData.startDate;
   
   // Calculate days difference between today and start date
-  const daysUntilReservation = startDate ? differenceInDays(startDate, today) : null;
+  const today = new Date();
+  const daysUntilReservation = reservationDate ? differenceInDays(reservationDate, today) : null;
   
   // Calculate if the start date is less than 3 months away (changed from 5 months)
-  const isLessThanThreeMonthsAway = startDate ? differenceInMonths(startDate, today) < 3 : true;
+  const isLessThanThreeMonthsAway = reservationDate ? differenceInMonths(reservationDate, today) < 3 : true;
   
   // Calculate payment dates
-  const thirtyDaysBefore = startDate ? addDays(startDate, -30) : null;
-  const fourteenDaysBefore = startDate ? addDays(startDate, -14) : null;
+  const thirtyDaysBefore = reservationDate ? addDays(reservationDate, -30) : null;
+  const fourteenDaysBefore = reservationDate ? addDays(reservationDate, -14) : null;
   
   // Determine payment structure based on proximity to booking date
   let immediatePaymentPercentage = 50; // Default
@@ -68,13 +70,23 @@ const CancellationPolicySection = () => {
         <h3 className="text-xl font-semibold text-amber-800">Payment Schedule & Cancellation Policy</h3>
       </div>
       
-      {!startDate ? (
+      {!reservationDate ? (
         <div className="flex items-center gap-2 text-gray-600 italic bg-white p-4 rounded-md">
           <AlertCircle className="h-4 w-4" />
           <p>Please select a reservation date to see your payment schedule.</p>
         </div>
       ) : (
         <>
+          <div className="bg-amber-50 rounded-lg p-4 border border-amber-200 mb-4">
+            <p className="text-amber-800 font-medium flex items-center gap-2">
+              <CalendarClock className="h-4 w-4" />
+              Selected Date: {format(reservationDate, 'MMMM d, yyyy')}
+            </p>
+            <p className="text-sm text-amber-700 mt-1">
+              {daysUntilReservation} days until your reservation
+            </p>
+          </div>
+
           {/* Progress indicator for payment */}
           <div className="space-y-2 mb-4 bg-amber-50/70 p-3 rounded-lg">
             <div className="flex justify-between items-center text-sm">
