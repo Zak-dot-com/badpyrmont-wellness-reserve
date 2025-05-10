@@ -1,37 +1,18 @@
+
 import { useBooking } from '@/contexts/BookingContext';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { 
-  Card, 
-  CardContent,
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
-import { 
-  Bed, 
-  BedDouble,
-  CircleCheck,
-  Wifi,
-  CircleParking,
-  BadgeDollarSign,
-  ArrowUpCircle,
-  Users,
-  Sparkles,
-  Star,
-  Info,
-  Image
-} from 'lucide-react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
-import WellnessPackageDialog from "./WellnessPackageDialog";
 import { useSearchParams } from 'react-router-dom';
+import { Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import WellnessPackageDialog from "./WellnessPackageDialog";
+
+// Newly created components
+import RoomCard from './room-selection/RoomCard';
+import GuestCounter from './room-selection/GuestCounter';
+import RoomAddOns from './room-selection/RoomAddOns';
+import NavigationButtons from './room-selection/NavigationButtons';
 import RoomDetailDialog from './RoomDetailDialog';
-import { motion } from 'framer-motion';
 
 type RoomSelectionProps = {
   isEditMode?: boolean;
@@ -112,21 +93,6 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
     }
   };
 
-  const getIconForAddOn = (iconName: string) => {
-    switch (iconName) {
-      case 'wifi':
-        return <Wifi className="h-6 w-6" />;
-      case 'circle-parking':
-        return <CircleParking className="h-6 w-6" />;
-      case 'bed':
-        return <Bed className="h-6 w-6" />;
-      case 'circle-check':
-        return <CircleCheck className="h-6 w-6" />;
-      default:
-        return <CircleCheck className="h-6 w-6" />;
-    }
-  };
-
   const isRoomOnlyBooking = !selectedPackage;
 
   return (
@@ -165,165 +131,38 @@ const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProp
           const isUpgrade = !room.isStandard && selectedPackage?.includesStandardRoom;
           
           return (
-            <Card 
+            <RoomCard 
               key={room.id}
-              id={`room-card-${room.id}`}
-              className={`overflow-hidden cursor-pointer transition-all room-option ${
-                selectedRoom?.id === room.id 
-                  ? 'ring-2 ring-amber-500' 
-                  : 'hover:shadow-lg'
-              }`}
-              onClick={() => selectRoom(room.id)}
-            >
-              <div className="relative">
-                <AspectRatio ratio={16/9}>
-                  <img
-                    src={roomImages[room.id as keyof typeof roomImages] || room.image}
-                    alt={room.name}
-                    className="object-cover w-full h-full"
-                  />
-                </AspectRatio>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                  <div>
-                    <h3 className="text-white text-lg font-bold">{room.name}</h3>
-                    <p className="text-white/80 text-sm">{room.type === 'single' ? 'For 1 person' : room.type === 'deluxe' ? 'For 2 persons' : 'Luxury for 2'}</p>
-                  </div>
-                </div>
-                {isIncluded && (
-                  <div className="absolute top-2 left-2">
-                    <Badge className="bg-green-500 text-white">Included in Package</Badge>
-                  </div>
-                )}
-                {selectedRoom?.id === room.id && (
-                  <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
-                    <CircleCheck className="h-6 w-6 text-green-500" />
-                  </div>
-                )}
-              </div>
-              <CardContent className="p-4">
-                <p className="text-gray-700">{room.description}</p>
-                <div className="mt-3 flex items-center space-x-2">
-                  {room.type === 'single' ? (
-                    <Bed className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <BedDouble className="h-5 w-5 text-gray-500" />
-                  )}
-                  <span className="text-sm text-gray-500">
-                    {room.type === 'single' ? 'Single Bed' : 'King Size Bed'}
-                  </span>
-                </div>
-                
-                {isIncluded ? (
-                  <div className="mt-4 flex items-center gap-2">
-                    <BadgeDollarSign className="h-5 w-5 text-green-500" />
-                    <p className="text-green-600 font-medium">Included with your package</p>
-                  </div>
-                ) : isUpgrade ? (
-                  <div className="mt-4">
-                    <div className="flex items-center gap-2 text-amber-600">
-                      <ArrowUpCircle className="h-5 w-5" />
-                      <p className="font-medium">Upgrade fee:</p>
-                    </div>
-                    <p className="mt-1 text-xl font-bold text-amber-600">
-                      +{upgradePrice} € <span className="text-sm text-gray-500">/ night</span>
-                    </p>
-                  </div>
-                ) : (
-                  <p className="mt-4 text-xl font-bold text-amber-600">
-                    {room.price} € <span className="text-sm text-gray-500">/ night</span>
-                  </p>
-                )}
-
-                {/* New "Learn More" button */}
-                <div className="mt-4">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white py-2 px-4 rounded-md shadow transition-all duration-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openRoomDetails(room);
-                    }}
-                  >
-                    <Image className="h-4 w-4" />
-                    See Room Details
-                  </motion.button>
-                </div>
-              </CardContent>
-            </Card>
+              room={room}
+              isSelected={selectedRoom?.id === room.id}
+              isIncluded={isIncluded}
+              isUpgrade={isUpgrade}
+              upgradePrice={upgradePrice}
+              roomImages={roomImages}
+              onRoomSelect={selectRoom}
+              onViewDetails={openRoomDetails}
+            />
           );
         })}
       </div>
 
       {selectedRoom && (
-        <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
-          <div className="flex items-center gap-2 text-lg font-medium">
-            <Users className="h-5 w-5" />
-            <span>Number of Guests</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Slider
-              defaultValue={[1]}
-              max={4}
-              min={1}
-              step={1}
-              value={[guestCount]}
-              onValueChange={handleGuestChange}
-              className="w-[200px]"
-            />
-            <span className="text-sm text-gray-600">
-              {guestCount} {guestCount === 1 ? 'guest' : 'guests'}
-            </span>
-          </div>
-        </div>
+        <GuestCounter 
+          guestCount={guestCount}
+          onGuestCountChange={handleGuestChange}
+        />
       )}
 
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-xl font-bold mb-4">Room Add-ons</h3>
-        <p className="text-gray-600 mb-6">Enhance your stay with these premium services</p>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {roomAddOns.map((addon) => (
-            <div 
-              key={addon.id}
-              className={`p-4 border rounded-lg cursor-pointer transition ${
-                addon.selected 
-                  ? 'bg-amber-50 border-amber-500' 
-                  : 'hover:bg-gray-100'
-              }`}
-              onClick={() => toggleRoomAddOn(addon.id)}
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className={`p-3 rounded-full ${
-                  addon.selected ? 'bg-amber-500 text-white' : 'bg-gray-100'
-                }`}>
-                  {getIconForAddOn(addon.icon)}
-                </div>
-                <h4 className="font-medium mt-2">{addon.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">{addon.price} €</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <RoomAddOns 
+        addOns={roomAddOns}
+        onToggleAddOn={toggleRoomAddOn}
+      />
 
-      <div className="flex justify-between pt-6">
-        <Button 
-          onClick={handleBack}
-          variant="outline"
-          size="lg"
-        >
-          {isEditMode ? "Cancel" : "Back"}
-        </Button>
-        <Button 
-          onClick={handleContinue}
-          className="bg-amber-800 hover:bg-amber-900"
-          size="lg"
-        >
-          {isEditMode ? "Save Changes" : "Continue to Checkout"}
-        </Button>
-      </div>
+      <NavigationButtons 
+        isEditMode={isEditMode}
+        onBack={handleBack}
+        onContinue={handleContinue}
+      />
 
       {/* Room Detail Dialog - Fixed to properly handle notifications */}
       <RoomDetailDialog
