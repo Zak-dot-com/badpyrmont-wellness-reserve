@@ -33,6 +33,9 @@ const RoomBookingContainer = ({
   handleContinue,
   handleBack
 }: RoomBookingContainerProps) => {
+  // Debug log to see if the component is receiving the correct props
+  console.log("RoomBookingContainer: activeStep =", activeStep, "selectedRoom =", bookingData.selectedRoom?.id);
+  
   return (
     <div className="container mx-auto px-4 md:px-6 py-[115px]">
       <div className="max-w-screen-xl mx-auto">
@@ -63,29 +66,26 @@ const RoomBookingContainer = ({
             )}
             
             {activeStep === 'room' && (
-              <RoomSelection 
-                isEditMode={false} 
-                onEditComplete={() => {}}
-              />
-            )}
-            
-            {activeStep === 'checkout' && <CheckoutForm />}
-            
-            {activeStep === 'room' && (
-              <NavigationButtons 
-                isEditMode={false}
-                onBack={handleBack}
-                onContinue={handleContinue}
-                disabled={!bookingData.selectedRoom}
-              />
+              <>
+                <RoomSelection isEditMode={false} onEditComplete={() => {}} />
+                <NavigationButtons 
+                  isEditMode={false}
+                  onBack={handleBack}
+                  onContinue={handleContinue}
+                  disabled={!bookingData.selectedRoom}
+                />
+              </>
             )}
             
             {activeStep === 'checkout' && (
-              <div className="flex justify-between mt-8">
-                <Button onClick={handleBack} variant="outline" size="lg">
-                  Back
-                </Button>
-              </div>
+              <>
+                <CheckoutForm />
+                <div className="flex justify-between mt-8">
+                  <Button onClick={handleBack} variant="outline" size="lg">
+                    Back
+                  </Button>
+                </div>
+              </>
             )}
           </div>
           

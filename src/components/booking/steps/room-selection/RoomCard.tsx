@@ -38,6 +38,12 @@ const RoomCard = ({
   onRoomSelect,
   onViewDetails
 }: RoomCardProps) => {
+  const handleRoomSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Room card clicked for room:", room.id);
+    onRoomSelect(room.id);
+  };
+
   return (
     <Card 
       key={room.id}
@@ -45,7 +51,7 @@ const RoomCard = ({
       className={`overflow-hidden cursor-pointer transition-all room-option ${
         isSelected ? 'ring-2 ring-amber-500' : 'hover:shadow-lg'
       }`}
-      onClick={() => onRoomSelect(room.id)}
+      onClick={handleRoomSelect}
     >
       <div className="relative">
         <AspectRatio ratio={16/9}>

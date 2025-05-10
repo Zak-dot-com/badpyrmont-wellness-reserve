@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RoomType } from "@/types/bookingTypes";
 import { roomDetailsData } from "@/data/roomDetailsData";
-import { BedDouble, Maximize2, Info, Image, Scroll } from "lucide-react";
+import { BedDouble, Maximize2, Info, Image } from "lucide-react";
 import { motion } from "framer-motion";
 
 type RoomDetailDialogProps = {
@@ -41,6 +41,13 @@ const RoomDetailDialog = ({
   }
 
   const imageKeys = Object.keys(roomDetails.images);
+
+  const handleSelectRoom = () => {
+    console.log("Selecting room from dialog:", room.id);
+    if (onSelectRoom) {
+      onSelectRoom();
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -140,10 +147,7 @@ const RoomDetailDialog = ({
                 <div className="pt-4">
                   {onSelectRoom && (
                     <Button
-                      onClick={() => {
-                        onSelectRoom();
-                        onOpenChange(false);
-                      }}
+                      onClick={handleSelectRoom}
                       className={`w-full ${
                         isSelected 
                           ? "bg-green-600 hover:bg-green-700 text-white" 
