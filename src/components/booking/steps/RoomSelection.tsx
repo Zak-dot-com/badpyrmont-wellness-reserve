@@ -17,10 +17,9 @@ import RoomDetailDialog from './RoomDetailDialog';
 type RoomSelectionProps = {
   isEditMode?: boolean;
   onEditComplete?: () => void;
-  isRoomBookingFlow?: boolean;
 };
 
-const RoomSelection = ({ isEditMode = false, onEditComplete, isRoomBookingFlow = false }: RoomSelectionProps) => {
+const RoomSelection = ({ isEditMode = false, onEditComplete }: RoomSelectionProps) => {
   const { 
     bookingData, 
     availableRooms, 
@@ -43,21 +42,13 @@ const RoomSelection = ({ isEditMode = false, onEditComplete, isRoomBookingFlow =
   // Effect to highlight the selected room when component mounts
   useEffect(() => {
     if (selectedRoom) {
-      console.log(`RoomSelection: Selected room ID: ${selectedRoom.id}`);
       // If we have a selected room, scroll it into view if possible
       const roomElement = document.getElementById(`room-card-${selectedRoom.id}`);
       if (roomElement) {
         roomElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    } else {
-      console.log('RoomSelection: No room selected');
     }
   }, [selectedRoom]);
-
-  // Log room selection on mount
-  useEffect(() => {
-    console.log('RoomSelection: Component mounted', { selectedRoom, isRoomBookingFlow });
-  }, []);
 
   const handleGuestChange = (value: number[]) => {
     setGuestCount(value[0]);
@@ -77,7 +68,6 @@ const RoomSelection = ({ isEditMode = false, onEditComplete, isRoomBookingFlow =
   const handleRoomSelect = () => {
     if (selectedRoomForDialog) {
       selectRoom(selectedRoomForDialog.id);
-      console.log(`RoomSelection: Selected room from dialog: ${selectedRoomForDialog.id}`);
     }
   };
 
@@ -118,7 +108,7 @@ const RoomSelection = ({ isEditMode = false, onEditComplete, isRoomBookingFlow =
             </p>
           </div>
 
-          {isRoomOnlyBooking && !isRoomBookingFlow && (
+          {isRoomOnlyBooking && (
             <>
               <Button 
                 variant="outline"
@@ -168,13 +158,11 @@ const RoomSelection = ({ isEditMode = false, onEditComplete, isRoomBookingFlow =
         onToggleAddOn={toggleRoomAddOn}
       />
 
-      {!isRoomBookingFlow && (
-        <NavigationButtons 
-          isEditMode={isEditMode}
-          onBack={handleBack}
-          onContinue={handleContinue}
-        />
-      )}
+      <NavigationButtons 
+        isEditMode={isEditMode}
+        onBack={handleBack}
+        onContinue={handleContinue}
+      />
 
       {/* Room Detail Dialog - Fixed to properly handle notifications */}
       <RoomDetailDialog

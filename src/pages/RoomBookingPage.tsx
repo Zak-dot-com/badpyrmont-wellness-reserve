@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -28,31 +27,21 @@ const RoomBookingPage = () => {
     bookingData,
     selectRoom
   } = useBooking();
-  
+
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
   const notificationsShown = useRef(false);
-  const initialRender = useRef(true);
 
   // Initialize booking context for room-only booking
   useEffect(() => {
-    if (!initialRender.current) return;
-    initialRender.current = false;
-    
-    console.log("RoomBookingPage: Initializing with URL params");
     setBookingType('room');
 
-    // Get room type and dates from URL if present
+    // Get room type from URL if present
     const roomParam = searchParams.get('room');
-    const startDateParam = searchParams.get('startDate');
-    const endDateParam = searchParams.get('endDate');
-    
-    // Process room selection if available
-    const hasRoom = !!roomParam;
-    if (hasRoom) {
+    if (roomParam) {
       // Pre-select the room by ID
-      console.log(`RoomBookingPage: Pre-selecting room: ${roomParam}`);
       selectRoom(roomParam);
+      setActiveStep('room'); // Move to the room selection step
       
       // Only show notification once
       if (!notificationsShown.current) {
@@ -61,13 +50,11 @@ const RoomBookingPage = () => {
       }
     }
 
-    // Process date selection if available
-    let hasDates = false;
+    // Get dates from URL if present
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
     if (startDateParam) {
-      const startDate = new Date(startDateParam);
-      console.log(`RoomBookingPage: Setting start date: ${startDate}`);
-      setStartDate(startDate);
-      hasDates = true;
+      setStartDate(new Date(startDateParam));
 
       // Calculate duration from start/end dates if both are present
       if (endDateParam) {
@@ -85,15 +72,6 @@ const RoomBookingPage = () => {
         }
       }
     }
-    
-    // Determine which step to show initially based on URL params
-    if (hasRoom && hasDates) {
-      console.log("RoomBookingPage: Both room and dates provided, skipping to room step");
-      setActiveStep('room');
-    } else if (hasRoom) {
-      setActiveStep('room');
-    }
-    
   }, [searchParams, setBookingType, setStartDate, setDuration, selectRoom]);
 
   const handleContinue = () => {
@@ -242,14 +220,18 @@ const RoomBookingPage = () => {
                     </div>
                   </motion.div>}
                 
-                {activeStep === 'room' && <RoomSelection isRoomBookingFlow={true} />}
+                {activeStep === 'room' && <RoomSelection />}
                 
                 {activeStep === 'checkout' && <CheckoutForm />}
                 
-                {activeStep === 'room' && <div className="flex justify-end mt-8">
-                    <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
-                      Continue to Checkout
+                {(activeStep === 'room' || activeStep === 'checkout') && <div className="flex justify-between mt-8">
+                    <Button onClick={handleBack} variant="outline" size="lg">
+                      Back
                     </Button>
+                    
+                    {activeStep === 'room' && <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
+                        Continue to Checkout
+                      </Button>}
                   </div>}
               </div>
               

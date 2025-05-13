@@ -53,19 +53,10 @@ const BookingBar = ({
       queryParams.append('package', selectedPackage);
       queryParams.append('bookingType', 'package');
     } else if (bookingType === 'room' && selectedRoom) {
-      // Map the room selection value to the correct room ID used in roomsData.ts
+      // Map the room selection value to the correct room ID used in the room booking page
       const roomId = mapRoomValueToId(selectedRoom);
-      console.log(`BookingBar: Selected room '${selectedRoom}' mapped to ID '${roomId}'`);
       queryParams.append('room', roomId);
       queryParams.append('bookingType', 'room');
-      
-      if (startDate) {
-        queryParams.append('startDate', startDate.toISOString());
-      }
-      if (endDate) {
-        queryParams.append('endDate', endDate.toISOString());
-      }
-      
       navigate(`/book-room?${queryParams.toString()}`);
       return;
     } else if (bookingType === 'event' && selectedEventSpace) {
@@ -90,9 +81,8 @@ const BookingBar = ({
     navigate(`/booking?${queryParams.toString()}`);
   };
 
-  // Map the room selection value to the correct room ID used in roomsData.ts
+  // Map the room selection value to the correct room ID used in the room booking page
   const mapRoomValueToId = (roomValue: string): string => {
-    // These IDs must exactly match what's in roomsData.ts
     switch (roomValue) {
       case 'standard':
         return 'single-standard';
