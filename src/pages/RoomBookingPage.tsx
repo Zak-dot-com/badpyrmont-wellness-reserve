@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -15,6 +16,7 @@ import RoomSelection from '@/components/booking/steps/RoomSelection';
 import BookingSummary from '@/components/booking/summary/BookingSummary';
 import DateSelector from '@/components/home/DateSelector';
 import CheckoutForm from '@/components/booking/steps/CheckoutForm';
+
 const RoomBookingPage = () => {
   const {
     setBookingType,
@@ -26,21 +28,32 @@ const RoomBookingPage = () => {
     bookingData,
     selectRoom
   } = useBooking();
+  
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<'dates' | 'room' | 'checkout'>('dates');
   const notificationsShown = useRef(false);
+  const initialRender = useRef(true);
 
   // Initialize booking context for room-only booking
   useEffect(() => {
+    if (!initialRender.current) return;
+    initialRender.current = false;
+    
+    console.log("RoomBookingPage: Initializing with URL params");
     setBookingType('room');
 
-    // Get room type from URL if present
+    // Get room type and dates from URL if present
     const roomParam = searchParams.get('room');
-    if (roomParam) {
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+    
+    // Process room selection if available
+    const hasRoom = !!roomParam;
+    if (hasRoom) {
       // Pre-select the room by ID
+      console.log(`RoomBookingPage: Pre-selecting room: ${roomParam}`);
       selectRoom(roomParam);
-      setActiveStep('room'); // Move to the room selection step
-
+      
       // Only show notification once
       if (!notificationsShown.current) {
         toast.info("Room type pre-selected. Please confirm your selection or choose dates.");
@@ -48,11 +61,13 @@ const RoomBookingPage = () => {
       }
     }
 
-    // Get dates from URL if present
-    const startDateParam = searchParams.get('startDate');
-    const endDateParam = searchParams.get('endDate');
+    // Process date selection if available
+    let hasDates = false;
     if (startDateParam) {
-      setStartDate(new Date(startDateParam));
+      const startDate = new Date(startDateParam);
+      console.log(`RoomBookingPage: Setting start date: ${startDate}`);
+      setStartDate(startDate);
+      hasDates = true;
 
       // Calculate duration from start/end dates if both are present
       if (endDateParam) {
@@ -70,7 +85,17 @@ const RoomBookingPage = () => {
         }
       }
     }
+    
+    // Determine which step to show initially based on URL params
+    if (hasRoom && hasDates) {
+      console.log("RoomBookingPage: Both room and dates provided, skipping to room step");
+      setActiveStep('room');
+    } else if (hasRoom) {
+      setActiveStep('room');
+    }
+    
   }, [searchParams, setBookingType, setStartDate, setDuration, selectRoom]);
+
   const handleContinue = () => {
     if (activeStep === 'dates') {
       if (!bookingData.startDate) {
@@ -87,6 +112,7 @@ const RoomBookingPage = () => {
       setCurrentStep(4); // Set to checkout step for consistency with main flow
     }
   };
+
   const handleBack = () => {
     if (activeStep === 'room') {
       setActiveStep('dates');
@@ -95,6 +121,7 @@ const RoomBookingPage = () => {
       setCurrentStep(3); // Reset to room selection step
     }
   };
+
   const handleStepClick = (step: 'dates' | 'room' | 'checkout') => {
     // Only allow going backward or staying on current step
     if (step === activeStep) return;
@@ -117,6 +144,7 @@ const RoomBookingPage = () => {
       setCurrentStep(4);
     }
   };
+
   return <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow bg-gray-100">
@@ -214,16 +242,14 @@ const RoomBookingPage = () => {
                     </div>
                   </motion.div>}
                 
-                {activeStep === 'room' && <RoomSelection />}
+                {activeStep === 'room' && <RoomSelection isRoomBookingFlow={true} />}
                 
                 {activeStep === 'checkout' && <CheckoutForm />}
                 
-                {(activeStep === 'room' || activeStep === 'checkout') && <div className="flex justify-between mt-8">
-                    
-                    
-                    {activeStep === 'room' && <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
-                        Continue to Checkout
-                      </Button>}
+                {activeStep === 'room' && <div className="flex justify-end mt-8">
+                    <Button onClick={handleContinue} className="bg-amber-800 hover:bg-amber-900" size="lg">
+                      Continue to Checkout
+                    </Button>
                   </div>}
               </div>
               
@@ -254,4 +280,5 @@ const RoomBookingPage = () => {
       <Footer />
     </div>;
 };
+
 export default RoomBookingPage;
