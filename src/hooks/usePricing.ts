@@ -12,7 +12,6 @@ type PricingProps = {
   attendees: number | null;
   eventDuration: number | null;
   eventAddons: string[];
-  eventDate?: Date | null; // Added eventDate prop
 }
 
 export function usePricing({
@@ -22,8 +21,7 @@ export function usePricing({
   eventType, 
   attendees, 
   eventDuration, 
-  eventAddons,
-  eventDate // Add eventDate parameter
+  eventAddons
 }: PricingProps) {
   
   const getDefaultAddOnQuantity = useCallback((duration: string): number => {
@@ -130,6 +128,18 @@ export function usePricing({
         }
       }
     }
+
+    // Add console.log to debug the total calculation
+    console.log('Calculated total price:', total, {
+      eventSpace, 
+      eventType,
+      attendees,
+      eventDuration,
+      eventAddons,
+      selectedRoom: bookingData.selectedRoom,
+      selectedPackage: bookingData.selectedPackage,
+      sessionEventBooking: sessionStorage.getItem('eventBooking')
+    });
 
     return total;
   }, [eventSpace, eventType, eventDuration, attendees, eventAddons, getStandardRoom]);
