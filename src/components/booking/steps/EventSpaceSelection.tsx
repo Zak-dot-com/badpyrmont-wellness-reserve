@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useBooking } from '@/contexts/BookingContext';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,6 @@ const EventSpaceSelection = () => {
   const [selectedAddons, setSelectedAddons] = useState<string[]>(eventAddons || []);
   const [specialRequests, setSpecialRequests] = useState<string>('');
   const [gatheringMode, setGatheringMode] = useState<string>('parliamentary');
-  const [startTime, setStartTime] = useState<string>('10:00');
 
   const [roomBooking, setRoomBooking] = useState<{
     enabled: boolean;
@@ -161,39 +161,9 @@ const EventSpaceSelection = () => {
     setEventAddons(updatedAddons);
   };
   
-  // Generate time slots from 06:00 to 22:00 in 30-minute intervals
-  const timeSlots = [];
-  for (let hour = 6; hour < 23; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      if (hour === 22 && minute === 30) continue; // Skip 22:30 as events can't start this late
-      const formattedHour = String(hour).padStart(2, '0');
-      const formattedMinute = String(minute).padStart(2, '0');
-      timeSlots.push(`${formattedHour}:${formattedMinute}`);
-    }
-  }
-  
-  const calculateEndTime = () => {
-    if (!startTime) return '';
-    
-    // Parse the start time (format: HH:MM)
-    const [hours, minutes] = startTime.split(':').map(Number);
-    
-    // Calculate end time
-    let endHours = hours + selectedDuration;
-    const endMinutes = minutes;
-    
-    // Handle overflow to next day
-    if (endHours >= 24) {
-      endHours = endHours - 24;
-    }
-    
-    // Format the result as HH:MM
-    return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
-  };
-  
   const handleSubmit = () => {
-    if (!selectedVenue || !selectedEventType || !selectedDate || !startTime) {
-      toast.error("Please select venue, event type, date, and time to continue.");
+    if (!selectedVenue || !selectedEventType || !selectedDate) {
+      toast.error("Please select venue, event type, and date to continue.");
       return;
     }
     
@@ -205,14 +175,6 @@ const EventSpaceSelection = () => {
     setEventDuration(selectedDuration);
     setEventAddons(selectedAddons);
     setBookingType('event');
-    
-    // Store time information in session storage since our context doesn't have a field for it
-    const eventDetails = {
-      startTime: startTime,
-      endTime: calculateEndTime(),
-      date: selectedDate
-    };
-    sessionStorage.setItem('eventTimeDetails', JSON.stringify(eventDetails));
     
     // Store room booking data if enabled
     if (roomBooking.enabled && roomBooking.roomType && roomBooking.numberOfRooms > 0) {
@@ -302,34 +264,6 @@ const EventSpaceSelection = () => {
                     className="pl-10"
                   />
                   <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="startTime">Event Time</Label>
-                <div className="flex items-center space-x-2">
-                  <div className="relative flex-1">
-                    <Select value={startTime} onValueChange={setStartTime}>
-                      <SelectTrigger className="w-full pl-10">
-                        <SelectValue placeholder="Start time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timeSlots.map(time => (
-                          <SelectItem key={time} value={time}>{time}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Clock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 z-10" />
-                  </div>
-                  <span className="text-gray-500">to</span>
-                  <div className="relative flex-1">
-                    <Input 
-                      value={calculateEndTime()} 
-                      disabled 
-                      className="pl-10 bg-gray-50"
-                    />
-                    <Clock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                  </div>
                 </div>
               </div>
               
